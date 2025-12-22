@@ -1,0 +1,24 @@
+{
+	"arrowParens": "always",
+	"bracketSameLine": true,
+	"bracketSpacing": true,
+	"jsxSingleQuote": true,
+	"printWidth": 250,
+	"proseWrap": "never",
+	"quoteProps": "as-needed",
+	"semi": true,
+	"singleQuote": true,
+	"tabWidth": 4,
+	"trailingComma": "all",
+	"useTabs": true,
+	"overrides": [
+		{
+			"files": "*.html",
+			"options": {
+				"parser": "angular",
+				"tabWidth": 4
+			}
+		}
+	],
+	"plugins": ["prettier-plugin-tailwindcss", "prettier-plugin-organize-imports"]
+}
