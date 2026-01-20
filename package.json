@@ -45,7 +45,11 @@
 		"typescript": "~5.9.3"
 	},
 	"browserslist": [
-		"Chrome >=61",
-		"ChromeAndroid >=60"
+		"last 2 Chrome versions",
+		"last 2 Firefox versions",
+		"last 2 Edge versions",
+		"last 2 Safari versions",
+		"last 2 iOS versions",
+		"Firefox ESR"
 	]
 }
