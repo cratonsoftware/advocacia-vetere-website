@@ -55,21 +55,21 @@
 	--font-display: 'Poppins', 'sans-serif';
 	--font-sans: 'Inter', 'sans-serif';
 
-	--color-destaque: #c2410c;
+	--color-destaque: #572c1c;
 
-	/* Padrão Light */
-	--color-light-fundo: #faf9f6;
-	--color-light-n1: #918d8a;
-	--color-light-n2: #6f6b68;
-	--color-light-n3: #4d4a48; /* Texto Secundário */
-	--color-light-n4: #2d2a28; /* Texto Principal */
+	/* Padrão Light: Foco em Clarté e Autoridade */
+	--color-light-fundo: #fafafa; /* Off-White puro: Limpo, moderno e leve */
+	--color-light-n1: #f0edea; /* Bege acinzentado: Para divisórias sutis e hovers */
+	--color-light-n2: #d6ccc5; /* Taupe: Para ícones e elementos que não devem brilhar */
+	--color-light-n3: #7a6a64; /* Marrom Acinzentado: Texto secundário (leitura fluida) */
+	--color-light-n4: #572c1c; /* O Marrom Destaque: Texto principal, Títulos e Botões */
 
-	/* Padrão Dark */
-	--color-dark-fundo: #1a1716;
-	--color-dark-n1: #faf9f6; /* Texto Principal */
-	--color-dark-n2: #c7c4bf;
-	--color-dark-n3: #918d8a; /* Texto Secundário */
-	--color-dark-n4: #4d4a48;
+	/* Padrão Dark: Foco em Luxo Noturno */
+	--color-dark-fundo: #1c1310; /* "Black Chocolate": Quase preto, mas com alma marrom */
+	--color-dark-n1: #fafafa; /* Texto Principal: Off-white para contraste máximo */
+	--color-dark-n2: #fff3ea; /* O Creme original aqui vira o destaque suave de leitura */
+	--color-dark-n3: #968178; /* Tom de transição para bordas no dark mode */
+	--color-dark-n4: #572c1c; /* Superfícies e Cards: O marrom de destaque */
 }
 
 /* preset html base */
