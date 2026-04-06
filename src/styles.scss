@@ -3,6 +3,14 @@
 
 /* set das fontes */
 @font-face {
+	font-family: 'Antic Didone';
+	src: url('/assets/fonts/AnticDidone-Regular.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
 	font-family: 'Inter';
 	src: url('/assets/fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype');
 	font-weight: 100 900;
@@ -54,6 +62,7 @@
 @theme {
 	--font-display: 'Poppins', 'sans-serif';
 	--font-sans: 'Inter', 'sans-serif';
+	--font-antic: 'Antic Didone', 'sans-serif';
 
 	--color-destaque: #572c1c;
 
