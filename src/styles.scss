@@ -73,21 +73,15 @@
 	--font-inter: 'Inter';
 	--font-poppins: 'Poppins';
 
-	--color-destaque: #572c1c;
+	--color-destaque-m: #572c1c;
+	--color-destaque-l: #fff3ea;
 
-	/* Padrão Light: Foco em Clarté e Autoridade */
-	--color-light-fundo: #fafafa; /* Off-White puro: Limpo, moderno e leve */
-	--color-light-n1: #f0edea; /* Bege acinzentado: Para divisórias sutis e hovers */
-	--color-light-n2: #d6ccc5; /* Taupe: Para ícones e elementos que não devem brilhar */
-	--color-light-n3: #7a6a64; /* Marrom Acinzentado: Texto secundário (leitura fluida) */
-	--color-light-n4: #572c1c; /* O Marrom Destaque: Texto principal, Títulos e Botões */
-
-	/* Padrão Dark: Foco em Luxo Noturno */
-	--color-dark-fundo: #1c1310; /* "Black Chocolate": Quase preto, mas com alma marrom */
-	--color-dark-n1: #fafafa; /* Texto Principal: Off-white para contraste máximo */
-	--color-dark-n2: #fff3ea; /* O Creme original aqui vira o destaque suave de leitura */
-	--color-dark-n3: #968178; /* Tom de transição para bordas no dark mode */
-	--color-dark-n4: #572c1c; /* Superfícies e Cards: O marrom de destaque */
+	--color-n0: #fafafa;
+	--color-n1: #f0edea;
+	--color-n2: #d6ccc5;
+	--color-n3: #7a6a64;
+	--color-n4: #572c1c;
+	--color-n5: #000000;
 }
 
 /* preset html base */
@@ -96,8 +90,8 @@ body {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	background-color: var(--color-light-fundo);
-	color: var(--color-light-n3);
+	background-color: var(--color-n1);
+	color: var(--color-n3);
 	font-family: 'Inter', sans-serif;
 	scroll-behavior: smooth;
 }

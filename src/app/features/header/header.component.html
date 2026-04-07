@@ -1,35 +1,45 @@
-<header class="bg-light-fundo fixed top-0 right-0 left-0 z-50 shadow-md transition-all duration-300">
+<header class="bg-n0 fixed top-0 right-0 left-0 z-50 shadow-md transition-all duration-300">
 	<nav class="mx-auto flex h-19 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
 		<a href="#" class="flex items-center transition-opacity hover:opacity-80">
 			<img src="/assets/logo/mfv-logo-ico-esc.png" alt="Ícone Balança Direito" class="h-17 w-auto" />
 
-			<div class="text-light-n4 font- ml-2 inline-flex shrink-0 flex-col items-center" style="-webkit-text-stroke: 0.2px currentColor">
+			<div class="text-n4 font- ml-2 inline-flex shrink-0 flex-col items-center" style="-webkit-text-stroke: 0.2px currentColor">
 				<div class="font-antic-didone text-xl leading-none whitespace-nowrap">DRA. MARIA FERNANDA</div>
-				<div class="font-black-gold mt-1 flex w-full justify-between px-1 text-5xl">
-					<span class="flex h-[0.81em] items-start overflow-hidden">V</span>
-					<span class="flex h-[0.81em] items-start overflow-hidden">E</span>
-					<span class="flex h-[0.81em] items-start overflow-hidden">T</span>
-					<span class="flex h-[0.81em] items-start overflow-hidden">E</span>
-					<span class="flex h-[0.81em] items-start overflow-hidden">R</span>
-					<span class="flex h-[0.81em] items-start overflow-hidden">E</span>
+				<div class="font-black-gold flex w-full justify-between px-1 text-5xl">
+					<span class="flex h-[0.9em] items-start overflow-hidden">V</span>
+					<span class="flex h-[0.9em] items-start overflow-hidden">E</span>
+					<span class="flex h-[0.9em] items-start overflow-hidden">T</span>
+					<span class="flex h-[0.9em] items-start overflow-hidden">E</span>
+					<span class="flex h-[0.9em] items-start overflow-hidden">R</span>
+					<span class="flex h-[0.9em] items-start overflow-hidden">E</span>
 				</div>
 			</div>
 		</a>
 
-		<div class="hidden items-center space-x-6 md:flex">
-			<a href="#home" class="text-light-n3 hover:text-destaque font-medium transition-colors"> Home </a>
-			<a href="#sobre" class="text-light-n3 hover:text-destaque font-medium transition-colors"> Sobre Mim </a>
-			<a href="#areas" class="text-light-n3 hover:text-destaque font-medium transition-colors"> Áreas de Atuação </a>
-			<a href="#contato" class="text-light-n3 hover:text-destaque font-medium transition-colors"> Blog </a>
-			<a href="#contato" class="text-light-n3 hover:text-destaque font-medium transition-colors"> Contato </a>
+		<div class="text-n3 hidden items-center space-x-6 lg:flex">
+			<a href="#home" class="hover:text-destaque-m font-medium transition-colors"> Home </a>
+			<a href="#sobre" class="hover:text-destaque-m font-medium transition-colors"> Sobre Mim </a>
+			<a href="#areas" class="hover:text-destaque-m font-medium transition-colors"> Áreas de Atuação </a>
+			<a class="cursor-not-allowed font-medium transition-colors"> Blog </a>
+			<a href="#contato" class="hover:text-destaque-m font-medium transition-colors"> Contato </a>
 		</div>
 
-		<div class="md:hidden">
-			<button type="button" aria-label="Abrir menu" class="text-light-n4 hover:bg-light-n2 hover:text-light-fundo rounded-md p-2 transition-colors">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-				</svg>
-			</button>
-		</div>
+		<button type="button" aria-label="Abrir menu" class="text-n4 hover:bg-n2 hover:text-n1 cursor-pointer rounded-md p-2 transition-colors lg:hidden" (click)="toggleMenu()">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+			</svg>
+		</button>
 	</nav>
+
+	@if (isMenuOpen()) {
+		<div class="bg-n4 border-n3/20 absolute top-19 left-0 w-full border-t shadow-xl lg:hidden">
+			<div class="flex flex-col space-y-4 p-6">
+				<a (click)="toggleMenu()" href="#home" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Home </a>
+				<a (click)="toggleMenu()" href="#sobre" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Sobre Mim </a>
+				<a (click)="toggleMenu()" href="#areas" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Áreas de Atuação </a>
+				<a (click)="toggleMenu()" href="#contato" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Blog </a>
+				<a (click)="toggleMenu()" href="#contato" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Contato </a>
+			</div>
+		</div>
+	}
 </header>
