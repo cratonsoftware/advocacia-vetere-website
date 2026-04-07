@@ -11,6 +11,14 @@
 }
 
 @font-face {
+	font-family: 'Black Gold';
+	src: url('/assets/fonts/BlackGold-Regular.otf') format('opentype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
 	font-family: 'Inter';
 	src: url('/assets/fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype');
 	font-weight: 100 900;
@@ -60,9 +68,10 @@
 
 /* personalização dos estilos tailwind css */
 @theme {
-	--font-display: 'Poppins', 'sans-serif';
-	--font-sans: 'Inter', 'sans-serif';
-	--font-antic: 'Antic Didone', 'sans-serif';
+	--font-antic-didone: 'Antic Didone';
+	--font-black-gold: 'Black Gold';
+	--font-inter: 'Inter';
+	--font-poppins: 'Poppins';
 
 	--color-destaque: #572c1c;
 
