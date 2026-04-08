@@ -1,0 +1,44 @@
+@if (article) {
+	<main class="bg-n1 min-h-screen pt-28 pb-24 lg:pt-36">
+		<article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+			<a routerLink="/blog" class="text-n4/60 hover:text-n4 mb-10 inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors">
+				<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+				Voltar para o Blog
+			</a>
+
+			<header class="mb-12 text-center lg:mb-16 lg:text-left">
+				<div class="mb-6 flex flex-wrap items-center justify-center gap-4 text-xs font-bold tracking-widest uppercase lg:justify-start">
+					<span class="bg-n4 text-n0 rounded-sm px-3 py-1">{{ article.category }}</span>
+					<span class="text-n3">{{ article.date }}</span>
+					<span class="text-n3 hidden sm:inline">•</span>
+					<span class="text-n3">{{ article.readTime }}</span>
+				</div>
+
+				<h1 class="font-antic-didone text-n4 text-4xl leading-tight sm:text-5xl lg:text-6xl">
+					{{ article.title }}
+				</h1>
+			</header>
+
+			@if (article.coverImage) {
+				<div class="relative mb-16 h-[40vh] w-full overflow-hidden sm:h-[50vh]">
+					<img [src]="article.coverImage" [alt]="article.title" class="h-full w-full object-cover grayscale-15" />
+					<div class="from-n1 absolute inset-0 bg-linear-to-t to-transparent opacity-40"></div>
+				</div>
+			}
+
+			<div class="text-n3 font-inter space-y-6 text-lg leading-relaxed md:text-xl md:leading-loose" [innerHTML]="article.content"></div>
+
+			<div class="border-n3/20 mt-20 border-t pt-10 text-center">
+				<p class="font-antic-didone text-n4 mb-2 text-2xl">Dra. Maria Fernanda Vetere</p>
+				<p class="text-n3 text-xs tracking-widest uppercase">Especialista em Direito {{ article.category }}</p>
+			</div>
+		</article>
+	</main>
+} @else {
+	<main class="bg-n1 flex min-h-screen items-center justify-center pt-28">
+		<div class="text-center">
+			<h2 class="font-antic-didone text-n4 mb-4 text-3xl">Artigo não encontrado</h2>
+			<a routerLink="/blog" class="text-n3 hover:text-n4 border-n4/30 border-b pb-1 text-xs font-bold tracking-widest uppercase">Voltar ao início</a>
+		</div>
+	</main>
+}
