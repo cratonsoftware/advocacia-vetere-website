@@ -1,34 +1,44 @@
-<section id="blog" class="bg-n0 py-24 lg:py-32">
+<section id="blog" class="bg-n1/20 py-24 lg:py-32">
 	<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-		<div class="mb-16 flex flex-col items-center justify-between gap-8 md:flex-row lg:mb-20">
-			<div>
-				<span class="text-n4/60 mb-3 block text-center text-[10px] font-bold tracking-[0.4em] uppercase md:text-left"> Conteúdo Jurídico </span>
-				<h2 class="font-antic-didone text-n4 text-center text-4xl md:text-left lg:text-5xl">Artigos & <span class="text-n3 italic">Atualizações</span></h2>
+		<div class="mb-16 flex flex-col items-center justify-between gap-8 md:flex-row">
+			<div class="text-center md:text-left">
+				<span class="text-n4/60 mb-3 block text-[10px] font-bold tracking-[0.4em] uppercase"> Informativo </span>
+				<h2 class="font-antic-didone text-n4 text-4xl lg:text-5xl">Artigos & <span class="text-n3 italic">Atualizações</span></h2>
 			</div>
 
 			<a routerLink="/blog" class="text-n4 hover:text-n3 border-n4/30 hover:border-n3 border-b pb-1 text-xs font-bold tracking-widest uppercase transition-all"> Ver todas as publicações → </a>
 		</div>
 
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-			<article class="group border-n2/20 bg-n1/20 hover:bg-n1/40 flex flex-col border transition-all duration-500 hover:shadow-lg">
-				<div class="relative h-48 w-full overflow-hidden">
-					<img src="/assets/fotos/8882.jpg" alt="Capa do Artigo" class="h-full w-full object-cover grayscale-30 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
-					<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">Direito Cível</div>
-				</div>
+			@for (article of latestArticles; track article.id) {
+				<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
+					<div class="relative h-56 w-full overflow-hidden">
+						<img [src]="article.coverImage" [alt]="article.title" class="h-full w-full object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
+						<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">
+							{{ article.category }}
+						</div>
+					</div>
 
-				<div class="flex flex-1 flex-col p-6 lg:p-8">
-					<span class="text-n3 mb-3 text-xs font-medium">12 de Abril, 2026</span>
-					<h3 class="font-antic-didone text-n4 group-hover:text-n3 mb-4 line-clamp-2 text-2xl leading-tight transition-colors">A Importância do Planejamento Sucessório Familiar</h3>
-					<p class="text-n3 mb-8 line-clamp-3 flex-1 text-sm leading-relaxed">Entenda como a organização prévia do patrimônio pode evitar conflitos judiciais, proteger a empresa familiar e garantir a paz entre os herdeiros...</p>
+					<div class="flex flex-1 flex-col p-8">
+						<span class="text-n3 mb-3 text-xs font-medium">{{ article.date }} • {{ article.readTime }}</span>
 
-					<a routerLink="/blog/planejamento-sucessorio" class="text-n4 group-hover:text-n3 mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-colors">
-						Ler Artigo Completo
-						<svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-						</svg>
-					</a>
-				</div>
-			</article>
+						<h3 class="font-antic-didone text-n4 mb-4 line-clamp-2 text-2xl leading-tight">
+							{{ article.title }}
+						</h3>
+
+						<p class="text-n3 mb-8 line-clamp-3 flex-1 text-sm leading-relaxed">
+							{{ article.excerpt }}
+						</p>
+
+						<a [routerLink]="['/blog', article.slug]" class="text-n4 hover:text-n3 mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-colors">
+							Ler Artigo Completo
+							<svg class="h-4 w-4 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+							</svg>
+						</a>
+					</div>
+				</article>
+			}
 		</div>
 	</div>
 </section>
