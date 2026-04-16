@@ -1,5 +1,6 @@
 /* imports */
 @use 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 /* set das fontes */
 @font-face {
