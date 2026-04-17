@@ -11,7 +11,13 @@ export class BlogService {
 	private supabase: SupabaseClient;
 
 	constructor() {
-		this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+		this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
+			auth: {
+				persistSession: false,
+				autoRefreshToken: false,
+				detectSessionInUrl: false,
+			},
+		});
 	}
 
 	getAllArticles(): Observable<BlogPost[]> {

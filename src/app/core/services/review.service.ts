@@ -11,7 +11,13 @@ export class ReviewsService {
 	private supabase: SupabaseClient;
 
 	constructor() {
-		this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+		this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
+			auth: {
+				persistSession: false,
+				autoRefreshToken: false,
+				detectSessionInUrl: false,
+			},
+		});
 	}
 
 	getReviews(): Observable<GoogleReview[]> {

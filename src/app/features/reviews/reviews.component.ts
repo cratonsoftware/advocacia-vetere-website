@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { afterNextRender, Component, ElementRef, inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { GoogleReview } from 'src/app/core/models/review.model';
 import { ReviewsService } from 'src/app/core/services/review.service';
@@ -12,8 +12,9 @@ export interface InfiniteReview extends GoogleReview {
 	templateUrl: './reviews.component.html',
 	imports: [MatIcon],
 })
-export class ReviewsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ReviewsComponent implements OnInit, OnDestroy {
 	private reviewsService = inject(ReviewsService);
+	private ngZone = inject(NgZone);
 
 	@ViewChild('slider') slider!: ElementRef<HTMLDivElement>;
 
@@ -62,6 +63,19 @@ export class ReviewsComponent implements OnInit, AfterViewInit, OnDestroy {
 		},
 	];
 
+	constructor() {
+		afterNextRender(() => {
+			setTimeout(() => {
+				if (this.slider) {
+					const container = this.slider.nativeElement;
+					const setWidth = container.scrollWidth / 3;
+					container.scrollLeft = setWidth;
+					this.startAutoplay();
+				}
+			}, 100);
+		});
+	}
+
 	ngOnInit(): void {
 		this.reviewsService.getReviews().subscribe({
 			next: (reviews) => {
@@ -83,17 +97,6 @@ export class ReviewsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		this.infiniteReviews = [...set1, ...set2, ...set3];
 		this.isLoading = false;
-	}
-
-	ngAfterViewInit() {
-		setTimeout(() => {
-			if (this.slider) {
-				const container = this.slider.nativeElement;
-				const setWidth = container.scrollWidth / 3;
-				container.scrollLeft = setWidth;
-				this.startAutoplay();
-			}
-		}, 100);
 	}
 
 	ngOnDestroy() {
@@ -118,15 +121,20 @@ export class ReviewsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	startAutoplay() {
 		this.stopAutoplay();
-		this.autoplayInterval = setInterval(() => {
-			if (!this.isHovered) {
-				this.scroll('right');
-			}
-		}, 4000);
+
+		this.ngZone.runOutsideAngular(() => {
+			this.autoplayInterval = setInterval(() => {
+				if (!this.isHovered) {
+					this.scroll('right');
+				}
+			}, 4000);
+		});
 	}
 
 	stopAutoplay() {
-		if (this.autoplayInterval) clearInterval(this.autoplayInterval);
+		if (this.autoplayInterval) {
+			clearInterval(this.autoplayInterval);
+		}
 	}
 
 	pauseAutoplay() {
