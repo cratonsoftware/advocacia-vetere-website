@@ -38,6 +38,24 @@
 						</a>
 					</div>
 				</article>
+			} @empty {
+				<div class="border-n2/20 bg-n0 group relative flex flex-col items-center justify-center overflow-hidden border px-8 py-24 text-center shadow-sm md:col-span-3">
+					<div class="bg-n1/10 absolute inset-0 translate-y-full transition-transform duration-1000 ease-in-out group-hover:translate-y-0"></div>
+
+					<div class="relative z-10 flex flex-col items-center">
+						<span class="text-n4/40 mb-6 block text-[10px] font-bold tracking-[0.4em] uppercase"> Em Preparação </span>
+
+						<h3 class="font-antic-didone text-n4 mb-6 text-3xl md:text-4xl">Conteúdo <span class="text-n3 italic">Exclusivo</span></h3>
+
+						<div class="bg-n4/30 mb-8 h-px w-16"></div>
+
+						<p class="text-n3 mx-auto mb-10 max-w-lg text-sm leading-relaxed">
+							A Dra. Maria Fernanda está elaborando novas análises e orientações jurídicas. O nosso compromisso é entregar informações com o máximo rigor técnico, relevância e clareza para si.
+						</p>
+
+						<a [routerLink]="['/']" fragment="contato" class="text-n4 hover:text-n3 border-n4/30 hover:border-n3 border-b pb-1 text-[10px] font-bold tracking-widest uppercase transition-all"> Deseja falar sobre o seu caso? </a>
+					</div>
+				</div>
 			}
 		</div>
 	</div>

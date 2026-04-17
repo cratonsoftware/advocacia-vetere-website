@@ -1,11 +1,17 @@
+export interface BlogCategory {
+	id: string;
+	name: string;
+	slug: string;
+}
+
 export interface BlogPost {
 	id: string;
 	slug: string;
 	title: string;
 	excerpt: string;
 	content: string;
-	category: 'Cível' | 'Trabalhista' | 'Empresarial';
-	date: string;
 	coverImage: string;
 	readTime: string;
+	category: string;
+	date: string;
 }

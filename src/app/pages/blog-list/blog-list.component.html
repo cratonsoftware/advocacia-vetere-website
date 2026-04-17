@@ -18,15 +18,25 @@
 			</div>
 
 			<div class="flex flex-wrap gap-2">
-				@for (category of categories; track category) {
+				<button
+					(click)="setCategory('Todos')"
+					[class.bg-n4]="selectedCategory === 'Todos'"
+					[class.text-n0]="selectedCategory === 'Todos'"
+					[class.border-n4]="selectedCategory !== 'Todos'"
+					[class.text-n4]="selectedCategory !== 'Todos'"
+					class="hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300">
+					Todos
+				</button>
+
+				@for (cat of categories; track cat.id) {
 					<button
-						(click)="setCategory(category)"
-						[class.bg-n4]="selectedCategory === category"
-						[class.text-n0]="selectedCategory === category"
-						[class.border-n4]="selectedCategory !== category"
-						[class.text-n4]="selectedCategory !== category"
+						(click)="setCategory(cat.name)"
+						[class.bg-n4]="selectedCategory === cat.name"
+						[class.text-n0]="selectedCategory === cat.name"
+						[class.border-n4]="selectedCategory !== cat.name"
+						[class.text-n4]="selectedCategory !== cat.name"
 						class="hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300">
-						{{ category }}
+						{{ cat.name }}
 					</button>
 				}
 			</div>

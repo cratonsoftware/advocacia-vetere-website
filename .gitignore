@@ -43,3 +43,6 @@ Thumbs.db
 
 style.css
 /src/app/generated
+
+/src/environments/environment.ts
+.env
