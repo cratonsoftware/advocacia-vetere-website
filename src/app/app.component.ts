@@ -1,7 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
+import { inject as injectAnalytics } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 import { FooterComponent } from './features/footer/footer.component';
 import { HeaderComponent } from './features/header/header.component';
 import { ICON_NAMES } from './generated/icon-list';
@@ -11,12 +13,17 @@ import { ICON_NAMES } from './generated/icon-list';
 	templateUrl: './app.component.html',
 	imports: [HeaderComponent, FooterComponent, RouterOutlet],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 	private iconRegistry = inject(MatIconRegistry);
 	private sanitizer = inject(DomSanitizer);
 
 	constructor() {
 		this.registrarIcones();
+	}
+
+	ngOnInit(): void {
+		injectAnalytics();
+		injectSpeedInsights();
 	}
 
 	registrarIcones() {
