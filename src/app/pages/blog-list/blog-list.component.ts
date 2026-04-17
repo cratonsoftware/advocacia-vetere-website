@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -7,9 +6,8 @@ import { BlogService } from '../../core/services/blog.service';
 
 @Component({
 	selector: 'app-blog-list',
-	standalone: true,
-	imports: [CommonModule, RouterLink, FormsModule],
 	templateUrl: './blog-list.component.html',
+	imports: [RouterLink, FormsModule],
 })
 export class BlogListComponent implements OnInit {
 	private blogService = inject(BlogService);

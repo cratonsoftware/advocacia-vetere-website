@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MarkdownModule } from 'ngx-markdown';
@@ -8,7 +7,7 @@ import { BlogService } from '../../core/services/blog.service';
 @Component({
 	selector: 'app-blog-post',
 	templateUrl: './blog-post.component.html',
-	imports: [CommonModule, RouterLink, MarkdownModule],
+	imports: [RouterLink, MarkdownModule],
 })
 export class BlogPostComponent implements OnInit {
 	private route = inject(ActivatedRoute);

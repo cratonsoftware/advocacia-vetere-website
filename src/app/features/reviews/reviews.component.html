@@ -1,84 +1,69 @@
-<section class="bg-n4 relative overflow-hidden py-24 lg:py-32">
+<section id="avaliacoes" class="bg-n4 relative overflow-hidden py-24 lg:py-32">
 	<div class="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-		<div class="mb-16 text-center lg:mb-24">
+		<div class="mb-16 text-center lg:mb-20">
 			<span class="text-n0/60 mb-4 block text-[10px] font-bold tracking-[0.4em] uppercase"> Prova Social </span>
 			<h2 class="font-antic-didone text-n0 text-4xl lg:text-5xl">O que dizem os <span class="text-n2 italic">nossos clientes</span></h2>
 			<div class="bg-n0/20 mx-auto mt-8 h-px w-24"></div>
 		</div>
 
-		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-			<div class="border-n0/10 bg-n0/5 hover:bg-n0/10 border p-10 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1">
-				<div class="mb-6 flex gap-1 text-[#FABB05]">
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-				</div>
-				<p class="text-n0/80 mb-8 text-sm leading-relaxed italic">
-					"Profissionalismo ímpar. A Dra. Maria Fernanda conduziu o meu processo de família com uma sensibilidade e firmeza que me deram muita segurança do início ao fim. Recomendo de olhos fechados."
-				</p>
-				<div class="border-n0/10 flex items-center gap-4 border-t pt-6">
-					<div class="bg-n0 text-n4 flex h-8 w-8 items-center justify-center rounded-full font-bold">
-						<span class="text-lg">G</span>
-					</div>
-					<div>
-						<p class="text-n0 text-xs font-bold tracking-widest uppercase">Juliana S.</p>
-						<p class="text-n0/50 text-[10px] tracking-widest uppercase">Avaliação verificada</p>
-					</div>
-				</div>
-			</div>
+		<div class="relative" (mouseenter)="pauseAutoplay()" (mouseleave)="resumeAutoplay()">
+			<div #slider (scroll)="onScroll()" class="flex snap-x snap-mandatory gap-8 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+				@if (isLoading) {
+					<div class="text-n0/50 w-full animate-pulse py-10 text-center text-xs tracking-widest uppercase">Carregando avaliações...</div>
+				} @else {
+					@for (review of infiniteReviews; track review._infiniteId) {
+						<div class="border-n0/10 bg-n0/5 hover:bg-n0/10 flex w-full shrink-0 snap-center flex-col border p-10 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 md:w-[calc(33.333333%-1.33rem)]">
+							<div class="mb-6 flex text-[#FABB05]">
+								@for (star of getStars(review.rating); track $index) {
+									<mat-icon class="size-6!" svgIcon="star" />
+								}
+							</div>
 
-			<div class="border-n0/10 bg-n0/5 hover:bg-n0/10 border p-10 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1">
-				<div class="mb-6 flex gap-1 text-[#FABB05]">
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-				</div>
-				<p class="text-n0/80 mb-8 text-sm leading-relaxed italic">
-					"Fui muito bem atendido. O escritório foi extremamente transparente sobre os prazos e as etapas da minha causa trabalhista. Senti que os meus direitos estavam realmente protegidos."
-				</p>
-				<div class="border-n0/10 flex items-center gap-4 border-t pt-6">
-					<div class="bg-n0 text-n4 flex h-8 w-8 items-center justify-center rounded-full font-bold">
-						<span class="text-lg">G</span>
-					</div>
-					<div>
-						<p class="text-n0 text-xs font-bold tracking-widest uppercase">Ricardo M.</p>
-						<p class="text-n0/50 text-[10px] tracking-widest uppercase">Avaliação verificada</p>
-					</div>
-				</div>
-			</div>
+							<p class="text-n0/80 mb-8 line-clamp-6 flex-1 text-sm leading-relaxed italic">"{{ review.text }}"</p>
 
-			<div class="border-n0/10 bg-n0/5 hover:bg-n0/10 border p-10 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1">
-				<div class="mb-6 flex gap-1 text-[#FABB05]">
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-					<svg class="h-5 w-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-				</div>
-				<p class="text-n0/80 mb-8 text-sm leading-relaxed italic">"Rigor técnico e ética. É difícil encontrar advogados que consigam explicar termos complexos de forma tão clara e acessível. Excelente assessoria preventiva."</p>
-				<div class="border-n0/10 flex items-center gap-4 border-t pt-6">
-					<div class="bg-n0 text-n4 flex h-8 w-8 items-center justify-center rounded-full font-bold">
-						<span class="text-lg">G</span>
-					</div>
-					<div>
-						<p class="text-n0 text-xs font-bold tracking-widest uppercase">Empresa C.</p>
-						<p class="text-n0/50 text-[10px] tracking-widest uppercase">Avaliação verificada</p>
-					</div>
-				</div>
+							<div class="border-n0/10 mt-auto flex items-center gap-4 border-t pt-6">
+								<div class="border-n0/20 bg-n1/10 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border">
+									@if (review.profile_photo_url && !review.photoError) {
+										<img [src]="review.profile_photo_url" [alt]="review.author_name" (error)="handleImageError(review)" class="h-full w-full object-cover transition-opacity duration-500" />
+									} @else {
+										<div class="bg-n1 text-n4 flex h-full w-full items-center justify-center font-serif text-lg font-bold shadow-inner">
+											{{ getInitial(review.author_name) }}
+										</div>
+									}
+								</div>
+
+								<div class="overflow-hidden">
+									<p class="text-n0 truncate text-xs font-bold tracking-widest uppercase">{{ review.author_name }}</p>
+									<p class="text-n0/50 truncate text-[10px] tracking-widest uppercase">{{ review.relative_time_description }}</p>
+								</div>
+							</div>
+						</div>
+					}
+				}
 			</div>
 		</div>
 
-		<div class="mt-16 text-center">
+		@if (!isLoading) {
+			<div class="mt-12 flex items-center justify-center gap-6">
+				<button (click)="scroll('left')" class="border-n0/20 text-n0 hover:bg-n0/10 hover:border-n0/40 flex h-12 w-12 items-center justify-center rounded-full border transition-all hover:scale-105" aria-label="Anterior">
+					<mat-icon class="size-5" svgIcon="chevron_backward" />
+				</button>
+
+				<div class="bg-n0/20 h-px w-16"></div>
+
+				<button (click)="scroll('right')" class="border-n0/20 text-n0 hover:bg-n0/10 hover:border-n0/40 flex h-12 w-12 items-center justify-center rounded-full border transition-all hover:scale-105" aria-label="Próximo">
+					<mat-icon class="size-5" svgIcon="chevron_forward" />
+				</button>
+			</div>
+		}
+
+		<div class="mt-20 text-center">
 			<a
 				href="https://www.google.com/search?kgmid=/g/11yvmsddvj&hl=pt-BR&q=Maria+Fernanda+Vetere+-+Advogada&shndl=30&source=sh/x/loc/osrp/m5/1&kgs=757570c1f8f2c025&utm_source=sh/x/loc/osrp/m5/1#lrd=0x4f513e711be78a2b:0xaa3ce123229ac830,1,,,,"
 				target="_blank"
-				class="border-n0/30 text-n0 hover:border-n0 inline-flex items-center gap-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase transition-all">
+				class="border-n0/30 text-n0 hover:border-n0 inline-flex gap-2 border-b pb-1 text-[10px] font-bold tracking-widest uppercase transition-all">
 				Ver todas as avaliações no Google
-				<svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+				<mat-icon class="size-4!" svgIcon="open_in_new_alt" />
 			</a>
 		</div>
 	</div>
