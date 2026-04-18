@@ -15,7 +15,6 @@ export const routes: Routes = [
 	{
 		path: 'blog/:slug',
 		loadComponent: () => import('./pages/blog-post/blog-post.component').then((m) => m.BlogPostComponent),
-		title: 'Artigo | Dra. Maria Fernanda Vetere',
 	},
 
 	{ path: '**', redirectTo: '', pathMatch: 'full' },
