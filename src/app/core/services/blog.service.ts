@@ -79,8 +79,8 @@ export class BlogService {
 		const dataObj = new Date(article.date);
 		const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long', year: 'numeric' };
 		article.date = dataObj.toLocaleDateString('pt-BR', options);
-
 		article.date = article.date.replace(/ de [a-z]/g, (match) => match.toUpperCase());
+		if (article.content) article.content = article.content.replace(/\\n/g, '\n');
 		return article;
 	}
 }

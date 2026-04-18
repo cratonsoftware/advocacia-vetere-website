@@ -1,20 +1,27 @@
 @if (isLoading) {
 	<main class="bg-n1 flex min-h-screen items-center justify-center pt-28">
-		<div class="text-n4/60 animate-pulse text-xs font-bold tracking-[0.2em] uppercase">Carregando conteúdo...</div>
+		<div class="text-n4/60 flex flex-col items-center gap-4">
+			<div class="bg-n4/20 h-px w-24 animate-pulse"></div>
+			<span class="animate-pulse text-[10px] font-bold tracking-[0.4em] uppercase">Carregando conteúdo</span>
+		</div>
 	</main>
 } @else if (article) {
-	<main class="bg-n1 min-h-screen pt-28 pb-24 lg:pt-36">
-		<article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-			<a routerLink="/blog" class="text-n4/60 hover:text-n4 mb-10 inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors">
-				<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-				Voltar para o Blog
-			</a>
+	<main class="bg-n1 relative min-h-screen overflow-hidden pt-32 pb-24 lg:pt-40">
+		<div class="pointer-events-none absolute -top-10 right-10 opacity-5 select-none">
+			<span class="font-antic-didone text-n4 text-[20rem] leading-none">"</span>
+		</div>
 
-			<header class="mb-12 text-center lg:mb-16 lg:text-left">
-				<div class="mb-6 flex flex-wrap items-center justify-center gap-4 text-[10px] font-bold tracking-widest uppercase lg:justify-start">
+		<div class="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+			<header class="mb-12 lg:mb-20 lg:text-left">
+				<a routerLink="/blog" class="text-n4/60 hover:text-n4 mb-10 inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors">
+					<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+					Voltar para o Blog
+				</a>
+
+				<div class="mb-6 flex flex-wrap items-center gap-4 text-[9px] font-bold tracking-[0.2em] uppercase">
 					<span class="bg-n4 text-n0 rounded-sm px-3 py-1.5">{{ article.category }}</span>
 					<span class="text-n3">{{ article.date }}</span>
-					<span class="text-n3 hidden sm:inline">•</span>
+					<span class="text-n3/50">•</span>
 					<span class="text-n3">{{ article.readTime }}</span>
 				</div>
 
@@ -24,27 +31,48 @@
 			</header>
 
 			@if (article.coverImage) {
-				<div class="relative mb-16 h-[40vh] w-full overflow-hidden shadow-lg sm:h-[50vh]">
-					<img [src]="article.coverImage" [alt]="article.title" class="h-full w-full object-cover grayscale-15" />
+				<div class="mb-20">
+					<div class="border-n2/20 relative h-[40vh] w-full overflow-hidden border shadow-sm">
+						<img [src]="article.coverImage" [alt]="article.title" class="aspect-square! h-auto w-full object-cover grayscale-15 transition-transform duration-1000 hover:scale-105 hover:grayscale-0" />
+					</div>
 				</div>
 			}
 
-			<div
-				class="prose prose-lg md:prose-xl text-n3 font-inter prose-headings:font-antic-didone prose-headings:text-n4 prose-headings:font-normal prose-a:text-n4 prose-a:font-bold hover:prose-a:text-n3 prose-a:transition-colors prose-strong:text-n4 prose-strong:font-bold prose-blockquote:border-l-n4 prose-blockquote:text-n4/80 prose-blockquote:italic prose-img:rounded-md prose-img:shadow-md max-w-none">
-				<markdown [data]="article.content"></markdown>
-			</div>
+			<article>
+				<div
+					class="prose md:prose-lg text-n3 font-inter prose-headings:font-antic-didone prose-headings:text-n4 prose-headings:font-normal prose-p:mb-6 prose-p:leading-relaxed prose-p:font-light prose-a:text-n4 prose-a:font-bold prose-blockquote:border-l-n4 prose-blockquote:bg-n1/40 prose-blockquote:px-8 prose-blockquote:py-4 prose-blockquote:font-serif prose-blockquote:text-xl prose-blockquote:italic prose-blockquote:text-n4/80 max-w-none">
+					<markdown [data]="article.content"></markdown>
+				</div>
 
-			<div class="border-n3/20 mt-20 border-t pt-10 text-center">
-				<p class="font-antic-didone text-n4 mb-2 text-2xl">Dra. Maria Fernanda Vetere</p>
-				<p class="text-n3 text-[10px] font-bold tracking-widest uppercase">Especialista em {{ article.category }}</p>
-			</div>
-		</article>
+				<div class="border-n4/10 mt-20 flex flex-col items-center justify-between gap-8 border-t pt-12 md:flex-row">
+					<div class="flex items-center gap-4">
+						<div>
+							<p class="font-antic-didone text-n4 text-xl">Dra. Maria Fernanda Vetere</p>
+							<p class="text-n3/60 text-[8px] font-bold tracking-widest uppercase">Especialista em {{ article.category }}</p>
+						</div>
+					</div>
+
+					<div class="flex items-center gap-4">
+						<span class="text-n3/70 text-[9px] font-bold tracking-[0.2em] uppercase">Comartilhar:</span>
+						<a
+							[href]="'https://api.whatsapp.com/send?text=' + article.title + ' - https://mariafernandavetere.com.br/blog/' + article.slug"
+							target="_blank"
+							class="border-n4/20 text-n4 hover:bg-n4 hover:text-n0 flex h-9 w-9 items-center justify-center rounded-full border transition-all">
+							<svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
+								<path
+									d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+							</svg>
+						</a>
+					</div>
+				</div>
+			</article>
+		</div>
 	</main>
 } @else {
-	<main class="bg-n1 flex min-h-screen items-center justify-center pt-28">
+	<main class="bg-n0 flex min-h-screen items-center justify-center pt-28">
 		<div class="text-center">
 			<h2 class="font-antic-didone text-n4 mb-4 text-3xl">Artigo não encontrado</h2>
-			<a routerLink="/blog" class="text-n3 hover:text-n4 border-n4/30 border-b pb-1 text-xs font-bold tracking-widest uppercase">Voltar à listagem</a>
+			<a routerLink="/blog" class="text-n3 hover:text-n4 border-n4/30 border-b pb-1 text-xs font-bold tracking-widest uppercase">Voltar ao Blog</a>
 		</div>
 	</main>
 }
