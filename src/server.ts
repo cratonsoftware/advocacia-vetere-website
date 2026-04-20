@@ -9,14 +9,6 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-app.use(
-	express.static(browserDistFolder, {
-		maxAge: '1y',
-		index: false,
-		redirect: false,
-	}),
-);
-
 app.get(['/sitemap.xml', '/sitemap-dinamico'], async (req, res) => {
 	console.log('Gerando sitemap dinâmico...');
 	try {
@@ -68,6 +60,14 @@ app.get(['/sitemap.xml', '/sitemap-dinamico'], async (req, res) => {
 		res.status(500).send('Erro interno ao gerar o sitemap');
 	}
 });
+
+app.use(
+	express.static(browserDistFolder, {
+		maxAge: '1y',
+		index: false,
+		redirect: false,
+	}),
+);
 
 app.use((req, res, next) => {
 	angularApp
