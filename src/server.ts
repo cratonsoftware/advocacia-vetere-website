@@ -14,6 +14,8 @@ app.get('/sitemap.xml', async (req, res) => {
 	try {
 		const baseUrl = 'https://www.mfernandavetere.adv.br';
 
+		if (!environment || !environment.supabaseUrl || !environment.supabaseKey) throw new Error('Variáveis de ambiente de supabase nulas');
+
 		const supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
 			auth: {
 				persistSession: false,
