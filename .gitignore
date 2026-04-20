@@ -46,3 +46,5 @@ style.css
 
 /src/environments/environment.ts
 .env
+.vercel
+.env*.local

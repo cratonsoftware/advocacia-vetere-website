@@ -29,7 +29,7 @@
 						"server": "src/main.server.ts",
 						"outputMode": "server",
 						"security": {
-							"allowedHosts": []
+							"allowedHosts": ["localhost:3000", "127.0.0.1", "mfernandavetere.adv.br", "*.mfernandavetere.adv.br", "vetere.craton.com.br", "^.*\\.vercel\\.app$"]
 						},
 						"ssr": {
 							"entry": "src/server.ts"
