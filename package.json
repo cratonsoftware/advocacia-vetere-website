@@ -1,13 +1,14 @@
 {
 	"name": "advocacia-vetere-website",
 	"version": "1.0.0",
+	"type": "module",
 	"author": "CRATON Software (cratonsoftware)",
 	"homepage": "https://craton.com.br/",
 	"scripts": {
 		"ng": "ng",
-		"prebuild": "node ./scripts/generate-icons.js && node ./scripts/set-env.js",
-		"predev": "node ./scripts/generate-icons.js && node ./scripts/set-env.js",
-		"preserve": "node ./scripts/generate-icons.js && node ./scripts/set-env.js",
+		"prebuild": "node ./scripts/generate-icons.cjs && node ./scripts/set-env.cjs",
+		"predev": "node ./scripts/generate-icons.cjs && node ./scripts/set-env.cjs",
+		"preserve": "node ./scripts/generate-icons.cjs && node ./scripts/set-env.cjs",
 		"serve": "ng serve",
 		"dev": "ng serve --host=localhost --port=4200",
 		"build": "ng build",
