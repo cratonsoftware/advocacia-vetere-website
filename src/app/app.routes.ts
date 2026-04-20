@@ -4,13 +4,11 @@ export const routes: Routes = [
 	{
 		path: '',
 		loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
-		title: 'Dra. Maria Fernanda Vetere | Advocacia & Consultoria',
 	},
 
 	{
 		path: 'blog',
 		loadComponent: () => import('./pages/blog-list/blog-list.component').then((m) => m.BlogListComponent),
-		title: 'Blog | Dra. Maria Fernanda Vetere',
 	},
 	{
 		path: 'blog/:slug',

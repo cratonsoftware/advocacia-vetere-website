@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
+import { MatIcon, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { inject as injectAnalytics } from '@vercel/analytics';
@@ -11,7 +11,7 @@ import { ICON_NAMES } from './generated/icon-list';
 @Component({
 	selector: 'app-root',
 	templateUrl: './app.component.html',
-	imports: [HeaderComponent, FooterComponent, RouterOutlet],
+	imports: [HeaderComponent, FooterComponent, RouterOutlet, MatIcon],
 })
 export class AppComponent implements OnInit {
 	private iconRegistry = inject(MatIconRegistry);

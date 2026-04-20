@@ -9,33 +9,32 @@ export class SeoService {
 	private document = inject(DOCUMENT);
 
 	private readonly siteName = 'Dra. Maria Fernanda Vetere | Advocacia & Consultoria';
-
-	private readonly defaultImage = '/assets/logo/mfv-logo-com-cla-hor.png';
+	private readonly defaultImage = '/assets/logo/mfv-cartao-com-cla-hor.png';
+	private readonly baseUrl = 'https://www.mfernandavetere.adv.br';
 
 	updateMetaTags(config: SeoConfig) {
 		const fullTitle = config.title.includes('Dra. Maria Fernanda') ? config.title : `${config.title} | Dra. Maria Fernanda Vetere`;
-
 		this.titleService.setTitle(fullTitle);
 
-		const origin = this.document.location.origin;
-		const url = config.slug ? `${origin}/blog/${config.slug}` : origin;
-
+		const url = config.slug ? `${this.baseUrl}/blog/${config.slug}` : this.baseUrl;
 		const rawImageUrl = config.image || this.defaultImage;
-		const absoluteImageUrl = rawImageUrl.startsWith('http') ? rawImageUrl : `${origin}${rawImageUrl.startsWith('/') ? '' : '/'}${rawImageUrl}`;
-
+		const absoluteImageUrl = rawImageUrl.startsWith('http') ? rawImageUrl : `${this.baseUrl}${rawImageUrl.startsWith('/') ? '' : '/'}${rawImageUrl}`;
 		const type = config.type || 'website';
 
 		const tags: MetaDefinition[] = [
 			{ name: 'description', content: config.description },
+			{ name: 'keywords', content: config.keywords || 'advocacia, direito, consultoria jurídica' },
+
 			{ property: 'og:title', content: fullTitle },
 			{ property: 'og:description', content: config.description },
 			{ property: 'og:image', content: absoluteImageUrl },
 			{ property: 'og:image:secure_url', content: absoluteImageUrl },
-			{ property: 'og:image:width', content: '1200' },
+			{ property: 'og:image:width', content: '100' },
 			{ property: 'og:image:height', content: '630' },
 			{ property: 'og:url', content: url },
 			{ property: 'og:type', content: type },
 			{ property: 'og:site_name', content: this.siteName },
+
 			{ name: 'twitter:card', content: 'summary_large_image' },
 			{ name: 'twitter:title', content: fullTitle },
 			{ name: 'twitter:description', content: config.description },
@@ -46,6 +45,10 @@ export class SeoService {
 			if (config.author) tags.push({ property: 'article:author', content: config.author });
 			if (config.publishedDate) tags.push({ property: 'article:published_time', content: config.publishedDate });
 			if (config.modifiedDate) tags.push({ property: 'article:modified_time', content: config.modifiedDate });
+		} else {
+			this.meta.removeTag("property='article:author'");
+			this.meta.removeTag("property='article:published_time'");
+			this.meta.removeTag("property='article:modified_time'");
 		}
 
 		tags.forEach((tag) => this.meta.updateTag(tag));
@@ -88,14 +91,14 @@ export class SeoService {
 				author: {
 					'@type': 'Person',
 					name: config.author || 'Dra. Maria Fernanda Vetere',
-					url: this.document.location.origin,
+					url: this.baseUrl,
 				},
 				publisher: {
 					'@type': 'LegalService',
 					name: this.siteName,
 					logo: {
 						'@type': 'ImageObject',
-						url: `${this.document.location.origin}${this.defaultImage}`,
+						url: `${this.baseUrl}${this.defaultImage}`,
 					},
 				},
 				datePublished: config.publishedDate,
@@ -107,7 +110,7 @@ export class SeoService {
 				'@type': 'LegalService',
 				name: this.siteName,
 				url: url,
-				logo: `${this.document.location.origin}${this.defaultImage}`,
+				logo: `${this.baseUrl}${this.defaultImage}`,
 				description: config.description,
 				image: imageUrl,
 			};
