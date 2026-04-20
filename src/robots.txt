@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Aponta para o sitemap dinâmico que acabamos de criar no Express
+Sitemap: https://mfernandavetere.adv.br/sitemap.xml

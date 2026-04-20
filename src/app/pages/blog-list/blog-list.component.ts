@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { SeoService } from 'src/app/core/services/seo.service';
 import { BlogCategory, BlogPost } from '../../core/models/blog.model';
 import { BlogService } from '../../core/services/blog.service';
 
@@ -11,6 +12,7 @@ import { BlogService } from '../../core/services/blog.service';
 })
 export class BlogListComponent implements OnInit {
 	private blogService = inject(BlogService);
+	private seoService = inject(SeoService);
 
 	allArticles: BlogPost[] = [];
 	filteredArticles: BlogPost[] = [];
@@ -26,6 +28,12 @@ export class BlogListComponent implements OnInit {
 	isLoading: boolean = true;
 
 	ngOnInit(): void {
+		this.seoService.updateMetaTags({
+			title: 'Blog Vetere | Análises, orientações e atualizações sobre o mundo jurídico',
+			description: 'Acompanhe artigos atualizados sobre legislação, direitos e deveres para manter-se sempre bem informado.',
+			slug: 'blog',
+		});
+
 		this.blogService.getCategories().subscribe((cats) => (this.categories = cats));
 		this.blogService.getAllArticles().subscribe((articles) => {
 			this.allArticles = articles;

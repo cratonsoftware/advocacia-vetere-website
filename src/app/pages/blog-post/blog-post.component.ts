@@ -34,6 +34,10 @@ export class BlogPostComponent implements OnInit {
 						description: data.excerpt,
 						image: data.coverImage,
 						slug: data.slug,
+						type: 'article',
+						author: 'Dra. Maria Fernanda Vetere',
+						publishedDate: data.date,
+						modifiedDate: data.date,
 					});
 				}
 
