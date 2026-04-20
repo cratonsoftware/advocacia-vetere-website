@@ -9,10 +9,10 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-app.get(['/sitemap.xml', '/sitemap-dinamico'], async (req, res) => {
+app.get('/sitemap.xml', async (req, res) => {
 	console.log('Gerando sitemap dinâmico...');
 	try {
-		const baseUrl = 'https://mfernandavetere.adv.br';
+		const baseUrl = 'https://www.mfernandavetere.adv.br';
 
 		const supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
 			auth: {
@@ -79,9 +79,7 @@ app.use((req, res, next) => {
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
 	const port = process.env['PORT'] || 4000;
 	app.listen(port, (error) => {
-		if (error) {
-			throw error;
-		}
+		if (error) throw error;
 
 		console.log(`Node Express server listening on http://localhost:${port}`);
 	});
