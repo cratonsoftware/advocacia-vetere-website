@@ -17,7 +17,8 @@ app.use(
 	}),
 );
 
-app.get('/sitemap.xml', async (req, res) => {
+app.get(['/sitemap.xml', '/sitemap-dinamico'], async (req, res) => {
+	console.log('Gerando sitemap dinâmico...');
 	try {
 		const baseUrl = 'https://mfernandavetere.adv.br';
 
