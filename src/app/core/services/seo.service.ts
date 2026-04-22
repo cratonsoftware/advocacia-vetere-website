@@ -16,7 +16,9 @@ export class SeoService {
 		const fullTitle = config.title.includes('Dra. Maria Fernanda') ? config.title : `${config.title} | Dra. Maria Fernanda Vetere`;
 		this.titleService.setTitle(fullTitle);
 
-		const url = config.slug ? `${this.baseUrl}/blog/${config.slug}` : this.baseUrl;
+		let url = this.baseUrl;
+		if (config.slug) url = config.slug === 'blog' ? `${this.baseUrl}/blog` : `${this.baseUrl}/blog/${config.slug}`;
+
 		const rawImageUrl = config.image || this.defaultImage;
 		const absoluteImageUrl = rawImageUrl.startsWith('http') ? rawImageUrl : `${this.baseUrl}${rawImageUrl.startsWith('/') ? '' : '/'}${rawImageUrl}`;
 		const type = config.type || 'website';
@@ -51,7 +53,10 @@ export class SeoService {
 			this.meta.removeTag("property='article:modified_time'");
 		}
 
-		tags.forEach((tag) => this.meta.updateTag(tag));
+		tags.forEach((tag) => {
+			const seletor = tag.property ? `property="${tag.property}"` : `name="${tag.name}"`;
+			this.meta.updateTag(tag, seletor);
+		});
 
 		this.setCanonicalUrl(url);
 		this.setJsonLd(config, url, absoluteImageUrl, fullTitle);
