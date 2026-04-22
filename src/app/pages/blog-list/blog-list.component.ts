@@ -29,9 +29,10 @@ export class BlogListComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.seoService.updateMetaTags({
-			title: 'Blog Vetere | Análises, orientações e atualizações sobre o mundo jurídico',
-			description: 'Acompanhe artigos atualizados sobre legislação, direitos e deveres para manter-se sempre bem informado.',
+			title: 'Blog Vetere | Análises e Orientações Jurídicas',
+			description: 'Acompanhe artigos atualizados sobre legislação e seus direitos.',
 			slug: 'blog',
+			type: 'website',
 		});
 
 		this.blogService.getCategories().subscribe((cats) => (this.categories = cats));

@@ -86,28 +86,26 @@ export class SeoService {
 			schema = {
 				'@context': 'https://schema.org',
 				'@type': 'BlogPosting',
-				mainEntityOfPage: {
-					'@type': 'WebPage',
-					'@id': url,
-				},
 				headline: fullTitle,
 				description: config.description,
 				image: imageUrl,
-				author: {
-					'@type': 'Person',
-					name: config.author || 'Dra. Maria Fernanda Vetere',
-					url: this.baseUrl,
-				},
+				author: { '@type': 'Person', name: config.author || 'Dra. Maria Fernanda Vetere', url: this.baseUrl },
 				publisher: {
 					'@type': 'LegalService',
 					name: this.siteName,
-					logo: {
-						'@type': 'ImageObject',
-						url: `${this.baseUrl}${this.defaultImage}`,
-					},
+					logo: { '@type': 'ImageObject', url: `${this.baseUrl}${this.defaultImage}` },
 				},
 				datePublished: config.publishedDate,
 				dateModified: config.modifiedDate || config.publishedDate,
+			};
+		} else if (config.slug === 'blog') {
+			schema = {
+				'@context': 'https://schema.org',
+				'@type': 'Blog',
+				name: 'Blog Jurídico | Dra. Maria Fernanda Vetere',
+				description: config.description,
+				url: url,
+				publisher: { '@type': 'LegalService', name: this.siteName },
 			};
 		} else {
 			schema = {
@@ -118,6 +116,7 @@ export class SeoService {
 				logo: `${this.baseUrl}${this.defaultImage}`,
 				description: config.description,
 				image: imageUrl,
+				address: { '@type': 'PostalAddress', addressLocality: 'Tambaú', addressRegion: 'SP', addressCountry: 'BR' },
 			};
 		}
 
