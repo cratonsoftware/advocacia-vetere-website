@@ -89,29 +89,31 @@
 			</div>
 
 			<div class="bg-n0 border-n2/20 h-fit w-full border p-8 shadow-sm lg:sticky lg:top-32 lg:w-1/2 lg:p-12">
-				<form (submit)="enviarMensagem($event)" class="space-y-6">
+				<form class="space-y-6" action="https://api.web3forms.com/submit" method="POST">
+					<input type="hidden" name="access_key" value="b1f4fce1-06a1-4e59-bd4a-fd91b9f117e3" />
+
 					<div>
 						<label class="text-n4 mb-2 block text-xs font-bold tracking-widest uppercase">Nome Completo</label>
-						<input type="text" required class="bg-n1/50 border-n2 focus:border-n4 w-full border-b p-3 transition-colors focus:outline-none" placeholder="Seu nome..." />
+						<input type="text" name="name" required class="bg-n1/50 border-n2 focus:border-n4 w-full border-b p-3 transition-colors focus:outline-none" placeholder="Seu nome..." />
 					</div>
 
 					<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 						<div>
 							<label class="text-n4 mb-2 block text-xs font-bold tracking-widest uppercase">E-mail</label>
-							<input type="email" required class="bg-n1/50 border-n2 focus:border-n4 w-full border-b p-3 transition-colors focus:outline-none" placeholder="exemplo@email.com" />
+							<input type="email" name="email" required class="bg-n1/50 border-n2 focus:border-n4 w-full border-b p-3 transition-colors focus:outline-none" placeholder="exemplo@email.com" />
 						</div>
 						<div>
 							<label class="text-n4 mb-2 block text-xs font-bold tracking-widest uppercase">Telefone</label>
-							<input type="text" (input)="formatarTelefone($event)" maxlength="15" required class="bg-n1/50 border-n2 focus:border-n4 w-full border-b p-3 transition-colors focus:outline-none" placeholder="(00) 00000-0000" />
+							<input type="text" name="fone" [required]="true" class="bg-n1/50 border-n2 focus:border-n4 w-full border-b p-3 transition-colors focus:outline-none" placeholder="(00) 00000-0000" mask="(00) 0000-0000||(00) 00000-0000" />
 						</div>
 					</div>
 
 					<div>
 						<label class="text-n4 mb-2 block text-xs font-bold tracking-widest uppercase">Sua Mensagem</label>
-						<textarea rows="4" required class="bg-n1/50 border-n2 focus:border-n4 w-full resize-none border-b p-3 transition-colors focus:outline-none" placeholder="Como posso te ajudar?"></textarea>
+						<textarea rows="4" name="message" required class="bg-n1/50 border-n2 focus:border-n4 w-full resize-none border-b p-3 transition-colors focus:outline-none" placeholder="Como posso te ajudar?"></textarea>
 					</div>
 
-					<button type="submit" class="bg-n4 text-n0 hover:bg-n3 w-full py-4 text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300">Enviar Mensagem</button>
+					<button type="submit" class="bg-n4 text-n0 hover:bg-n3 w-full cursor-pointer py-4 text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300">Enviar Mensagem</button>
 				</form>
 			</div>
 		</div>

@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideMarkdown } from 'ngx-markdown';
+import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -22,5 +23,6 @@ export const appConfig: ApplicationConfig = {
 		importProvidersFrom(MatIconModule),
 		provideHttpClient(withFetch()),
 		provideMarkdown(),
+		provideEnvironmentNgxMask(),
 	],
 };
