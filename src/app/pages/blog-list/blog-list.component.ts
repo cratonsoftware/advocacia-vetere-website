@@ -31,6 +31,7 @@ export class BlogListComponent implements OnInit {
 		this.seoService.updateMetaTags({
 			title: 'Blog Vetere | Análises e Orientações Jurídicas',
 			description: 'Acompanhe artigos atualizados sobre legislação e seus direitos.',
+			keywords: 'blog jurídico, artigos direito, planejamento sucessório, notícias jurídicas',
 			slug: 'blog',
 			type: 'website',
 		});
