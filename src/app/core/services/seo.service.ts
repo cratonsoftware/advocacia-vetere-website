@@ -119,10 +119,26 @@ export class SeoService {
 				'@type': 'LegalService',
 				name: this.siteName,
 				url: url,
-				logo: `${this.baseUrl}${this.defaultImage}`,
-				description: config.description,
 				image: imageUrl,
-				address: { '@type': 'PostalAddress', addressLocality: 'Tambaú', addressRegion: 'SP', addressCountry: 'BR' },
+				description: config.description,
+				address: {
+					'@type': 'PostalAddress',
+					addressLocality: 'Tambaú',
+					addressRegion: 'SP',
+					addressCountry: 'BR',
+				},
+				areaServed: [
+					{
+						'@type': 'City',
+						name: 'Tambaú',
+					},
+					{
+						'@type': 'Country',
+						name: 'BR',
+						description: 'Consultoria e Atendimento Jurídico Online para todo o Brasil',
+					},
+				],
+				knowsAbout: ['Direito Civil', 'Direito de Família', 'Direito Trabalhista', 'Processos Judiciais'],
 			};
 		}
 
