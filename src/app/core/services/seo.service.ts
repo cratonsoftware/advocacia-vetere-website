@@ -53,6 +53,9 @@ export class SeoService {
 			this.meta.removeTag("property='article:modified_time'");
 		}
 
+		if (config.noIndex) tags.push({ name: 'robots', content: 'noindex, nofollow' });
+		else tags.push({ name: 'robots', content: 'index, follow' });
+
 		tags.forEach((tag) => {
 			const seletor = tag.property ? `property="${tag.property}"` : `name="${tag.name}"`;
 			this.meta.updateTag(tag, seletor);

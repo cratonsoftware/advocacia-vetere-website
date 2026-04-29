@@ -17,5 +17,15 @@ export const routes: Routes = [
 		loadComponent: () => import('./pages/blog-post/blog-post.component').then((m) => m.BlogPostComponent),
 	},
 
-	{ path: '**', redirectTo: '', pathMatch: 'full' },
+	{
+		path: 'sucesso',
+		loadComponent: () => import('./pages/sucesso/sucesso.component').then((m) => m.SucessoComponent),
+	},
+
+	{
+		path: '404',
+		loadComponent: () => import('./pages/not-found/not-found.component').then((m) => m.NotFoundComponent),
+	},
+
+	{ path: '**', loadComponent: () => import('./pages/not-found/not-found.component').then((m) => m.NotFoundComponent) },
 ];

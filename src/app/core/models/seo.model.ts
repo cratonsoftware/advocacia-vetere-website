@@ -8,4 +8,5 @@ export interface SeoConfig {
 	author?: string;
 	publishedDate?: string;
 	modifiedDate?: string;
+	noIndex?: boolean;
 }
