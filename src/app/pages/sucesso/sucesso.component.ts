@@ -15,6 +15,7 @@ export class SucessoComponent implements OnInit {
 			title: 'Mensagem Enviada | Dra. Maria Fernanda Vetere',
 			description: 'Agradecemos o seu contacto. Retornaremos o mais breve possível.',
 			slug: 'sucesso',
+			type: 'website',
 			noIndex: true,
 		});
 	}

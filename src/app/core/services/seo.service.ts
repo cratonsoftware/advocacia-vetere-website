@@ -17,7 +17,10 @@ export class SeoService {
 		this.titleService.setTitle(fullTitle);
 
 		let url = this.baseUrl;
-		if (config.slug) url = config.slug === 'blog' ? `${this.baseUrl}/blog` : `${this.baseUrl}/blog/${config.slug}`;
+		if (config.slug) {
+			const cleanSlug = config.slug.startsWith('/') ? config.slug.substring(1) : config.slug;
+			url = `${this.baseUrl}/${cleanSlug}`;
+		}
 
 		const rawImageUrl = config.image || this.defaultImage;
 		const absoluteImageUrl = rawImageUrl.startsWith('http') ? rawImageUrl : `${this.baseUrl}${rawImageUrl.startsWith('/') ? '' : '/'}${rawImageUrl}`;

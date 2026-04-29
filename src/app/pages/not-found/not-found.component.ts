@@ -15,6 +15,7 @@ export class NotFoundComponent implements OnInit {
 			title: 'Página Não Encontrada | Dra. Maria Fernanda Vetere',
 			description: 'Lamentamos, mas a página que você procura não existe ou foi movida.',
 			slug: '404',
+			type: 'website',
 			noIndex: true,
 		});
 	}
