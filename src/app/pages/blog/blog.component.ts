@@ -1,24 +1,24 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Artigo, CategoriaArtigo } from 'src/app/core/models/artigo.model';
 import { SeoService } from 'src/app/core/services/seo.service';
-import { BlogCategory, BlogPost } from '../../core/models/blog.model';
 import { BlogService } from '../../core/services/blog.service';
 
 @Component({
-	selector: 'app-blog-list',
-	templateUrl: './blog-list.component.html',
+	selector: 'app-blog',
+	templateUrl: './blog.component.html',
 	imports: [RouterLink, FormsModule],
 })
-export class BlogListComponent implements OnInit {
+export class BlogComponent implements OnInit {
 	private blogService = inject(BlogService);
 	private seoService = inject(SeoService);
 
-	allArticles: BlogPost[] = [];
-	filteredArticles: BlogPost[] = [];
-	paginatedArticles: BlogPost[] = [];
+	allArticles: Artigo[] = [];
+	filteredArticles: Artigo[] = [];
+	paginatedArticles: Artigo[] = [];
 
-	categories: BlogCategory[] = [];
+	categories: CategoriaArtigo[] = [];
 	selectedCategory: string = 'Todos';
 	searchTerm: string = '';
 
@@ -30,7 +30,7 @@ export class BlogListComponent implements OnInit {
 	ngOnInit(): void {
 		this.seoService.updateMetaTags({
 			title: 'Blog Vetere | Análises e Orientações Jurídicas',
-			description: 'Acompanhe artigos atualizados sobre legislação e seus direitos.',
+			description: 'Mantenha-se atualizado com o nosso blog jurídico. Aqui você encontrará artigos especializados, análises sobre a legislação vigente e orientações fundamentais para a proteção e o exercício dos seus direitos.',
 			keywords: 'blog jurídico, artigos direito, planejamento sucessório, notícias jurídicas',
 			slug: 'blog',
 			type: 'website',

@@ -13,7 +13,7 @@ export class NotFoundComponent implements OnInit {
 	ngOnInit(): void {
 		this.seoService.updateMetaTags({
 			title: 'Página Não Encontrada | Dra. Maria Fernanda Vetere',
-			description: 'Lamentamos, mas a página que você procura não existe ou foi movida.',
+			description: 'Lamentamos, mas a página que você procura não foi localizada. O conteúdo pode ter sido movido ou excluído. Convidamos você a continuar sua navegação através de nossa página inicial ou do nosso blog.',
 			slug: '404',
 			type: 'website',
 			noIndex: true,

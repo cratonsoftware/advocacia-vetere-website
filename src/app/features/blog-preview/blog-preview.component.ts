@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Artigo } from 'src/app/core/models/artigo.model';
 import { BlogService } from 'src/app/core/services/blog.service';
-import { BlogPost } from '../../core/models/blog.model';
 
 @Component({
 	selector: 'app-blog-preview',
@@ -10,7 +10,7 @@ import { BlogPost } from '../../core/models/blog.model';
 })
 export class BlogPreviewComponent implements OnInit {
 	private blogService = inject(BlogService);
-	latestArticles: BlogPost[] = [];
+	latestArticles: Artigo[] = [];
 	isLoading = true;
 
 	ngOnInit(): void {

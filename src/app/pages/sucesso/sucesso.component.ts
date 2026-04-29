@@ -13,7 +13,7 @@ export class SucessoComponent implements OnInit {
 	ngOnInit(): void {
 		this.seoService.updateMetaTags({
 			title: 'Mensagem Enviada | Dra. Maria Fernanda Vetere',
-			description: 'Agradecemos o seu contacto. Retornaremos o mais breve possível.',
+			description: 'A sua mensagem foi enviada com sucesso. Agradecemos o contato e informamos que a Dra. Maria Fernanda Vetere analisará sua solicitação para retornar com a devida brevidade e a atenção jurídica necessária.',
 			slug: 'sucesso',
 			type: 'website',
 			noIndex: true,

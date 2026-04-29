@@ -9,12 +9,12 @@ export const routes: Routes = [
 
 	{
 		path: 'blog',
-		loadComponent: () => import('./pages/blog-list/blog-list.component').then((m) => m.BlogListComponent),
+		loadComponent: () => import('./pages/blog/blog.component').then((m) => m.BlogComponent),
 		pathMatch: 'full',
 	},
 	{
 		path: 'blog/:slug',
-		loadComponent: () => import('./pages/blog-post/blog-post.component').then((m) => m.BlogPostComponent),
+		loadComponent: () => import('./pages/artigo/artigo.component').then((m) => m.ArtigoComponent),
 	},
 
 	{

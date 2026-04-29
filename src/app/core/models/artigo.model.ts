@@ -1,10 +1,10 @@
-export interface BlogCategory {
+export interface CategoriaArtigo {
 	id: string;
 	name: string;
 	slug: string;
 }
 
-export interface BlogPost {
+export interface Artigo {
 	id: string;
 	slug: string;
 	title: string;

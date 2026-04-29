@@ -1,50 +1,45 @@
-import { Component, inject, OnInit, PendingTasks } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MarkdownModule } from 'ngx-markdown';
 import { SeoService } from 'src/app/core/services/seo.service';
-import { BlogPost } from '../../core/models/blog.model';
+import { Artigo } from '../../core/models/artigo.model';
 import { BlogService } from '../../core/services/blog.service';
+import { ArtigoNotFoundComponent } from './not-found/not-found.component';
 
 @Component({
-	selector: 'app-blog-post',
-	templateUrl: './blog-post.component.html',
-	imports: [RouterLink, MarkdownModule],
+	selector: 'app-artigo',
+	templateUrl: './artigo.component.html',
+	standalone: true,
+	imports: [RouterLink, MarkdownModule, ArtigoNotFoundComponent],
 })
-export class BlogPostComponent implements OnInit {
+export class ArtigoComponent implements OnInit {
 	private route = inject(ActivatedRoute);
 	private blogService = inject(BlogService);
 	private seoService = inject(SeoService);
-	private pendingTasks = inject(PendingTasks);
 
-	article: BlogPost | null = null;
+	article: Artigo | null = null;
 	isLoading = true;
 
 	ngOnInit(): void {
 		const slug = this.route.snapshot.paramMap.get('slug');
 
 		if (slug) {
-			const removeTask = this.pendingTasks.add();
-
 			this.blogService.getArticleBySlug(slug).subscribe((data) => {
 				this.article = data;
+				this.isLoading = false;
 
 				if (data) {
 					this.seoService.updateMetaTags({
 						title: data.title,
 						description: data.excerpt,
 						image: data.coverImage,
-						slug: data.slug,
+						slug: `blog/${data.slug}`,
 						type: 'article',
 						author: 'Dra. Maria Fernanda Vetere',
 						publishedDate: data.date,
-						modifiedDate: data.date,
 					});
 				}
-
-				this.isLoading = false;
-
-				removeTask();
 			});
-		}
+		} else this.isLoading = false;
 	}
 }

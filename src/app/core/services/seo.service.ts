@@ -13,7 +13,7 @@ export class SeoService {
 	private readonly baseUrl = 'https://www.mfernandavetere.adv.br';
 
 	updateMetaTags(config: SeoConfig) {
-		const fullTitle = config.title.includes('Dra. Maria Fernanda') ? config.title : `${config.title} | Dra. Maria Fernanda Vetere`;
+		const fullTitle = config.title.includes('Dra. Maria Fernanda Vetere') ? config.title : `${config.title} | Dra. Maria Fernanda Vetere`;
 		this.titleService.setTitle(fullTitle);
 
 		let url = this.baseUrl;

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { from, map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { BlogCategory, BlogPost } from '../models/blog.model';
+import { Artigo, CategoriaArtigo } from '../models/artigo.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -20,62 +20,62 @@ export class BlogService {
 		});
 	}
 
-	getAllArticles(): Observable<BlogPost[]> {
+	getAllArticles(): Observable<Artigo[]> {
 		const query = this.supabase
 			.from('published_articles')
 			.select('*')
 			.then(({ data, error }) => {
 				if (error) throw error;
-				return data as BlogPost[];
+				return data as Artigo[];
 			});
 
 		return from(query).pipe(map((articles) => articles.map((article) => this.formatDate(article))));
 	}
 
-	getLatestArticles(limit: number = 3): Observable<BlogPost[]> {
+	getLatestArticles(limit: number = 3): Observable<Artigo[]> {
 		const query = this.supabase
 			.from('published_articles')
 			.select('*')
 			.limit(limit)
 			.then(({ data, error }) => {
 				if (error) throw error;
-				return data as BlogPost[];
+				return data as Artigo[];
 			});
 
 		return from(query).pipe(map((articles) => articles.map((article) => this.formatDate(article))));
 	}
 
-	getArticleBySlug(slug: string): Observable<BlogPost | null> {
+	getArticleBySlug(slug: string): Observable<Artigo | null> {
 		const query = this.supabase
 			.from('published_articles')
 			.select('*')
 			.eq('slug', slug)
-			.single()
+			.maybeSingle()
 			.then(({ data, error }) => {
 				if (error) {
-					console.error('Artigo não encontrado:', error);
+					console.error('Erro interno ao buscar artigo:', error.message);
 					return null;
 				}
-				return data as BlogPost;
+				return data as Artigo | null;
 			});
 
 		return from(query).pipe(map((article) => (article ? this.formatDate(article) : null)));
 	}
 
-	getCategories(): Observable<BlogCategory[]> {
+	getCategories(): Observable<CategoriaArtigo[]> {
 		const query = this.supabase
 			.from('categories')
 			.select('id, name, slug')
 			.order('name', { ascending: true })
 			.then(({ data, error }) => {
 				if (error) throw error;
-				return data as BlogCategory[];
+				return data as CategoriaArtigo[];
 			});
 
 		return from(query);
 	}
 
-	private formatDate(article: BlogPost): BlogPost {
+	private formatDate(article: Artigo): Artigo {
 		const dataObj = new Date(article.date);
 		const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long', year: 'numeric' };
 		article.date = dataObj.toLocaleDateString('pt-BR', options);
