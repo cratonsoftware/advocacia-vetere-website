@@ -9,7 +9,7 @@ export class SeoService {
 	private document = inject(DOCUMENT);
 
 	private readonly siteName = 'Dra. Maria Fernanda Vetere | Advocacia & Consultoria';
-	private readonly defaultImage = '/assets/logo/mfv-cartao-com-cla-hor.png';
+	private readonly defaultImage = '/assets/cards/card-home.png';
 	private readonly baseUrl = 'https://www.mfernandavetere.adv.br';
 
 	updateMetaTags(config: SeoConfig) {
@@ -25,6 +25,9 @@ export class SeoService {
 		const rawImageUrl = config.image || this.defaultImage;
 		const absoluteImageUrl = rawImageUrl.startsWith('http') ? rawImageUrl : `${this.baseUrl}${rawImageUrl.startsWith('/') ? '' : '/'}${rawImageUrl}`;
 		const type = config.type || 'website';
+
+		if (config.noIndex) this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
+		else this.meta.updateTag({ name: 'robots', content: 'index, follow' });
 
 		const tags: MetaDefinition[] = [
 			{ name: 'description', content: config.description },
@@ -55,9 +58,6 @@ export class SeoService {
 			this.meta.removeTag("property='article:published_time'");
 			this.meta.removeTag("property='article:modified_time'");
 		}
-
-		if (config.noIndex) tags.push({ name: 'robots', content: 'noindex, nofollow' });
-		else tags.push({ name: 'robots', content: 'index, follow' });
 
 		tags.forEach((tag) => {
 			const seletor = tag.property ? `property="${tag.property}"` : `name="${tag.name}"`;

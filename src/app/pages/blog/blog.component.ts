@@ -32,6 +32,7 @@ export class BlogComponent implements OnInit {
 			title: 'Blog Vetere | Análises e Orientações Jurídicas',
 			description: 'Mantenha-se atualizado com o nosso blog jurídico. Aqui você encontrará artigos especializados, análises sobre a legislação vigente e orientações fundamentais para a proteção e o exercício dos seus direitos.',
 			keywords: 'blog jurídico, artigos direito, planejamento sucessório, notícias jurídicas',
+			image: '/assets/cards/card-blog.png',
 			slug: 'blog',
 			type: 'website',
 		});

@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit {
 		this.seoService.updateMetaTags({
 			title: 'Dra. Maria Fernanda Vetere | Advocacia e Consultoria Jurídica',
 			description: 'Advocacia estratégica e humanizada. Consultoria especializada em garantir seus direitos com excelência e transparência.',
-			image: '/assets/logo/mfv-cartao-com-cla-hor.png',
+			image: '/assets/cards/card-home.png',
 			type: 'website',
 		});
 	}
