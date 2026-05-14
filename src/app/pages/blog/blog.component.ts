@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Artigo, CategoriaArtigo } from 'src/app/core/models/artigo.model';
@@ -13,6 +14,7 @@ import { BlogService } from '../../core/services/blog.service';
 export class BlogComponent implements OnInit {
 	private blogService = inject(BlogService);
 	private seoService = inject(SeoService);
+	private platformId = inject(PLATFORM_ID);
 
 	allArticles: Artigo[] = [];
 	filteredArticles: Artigo[] = [];
@@ -69,7 +71,7 @@ export class BlogComponent implements OnInit {
 			this.currentPage = page;
 			const startIndex = (this.currentPage - 1) * this.itemsPerPage;
 			this.paginatedArticles = this.filteredArticles.slice(startIndex, startIndex + this.itemsPerPage);
-			window.scrollTo({ top: 0, behavior: 'smooth' });
+			if (isPlatformBrowser(this.platformId)) window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
 

@@ -1,78 +1,58 @@
-import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { from, map, Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable, catchError, map, of } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { Artigo, CategoriaArtigo } from '../models/artigo.model';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class BlogService {
-	private supabase: SupabaseClient;
+	private http = inject(HttpClient);
 
-	constructor() {
-		this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
-			auth: {
-				persistSession: false,
-				autoRefreshToken: false,
-				detectSessionInUrl: false,
-			},
-		});
-	}
+	private readonly apiUrl = `${environment.supabaseUrl}/rest/v1`;
+	private readonly headers = new HttpHeaders({
+		apikey: environment.supabaseKey,
+		Authorization: `Bearer ${environment.supabaseKey}`,
+	});
 
 	getAllArticles(): Observable<Artigo[]> {
-		const query = this.supabase
-			.from('published_articles')
-			.select('*')
-			.then(({ data, error }) => {
-				if (error) throw error;
-				return data as Artigo[];
-			});
-
-		return from(query).pipe(map((articles) => articles.map((article) => this.formatDate(article))));
+		return this.http.get<Artigo[]>(`${this.apiUrl}/published_articles?select=*`, { headers: this.headers }).pipe(
+			map((articles) => articles.map((a) => this.formatDate(a))),
+			catchError((err) => {
+				console.error('Erro ao buscar artigos:', err);
+				return of([]);
+			}),
+		);
 	}
 
 	getLatestArticles(limit: number = 3): Observable<Artigo[]> {
-		const query = this.supabase
-			.from('published_articles')
-			.select('*')
-			.limit(limit)
-			.then(({ data, error }) => {
-				if (error) throw error;
-				return data as Artigo[];
-			});
-
-		return from(query).pipe(map((articles) => articles.map((article) => this.formatDate(article))));
+		return this.http.get<Artigo[]>(`${this.apiUrl}/published_articles?select=*&limit=${limit}`, { headers: this.headers }).pipe(
+			map((articles) => articles.map((a) => this.formatDate(a))),
+			catchError((err) => {
+				console.error('Erro ao buscar artigos recentes:', err);
+				return of([]);
+			}),
+		);
 	}
 
 	getArticleBySlug(slug: string): Observable<Artigo | null> {
-		const query = this.supabase
-			.from('published_articles')
-			.select('*')
-			.eq('slug', slug)
-			.maybeSingle()
-			.then(({ data, error }) => {
-				if (error) {
-					console.error('Erro interno ao buscar artigo:', error.message);
-					return null;
-				}
-				return data as Artigo | null;
-			});
-
-		return from(query).pipe(map((article) => (article ? this.formatDate(article) : null)));
+		return this.http.get<Artigo[]>(`${this.apiUrl}/published_articles?slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`, { headers: this.headers }).pipe(
+			map((articles) => (articles.length > 0 ? this.formatDate(articles[0]) : null)),
+			catchError((err) => {
+				console.error('Erro ao buscar artigo:', err);
+				return of(null);
+			}),
+		);
 	}
 
 	getCategories(): Observable<CategoriaArtigo[]> {
-		const query = this.supabase
-			.from('categories')
-			.select('id, name, slug')
-			.order('name', { ascending: true })
-			.then(({ data, error }) => {
-				if (error) throw error;
-				return data as CategoriaArtigo[];
-			});
-
-		return from(query);
+		return this.http.get<CategoriaArtigo[]>(`${this.apiUrl}/categories?select=id,name,slug&order=name.asc`, { headers: this.headers }).pipe(
+			catchError((err) => {
+				console.error('Erro ao buscar categorias:', err);
+				return of([]);
+			}),
+		);
 	}
 
 	private formatDate(article: Artigo): Artigo {

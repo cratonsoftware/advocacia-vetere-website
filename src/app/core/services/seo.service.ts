@@ -37,7 +37,7 @@ export class SeoService {
 			{ property: 'og:description', content: config.description },
 			{ property: 'og:image', content: absoluteImageUrl },
 			{ property: 'og:image:secure_url', content: absoluteImageUrl },
-			{ property: 'og:image:width', content: '100' },
+			{ property: 'og:image:width', content: '1200' },
 			{ property: 'og:image:height', content: '630' },
 			{ property: 'og:url', content: url },
 			{ property: 'og:type', content: type },

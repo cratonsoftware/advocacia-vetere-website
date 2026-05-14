@@ -1,7 +1,7 @@
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { ApplicationConfig, DEFAULT_CURRENCY_CODE, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideMarkdown } from 'ngx-markdown';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
 				anchorScrolling: 'enabled',
 			}),
 		),
-		provideClientHydration(withEventReplay()),
+		provideClientHydration(withEventReplay(), withHttpTransferCacheOptions({ includeRequestsWithAuthHeaders: true })),
 		{ provide: LOCALE_ID, useValue: 'pt-BR' },
 		{ provide: DEFAULT_CURRENCY_CODE, useValue: 'BRL' },
 		importProvidersFrom(MatIconModule),
