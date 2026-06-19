@@ -18,6 +18,8 @@ Estas regras valem para **qualquer** intervenção no projeto e têm precedênci
 
 4. **Definition of Done.** Nenhum item é "feito" sem: `npm run build` sem erros, validação específica aprovada, documentação atualizada e progresso marcado. Em caso de bloqueio, registrar `⏸️` com a causa.
 
+5. **Execução de comandos pesados é do operador, não do agente.** O agente **não** executa por conta própria operações de Git (`branch`, `checkout`, `add`, `commit`, `push`, `merge`, `rebase`, `reset`), builds (`npm run build`, `ng build` e afins) nem outras ações custosas ou demoradas. Em vez disso, **monta o comando exato**, explica o que ele faz e o resultado esperado, e **pede ao operador para executá-lo** — aguardando a saída (ou um "ok") antes de prosseguir. Tentativas e retentativas automáticas desperdiçam a cota de uso e o tempo do operador. Permanecem livres para o agente as ações **leves**: ler, editar e escrever arquivos do projeto, inspeções rápidas (grep/leitura) e consultas via MCP. **Exceção:** quando o operador autorizar explicitamente ("pode rodar"), o agente executa aquele comando específico.
+
 ---
 
 ## Sobre o Projeto
@@ -63,14 +65,14 @@ O servidor Express (`src/server.ts`) é responsável exclusivamente por:
 
 ### Render Modes por Rota (`app.routes.server.ts`)
 
-| Rota          | Modo        | Motivo                                                   |
-| ------------- | ----------- | -------------------------------------------------------- |
-| `/`           | `Prerender` | Conteúdo estático — máxima performance e SEO             |
-| `/blog`       | `Prerender` | Listagem de artigos pré-renderizada com conteúdo real    |
+| Rota          | Modo        | Motivo                                                                                                                                        |
+| ------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`           | `Prerender` | Conteúdo estático — máxima performance e SEO                                                                                                  |
+| `/blog`       | `Prerender` | Listagem de artigos pré-renderizada com conteúdo real                                                                                         |
 | `/blog/:slug` | `Prerender` | Pré-renderizado por slug via `getPrerenderParams()` (lê os slugs publicados no Supabase no build) — HTML estático com SEO próprio e indexável |
-| `/sucesso`    | `Prerender` | Página simples sem dados dinâmicos                       |
-| `/404`        | `Prerender` | Página de erro estática                                  |
-| `/**`         | `Server`    | Fallback para rotas não mapeadas                         |
+| `/sucesso`    | `Prerender` | Página simples sem dados dinâmicos                                                                                                            |
+| `/404`        | `Prerender` | Página de erro estática                                                                                                                       |
+| `/**`         | `Server`    | Fallback para rotas não mapeadas                                                                                                              |
 
 ### Pré-renderização de artigos (`/blog/:slug`)
 
