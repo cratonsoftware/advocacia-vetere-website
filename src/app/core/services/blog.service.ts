@@ -56,13 +56,24 @@ export class BlogService {
 	}
 
 	private formatDate(article: Artigo): Artigo {
-		const dataObj = new Date(article.date);
-		// Preservar a data ISO antes de formatar — necessário para meta tags e JSON-LD
-		article.dateIso = article.date.split('T')[0];
+		// Datas ISO (8601) cruas para meta tags e JSON-LD — `publishedAt`/`updatedAt` vêm da view (S3).
+		// Fallback para `date` (alias de `published_at`) caso a view antiga seja consumida.
+		article.dateIso = this.toIso(article.publishedAt ?? article.date);
+		article.updatedAtIso = this.toIso(article.updatedAt ?? article.publishedAt ?? article.date);
+
+		// `date` passa a ser apenas o rótulo de exibição em pt-BR.
+		const dataObj = new Date(article.publishedAt ?? article.date);
 		const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long', year: 'numeric' };
-		article.date = dataObj.toLocaleDateString('pt-BR', options);
-		article.date = article.date.replace(/ de [a-z]/g, (match) => match.toUpperCase());
+		article.date = dataObj.toLocaleDateString('pt-BR', options).replace(/ de [a-z]/g, (match) => match.toUpperCase());
+
 		if (article.content) article.content = article.content.replace(/\\n/g, '\n');
 		return article;
+	}
+
+	/** Normaliza um timestamp do Postgres ("2026-06-18 21:20:58+00") para ISO 8601 completo. */
+	private toIso(value: string | undefined): string {
+		if (!value) return '';
+		const parsed = new Date(value);
+		return isNaN(parsed.getTime()) ? '' : parsed.toISOString();
 	}
 }

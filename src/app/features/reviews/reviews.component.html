@@ -7,7 +7,7 @@
 		</div>
 
 		<div class="relative" (mouseenter)="pauseAutoplay()" (mouseleave)="resumeAutoplay()">
-			<div #slider (scroll)="onScroll()" class="flex snap-x snap-mandatory gap-8 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+			<div #slider (scroll)="onScroll()" class="flex snap-x snap-mandatory [scrollbar-width:none] gap-8 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
 				@if (isLoading) {
 					<div class="text-n0/50 w-full animate-pulse py-10 text-center text-xs tracking-widest uppercase">Carregando avaliações...</div>
 				} @else {

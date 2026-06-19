@@ -13,19 +13,25 @@ export default async function handler(req: any, res: any) {
 			auth: { persistSession: false },
 		});
 
-		const { data: articles, error } = await supabase.from('published_articles').select('slug, date');
+		const { data: articles, error } = await supabase.from('published_articles').select('slug, date, updatedAt').order('updatedAt', { ascending: false });
 		if (error) throw error;
+
+		// Normaliza um timestamp para "YYYY-MM-DD" (formato aceito em <lastmod>).
+		const toDay = (value: string | null | undefined): string => new Date(value || Date.now()).toISOString().split('T')[0];
+
+		// lastmod de home e /blog = data de modificação mais recente entre os artigos (sinal de frescor).
+		const siteLastMod = articles && articles.length ? toDay(articles[0].updatedAt || articles[0].date) : toDay(null);
 
 		const doc = create({ version: '1.0', encoding: 'UTF-8' }).ele('urlset', { xmlns: 'http://www.sitemaps.org/schemas/sitemap/0.9' });
 
-		doc.ele('url').ele('loc').txt(`${baseUrl}/`).up().ele('priority').txt('1.0').up().ele('changefreq').txt('monthly').up().up();
+		doc.ele('url').ele('loc').txt(`${baseUrl}/`).up().ele('lastmod').txt(siteLastMod).up().ele('priority').txt('1.0').up().ele('changefreq').txt('monthly').up().up();
 
-		doc.ele('url').ele('loc').txt(`${baseUrl}/blog`).up().ele('priority').txt('0.8').up().ele('changefreq').txt('weekly').up().up();
+		doc.ele('url').ele('loc').txt(`${baseUrl}/blog`).up().ele('lastmod').txt(siteLastMod).up().ele('priority').txt('0.8').up().ele('changefreq').txt('weekly').up().up();
 
 		if (articles) {
 			articles.forEach((artigo: any) => {
-				const lastMod = artigo.date || new Date().toISOString();
-				doc.ele('url').ele('loc').txt(`${baseUrl}/blog/${artigo.slug}`).up().ele('lastmod').txt(new Date(lastMod).toISOString().split('T')[0]).up().ele('priority').txt('0.7').up().up();
+				const lastMod = toDay(artigo.updatedAt || artigo.date);
+				doc.ele('url').ele('loc').txt(`${baseUrl}/blog/${artigo.slug}`).up().ele('lastmod').txt(lastMod).up().ele('priority').txt('0.7').up().up();
 			});
 		}
 

@@ -109,16 +109,16 @@ A localização usa um **iframe de embed do Google Maps** (`mapa.component.html`
 
 Camadas de SEO do projeto:
 
-- **`SeoService`** (`core/services/seo.service.ts`): injeta `title`, `description`, Open Graph, Twitter Card, `canonical` e **JSON-LD** por página. Usa o token `DOCUMENT` (SSR-safe) para manipular `<head>`.
-- **JSON-LD por tipo**:
-    - `article` → `BlogPosting`
+- **`SeoService`** (`core/services/seo.service.ts`): injeta `title`, `description`, Open Graph (incl. `og:locale=pt_BR` e `og:image:alt`), Twitter Card, `canonical` e **JSON-LD** por página. Usa o token `DOCUMENT` (SSR-safe) para manipular `<head>`. Suporta **múltiplos blocos JSON-LD** por página, identificados pelo atributo `data-seo` (`main` + `breadcrumb`).
+- **JSON-LD por tipo** _(S4)_:
+    - `article` → **`BlogPosting` rico**: `mainEntityOfPage`, `image` como `ImageObject` (1200×630 + `caption`), `datePublished`/`dateModified` (ISO), `inLanguage`, `articleSection`, `keywords` (quando há `tags`), `author` como `Person` (`jobTitle`, `identifier` OAB, `sameAs`) — sinais de E-E-A-T. Acompanha um bloco **`BreadcrumbList`** (Início › Blog › Artigo).
     - `slug === 'blog'` → `Blog`
-    - default → `LegalService` (negócio local, com `address`, `areaServed`, `knowsAbout`)
-- **Sitemap dinâmico**: `api/sitemap.ts` (Serverless) gera `/sitemap.xml` com `xmlbuilder2`, incluindo home, `/blog` e cada artigo (com `lastmod`). Reescrito via `vercel.json`.
+    - default (home) → **`LegalService` enriquecido**: `telephone`, `email`, `address` completo, `geo`, `openingHoursSpecification`, `sameAs`, `priceRange`, `logo`, `areaServed`, `knowsAbout` (negócio local).
+- **Sitemap dinâmico**: `api/sitemap.ts` (Serverless) gera `/sitemap.xml` com `xmlbuilder2`, incluindo home, `/blog` e cada artigo, todos com **`lastmod`** (home/`blog` usam a data de modificação mais recente entre os artigos; artigos usam `updatedAt`). Reescrito via `vercel.json`.
 - **`robots.txt`** (`src/robots.txt`): libera tudo e aponta para o sitemap.
 - **`index.html`**: `lang="pt-BR"`, `theme-color`, favicons por `prefers-color-scheme`, verificação Google.
 
-> Pontos de melhoria de SEO catalogados em `MELHORIAS.md` §2 (enriquecer `LegalService`, `BreadcrumbList`, `og:locale`, data ISO).
+> Datas ISO para SEO: o `BlogService.formatDate` deriva `dateIso`/`updatedAtIso` de `publishedAt`/`updatedAt` (view S3, com `.toISOString()`), mantendo `date` apenas como rótulo pt-BR. Melhorias remanescentes em `MELHORIAS.md` §2.5 (manifest/PWA) e S5 (FAQPage, páginas de categoria, `canonicalUrl`/`noindex`).
 
 ---
 

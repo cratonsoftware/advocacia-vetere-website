@@ -93,7 +93,9 @@ Não há `engines` no `package.json` nem `.nvmrc`. Para builds reproduzíveis (l
 
 > O projeto já é forte em SEO (SSR + prerender, meta tags por rota, JSON-LD, sitemap dinâmico, canonical). As melhorias abaixo elevam principalmente o **SEO local** — decisivo para uma advogada com escritório físico em Tambaú/SP.
 
-### 2.1 Enriquecer o JSON-LD `LegalService` — Impacto Alto · Esforço M
+### 2.1 Enriquecer o JSON-LD `LegalService` — Impacto Alto · Esforço M — ✅ S4 (2026-06-19)
+
+> **Aplicado na S4:** adicionados `telephone`, `email`, `address` completo (`streetAddress`/`postalCode`), `geo`, `openingHoursSpecification` (Seg–Sex 09:00–12:00 / 13:00–17:00), `sameAs` (Instagram/Facebook/TikTok), `priceRange` e `logo`. **`aggregateRating` ficou de fora** (depende da política do Google para exibir nota agregada) — reavaliar em sessão futura.
 
 O schema atual de `LegalService` traz nome, endereço (cidade/UF) e `areaServed`, mas **omite sinais fortes de negócio local**. Adicionar:
 
@@ -107,15 +109,21 @@ O schema atual de `LegalService` traz nome, endereço (cidade/UF) e `areaServed`
 
 Isso melhora o rich result e a ficha de conhecimento local.
 
-### 2.2 `BreadcrumbList` nos artigos — Impacto Médio · Esforço P
+### 2.2 `BreadcrumbList` nos artigos — Impacto Médio · Esforço P — ✅ S4 (2026-06-19)
+
+> **Aplicado na S4:** bloco JSON-LD `BreadcrumbList` (Início › Blog › Artigo) injetado em toda página de artigo, em bloco separado do `BlogPosting` (atributo `data-seo="breadcrumb"`).
 
 O checklist do `CLAUDE.md` cita `BreadcrumbList`, mas ele **não é injetado**. Adicionar breadcrumb (Início › Blog › Artigo) no JSON-LD da página de artigo ajuda o Google a montar a trilha de navegação no resultado de busca.
 
-### 2.3 `og:locale` e Twitter handles — Impacto Baixo · Esforço P
+### 2.3 `og:locale` e Twitter handles — Impacto Baixo · Esforço P — ✅ S4 (2026-06-19, parcial)
+
+> **Aplicado na S4:** `og:locale=pt_BR` e `og:image:alt` adicionados no `SeoService`. `twitter:site`/`twitter:creator` **não** foram adicionados — não há perfil X/Twitter da marca (reavaliar se um perfil for criado).
 
 Faltam `og:locale` (`pt_BR`) e, se houver perfil, `twitter:site` / `twitter:creator`. Pequenos, mas completam o cartão social.
 
-### 2.4 `lastmod` no sitemap para home e blog — Impacto Baixo · Esforço P
+### 2.4 `lastmod` no sitemap para home e blog — Impacto Baixo · Esforço P — ✅ S4 (2026-06-19)
+
+> **Aplicado na S4:** `/` e `/blog` passaram a emitir `<lastmod>` = data de modificação mais recente entre os artigos (`updatedAt`). Os artigos passaram a usar `updatedAt` (antes usavam `date`/publicação).
 
 `api/sitemap.ts` só emite `lastmod` nos artigos. Home e `/blog` poderiam ter `lastmod` (ex.: data do artigo mais recente) para sinalizar frescor.
 

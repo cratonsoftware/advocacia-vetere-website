@@ -94,8 +94,8 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | --- | --- | --- | --- | --- |
 | S1 — P0 Indexação | ✅ | 2026-06-19 | ff0a688 | Opção A: `/blog/:slug` Prerender + `getPrerenderParams`; **merge + validado em produção**; rebuild ao publicar documentado |
 | S2 — Quick wins | ✅ | 2026-06-19 | f499d40 | 7 de 8 itens aplicados; §3.6 (redirect) N/A — configurado na plataforma Web3Forms |
-| S3 — Banco E-E-A-T | ✅ | 2026-06-19 | 5c8de94   | Migração aditiva aplicada via MCP Supabase; view retrocompatível com ISO+author; `get_advisors security` **limpo**; capa migrada ao Storage (`cover_image` → URL pública do bucket `article-covers`) |
-| S4 — Schema & SERP | ⬜ | — | — | Depende de S3 |
+| S3 — Banco E-E-A-T | ✅ | 2026-06-19 | 5c8de94 · 9e74ae4 | Migração aditiva aplicada via MCP Supabase; view retrocompatível com ISO+author; `get_advisors security` **limpo**; capa migrada ao Storage (`cover_image` → URL pública do bucket `article-covers`) |
+| S4 — Schema & SERP | 🔄 | 2026-06-19 | _(pendente build+commit do operador)_ | Código pronto na branch `feat/seo-schema-serp`: meta dedicados, JSON-LD Article rico, BreadcrumbList, LegalService enriquecido, og:locale + lastmod no sitemap. Falta: `npm run build` verde + commit + preview Vercel + Rich Results Test |
 | S5 — Topical & GEO | ⬜ | — | — | Depende de S3 |
 | S6 — Performance | ⬜ | — | — |  |
 | S7 — Acessibilidade | ⬜ | — | — |  |
@@ -129,13 +129,13 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 - ✅ Migrar capas para Supabase Storage 1200×630 + `cover_image_alt` — G5/G9: bucket público `article-covers`, imagem `traicao-da-direito-a-indenizacao.png` enviada pelo operador, `cover_image` apontando para a URL pública do Storage e `cover_image_alt` preenchido. URL pública validada. _(2026-06-19, migração `create_article_covers_storage_bucket` + update de `cover_image`)_
 - ✅ Corrigir categoria "Familia" → "Família" — G12 _(2026-06-19, migração `fix_familia_category_accent`)_
 
-**S4 — Schema & SERP** _(detalhes: `BLOG-SEO.md` §7; `MELHORIAS.md` §2)_
+**S4 — Schema & SERP** _(detalhes: `BLOG-SEO.md` §7; `MELHORIAS.md` §2)_ — _código aplicado 2026-06-19 na branch `feat/seo-schema-serp`; build/commit/preview pendentes do operador_
 
-- ⬜ `meta_title`/`meta_description` dedicados no front — G4
-- ⬜ JSON-LD Article rico (`dateModified`, `ImageObject`, `inLanguage`, `articleSection`, `keywords`, `mainEntityOfPage`, `author` Person)
-- ⬜ `BreadcrumbList` nas páginas de artigo — §2.2
-- ⬜ Enriquecer `LegalService` da home (telefone, geo, horário, `sameAs`) — §2.1
-- ⬜ `og:locale` + `lastmod` de home/blog no sitemap — §2.3/§2.4
+- ✅ `meta_title`/`meta_description` dedicados no front — G4 _(ArtigoComponent usa `metaTitle`/`metaDescription` da view; modelo `Artigo` estendido; `BlogService.formatDate` deriva `dateIso`/`updatedAtIso` de `publishedAt`/`updatedAt`)_
+- ✅ JSON-LD Article rico (`dateModified`, `ImageObject`, `inLanguage`, `articleSection`, `keywords`, `mainEntityOfPage`, `author` Person com `identifier` OAB + `sameAs`) _(`SeoService.setJsonLd`)_
+- ✅ `BreadcrumbList` nas páginas de artigo — §2.2 _(bloco JSON-LD separado por `data-seo`; Início › Blog › Artigo)_
+- ✅ Enriquecer `LegalService` da home (telefone, e-mail, endereço completo, geo, `openingHoursSpecification`, `sameAs`, `priceRange`, `logo`) — §2.1
+- ✅ `og:locale` (`pt_BR`) + `og:image:alt` no `SeoService`; `lastmod` de home/blog no `api/sitemap.ts` (data de modificação mais recente) — §2.3/§2.4
 
 **S5 — Topical authority & GEO/AEO** _(detalhes: `BLOG-SEO.md` §4.3, §6, §7)_
 

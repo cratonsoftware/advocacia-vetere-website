@@ -29,14 +29,33 @@ export class ArtigoComponent implements OnInit {
 				this.isLoading = false;
 
 				if (data) {
+					const baseUrl = 'https://www.mfernandavetere.adv.br';
 					this.seoService.updateMetaTags({
-						title: data.title,
-						description: data.excerpt,
+						title: data.metaTitle || data.title,
+						description: data.metaDescription || data.excerpt,
 						image: data.coverImage,
+						imageAlt: data.coverImageAlt,
 						slug: `blog/${data.slug}`,
 						type: 'article',
-						author: 'Dra. Maria Fernanda Vetere',
+						author: data.author?.name || 'Dra. Maria Fernanda Vetere',
+						authorPerson: {
+							name: data.author?.name || 'Dra. Maria Fernanda Vetere',
+							jobTitle: data.author?.role || 'Advogada',
+							oab: data.author?.oab || undefined,
+							// Página /autor/:slug será criada na S5 — por ora aponta para a home (sem 404).
+							url: baseUrl,
+							sameAs: data.author?.sameAs || undefined,
+						},
 						publishedDate: data.dateIso,
+						modifiedDate: data.updatedAtIso,
+						articleSection: data.category,
+						inLanguage: data.locale || 'pt-BR',
+						keywords: data.tags?.length ? data.tags.join(', ') : undefined,
+						breadcrumbs: [
+							{ name: 'Início', url: `${baseUrl}/` },
+							{ name: 'Blog', url: `${baseUrl}/blog` },
+							{ name: data.title, url: `${baseUrl}/blog/${data.slug}` },
+						],
 					});
 				}
 			});

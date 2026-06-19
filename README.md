@@ -85,6 +85,8 @@ scripts/       → hooks de pré-build
 | `/**`                                           | Server    |
 
 > Cada artigo (`/blog/:slug`) é pré-renderizado como HTML estático: o `getPrerenderParams()` em `app.routes.server.ts` lê os slugs publicados no Supabase em tempo de build, garantindo SEO próprio (canonical self, title/H1, OG, JSON-LD) e indexabilidade. Ao publicar/editar um artigo, um **Vercel Deploy Hook** acionado por um **webhook do Supabase** dispara o rebuild (~1–2 min). Ver `BLOG-SEO.md` §10.
+>
+> **SEO de schema (S4):** o `SeoService` injeta `BlogPosting` rico (`ImageObject`, `datePublished`/`dateModified`, `author` `Person` com OAB/`sameAs`, `inLanguage`, `articleSection`, `keywords`, `mainEntityOfPage`) + `BreadcrumbList` nos artigos, e `LegalService` enriquecido (telefone, e-mail, endereço, geo, horário, `sameAs`) na home; `og:locale=pt_BR` e `lastmod` de home/`blog` no sitemap. Ver `BLOG-SEO.md` §7 e `ARCHITECTURE.md` §5.
 
 ---
 

@@ -169,6 +169,8 @@ Arquivo Markdown na raiz do domínio que **curadoria** o conteúdo mais valioso 
 O que **falta no dado** hoje para sustentar tudo da §4 (priorizado por impacto):
 
 > **Atualização S3 (2026-06-19):** o lado-banco das lacunas foi resolvido. ✅ resolvidos: **G1** (tabela `authors` + seed), **G2** (`updatedAt` na view), **G3** (ISO na view; transporte no front feito na S2), **G4** (`meta_title`/`meta_description` — consumo no front = S4), **G6** (`tags`), **G8** (`tldr`/`faq` — `FAQPage` no front = S5), **G9** (`cover_image_alt`), **G11** (`locale`), **G12** (categoria "Família"), **G13** (índices). **G5** ✅: capa 1200×630 no bucket `article-covers` e `cover_image` apontando para a URL pública do Storage. ⬜ Restam para front: **G7** (rota `/blog/categoria/:slug` — S5) e o uso de **G10** (`canonical_url`/`noindex` já existem como colunas — consumo = S4).
+>
+> **Atualização S4 (2026-06-19):** **consumo no front** das lacunas resolvido — **G4** (`metaTitle`/`metaDescription` consumidos pelo `ArtigoComponent`), **G9** (`coverImageAlt` → `og:image:alt` + `caption` do `ImageObject`), **G11** (`locale` → `inLanguage`) e a entidade de autor **G1** agora viram JSON-LD `Person` (com `identifier` OAB e `sameAs`). O JSON-LD do artigo passou a `BlogPosting` rico + `BreadcrumbList`; o `LegalService` da home foi enriquecido. **G10** (`canonicalUrl`/`noindex`) segue como coluna disponível; o consumo fino foi deixado para a S5 junto com o restante do controle por artigo.
 
 | #   | Lacuna                                                                                | Impacto        | Por quê                                                              |
 | --- | ------------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------- |
@@ -278,6 +280,8 @@ Migrar capas para **Supabase Storage** (bucket público `article-covers`), em **
 ---
 
 ## 7. JSON-LD alvo para artigos (spec de referência)
+
+> **✅ APLICADO na S4 (2026-06-19)** — o `SeoService` passou a montar exatamente o `BlogPosting` abaixo (`mainEntityOfPage`, `ImageObject` 1200×630 com `caption`, `datePublished`/`dateModified` ISO, `inLanguage`, `articleSection`, `keywords` quando há `tags`, `author` `Person` com `jobTitle`, `identifier` OAB e `sameAs`). Foram acrescentados, em blocos JSON-LD separados (identificados por `data-seo`), o **`BreadcrumbList`** (Início › Blog › Artigo) em toda página de artigo. O `LegalService` da home foi enriquecido (telefone, e-mail, endereço completo, `geo`, `openingHoursSpecification`, `sameAs`, `priceRange`, `logo`). Pendente apenas a validação no Rich Results Test pós-deploy (precisa de URL de preview/produção). O `FAQPage` (quando `faq` existir) fica para a S5.
 
 Estado atual (`BlogPosting`) vs. alvo. O `SeoService` passaria a montar:
 
