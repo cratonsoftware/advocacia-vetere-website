@@ -93,7 +93,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | Sessão              | Status | Data       | Commit/PR | Notas                                                                                                                      |
 | ------------------- | ------ | ---------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
 | S1 — P0 Indexação   | ✅     | 2026-06-19 | ff0a688   | Opção A: `/blog/:slug` Prerender + `getPrerenderParams`; **merge + validado em produção**; rebuild ao publicar documentado |
-| S2 — Quick wins     | ✅     | 2026-06-19 | —         | 7 de 8 itens aplicados; §3.6 (redirect) N/A — configurado na plataforma Web3Forms                                         |
+| S2 — Quick wins     | ✅     | 2026-06-19 | f499d40   | 7 de 8 itens aplicados; §3.6 (redirect) N/A — configurado na plataforma Web3Forms                                         |
 | S3 — Banco E-E-A-T  | ⬜     | —          | —         | Migração aditiva (não destrutiva)                                                                                          |
 | S4 — Schema & SERP  | ⬜     | —          | —         | Depende de S3                                                                                                              |
 | S5 — Topical & GEO  | ⬜     | —          | —         | Depende de S3                                                                                                              |
@@ -112,14 +112,14 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 **S2 — Quick wins** _(detalhes: `MELHORIAS.md` §7)_
 
-- ✅ Data ISO no SEO (`dateIso` no modelo; `formatDate()` preserva ISO; SEO usa `dateIso`) — §1.4 _(2026-06-19)_
+- ✅ Data ISO no SEO (`dateIso` no modelo; `formatDate()` preserva ISO; SEO usa `dateIso`) — §1.4 _(2026-06-19, f499d40)_
 - ✅ Campo `redirect` no formulário → N/A (redirect já configurado diretamente na plataforma Web3Forms) — §3.6
-- ✅ Corrigir "Comartilhar" → "Compartilhar" — §3.10 _(2026-06-19)_
-- ✅ Navegação por âncora com `routerLink` + `fragment` (header, mobile, footer, hero) — §3.1 _(2026-06-19)_
-- ✅ `loading="lazy"` nas imagens + `fetchpriority="high"` no hero — §3.8 _(2026-06-19)_
-- ✅ `title` no iframe do mapa — §3.9 _(2026-06-19)_
-- ✅ Honeypot anti-spam no formulário (`botcheck`) — §3.7 _(2026-06-19)_
-- ✅ Remover código morto do contato (`formatarTelefone`, `enviarMensagem`) — §1.5 _(2026-06-19)_
+- ✅ Corrigir "Comartilhar" → "Compartilhar" — §3.10 _(2026-06-19, f499d40)_
+- ✅ Navegação por âncora com `routerLink` + `fragment` (header, mobile, footer, hero) — §3.1 _(2026-06-19, f499d40)_
+- ✅ `loading="lazy"` nas imagens + `fetchpriority="high"` no hero — §3.8 _(2026-06-19, f499d40)_
+- ✅ `title` no iframe do mapa — §3.9 _(2026-06-19, f499d40)_
+- ✅ Honeypot anti-spam no formulário (`botcheck`) — §3.7 _(2026-06-19, f499d40)_
+- ✅ Remover código morto do contato (`formatarTelefone`, `enviarMensagem`) — §1.5 _(2026-06-19, f499d40)_
 
 **S3 — Banco: fundação E-E-A-T** _(detalhes: `BLOG-SEO.md` §6 e §7)_
 
