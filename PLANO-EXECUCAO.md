@@ -94,7 +94,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | --- | --- | --- | --- | --- |
 | S1 — P0 Indexação | ✅ | 2026-06-19 | ff0a688 | Opção A: `/blog/:slug` Prerender + `getPrerenderParams`; **merge + validado em produção**; rebuild ao publicar documentado |
 | S2 — Quick wins | ✅ | 2026-06-19 | f499d40 | 7 de 8 itens aplicados; §3.6 (redirect) N/A — configurado na plataforma Web3Forms |
-| S3 — Banco E-E-A-T | ✅ | 2026-06-19 | `<commit>` | Migração aditiva aplicada via MCP Supabase; view retrocompatível com ISO+author; `get_advisors security` **limpo**; capa migrada ao Storage (`cover_image` → URL pública do bucket `article-covers`) |
+| S3 — Banco E-E-A-T | ✅ | 2026-06-19 | 5c8de94   | Migração aditiva aplicada via MCP Supabase; view retrocompatível com ISO+author; `get_advisors security` **limpo**; capa migrada ao Storage (`cover_image` → URL pública do bucket `article-covers`) |
 | S4 — Schema & SERP | ⬜ | — | — | Depende de S3 |
 | S5 — Topical & GEO | ⬜ | — | — | Depende de S3 |
 | S6 — Performance | ⬜ | — | — |  |
