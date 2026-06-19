@@ -2,7 +2,21 @@
 
 > Contexto permanente para o Claude Code. Leia antes de qualquer intervenção no projeto.
 
-> **Documentação relacionada:** [`README.md`](./README.md) (uso) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) (arquitetura técnica e fluxo de dados) · [`MELHORIAS.md`](./MELHORIAS.md) (backlog de melhorias priorizado).
+> **Documentação relacionada:** [`README.md`](./README.md) (uso) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) (arquitetura técnica e fluxo de dados) · [`MELHORIAS.md`](./MELHORIAS.md) (backlog de melhorias priorizado) · [`BLOG-SEO.md`](./BLOG-SEO.md) (banco, blog e SEO de alto nível) · [`PLANO-EXECUCAO.md`](./PLANO-EXECUCAO.md) (runbook de execução por sessões + registro de progresso).
+
+---
+
+## Governança de Documentação e Progresso (OBRIGATÓRIO)
+
+Estas regras valem para **qualquer** intervenção no projeto e têm precedência operacional. O objetivo é evitar retrabalho e manter o contexto íntegro entre sessões.
+
+1. **README e CLAUDE sempre atualizados.** Ao final de toda sessão/alteração, o agente **deve** revisar e atualizar o [`README.md`](./README.md) e este `CLAUDE.md` para refletir o estado real (stack, rotas, schema, comandos, padrões, decisões). Nenhuma sessão é considerada concluída com esses arquivos desatualizados. Quando uma decisão técnica mudar, atualizar também o documento de referência correspondente (`ARCHITECTURE.md`, `BLOG-SEO.md`, `MELHORIAS.md`).
+
+2. **Marcar SEMPRE, de forma explícita, o que já foi feito.** A **fonte única de verdade do progresso** é o §6 (Registro de progresso) do [`PLANO-EXECUCAO.md`](./PLANO-EXECUCAO.md). Antes de iniciar qualquer trabalho, **ler o registro** para não refazer o que já está concluído. Ao concluir um item, **marcá-lo `✅` com data e hash do commit/PR**. Legenda: ⬜ Pendente · 🔄 Em andamento · ✅ Concluído · ⏸️ Bloqueado. Não confiar na memória da conversa para saber o que foi feito — confiar no registro.
+
+3. **Trabalho em sessões fechadas.** Seguir o runbook do [`PLANO-EXECUCAO.md`](./PLANO-EXECUCAO.md): uma sessão = um escopo = uma branch = um PR, com **ritual de entrada** (ler docs + registro) e **ritual de saída** (build verde, validação, docs atualizados, progresso marcado, commit + preview). Ao concluir o escopo, **encerrar a sessão** — não emendar a próxima na mesma conversa.
+
+4. **Definition of Done.** Nenhum item é "feito" sem: `npm run build` sem erros, validação específica aprovada, documentação atualizada e progresso marcado. Em caso de bloqueio, registrar `⏸️` com a causa.
 
 ---
 
