@@ -76,6 +76,8 @@ private readonly headers = new HttpHeaders({
 | `categories` | `BlogService` | `id, name, slug` |
 | `google_reviews` | `ReviewsService` | `author_name, rating, text, profile_photo_url, relative_time_description` |
 
+> A view `published_articles` aplica `ORDER BY published_at DESC` e filtra `is_published AND published_at <= now()`. **Schema completo das tabelas base (`articles`, `categories`, `google_reviews`), RLS, índices e a proposta de evolução para SEO** estão em [`BLOG-SEO.md`](./BLOG-SEO.md).
+
 ### Transfer Cache
 Configurado em `app.config.ts` com `withHttpTransferCacheOptions({ includeRequestsWithAuthHeaders: true })`. Como as chamadas levam o header `apikey`, a flag `includeRequestsWithAuthHeaders` é **obrigatória** — sem ela o cliente refaria todas as requisições ao hidratar (double-fetch).
 

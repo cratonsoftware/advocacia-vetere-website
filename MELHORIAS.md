@@ -32,8 +32,8 @@ Os componentes hoje fazem `subscribe()` manual e gravam em propriedades de class
 
 Benefício colateral: combina perfeitamente com `OnPush`.
 
-### 1.3 Ordenar artigos por data — Impacto Alto · Esforço P · *(bug)*
-`BlogService.getLatestArticles()` e `getAllArticles()` consultam o Supabase **sem `order`**. Ou seja, os "últimos artigos" da home **não são necessariamente os mais recentes** — vêm na ordem que o PostgREST devolver. Corrigir adicionando `&order=date.desc` às queries. É a melhoria de maior retorno por menor esforço.
+### 1.3 Ordenação dos artigos — ✅ já resolvido na view *(correção)*
+**Apontamento revisado após leitura do banco.** As queries não têm `order`, mas a **view `published_articles` já ordena por `published_at DESC`** (e filtra publicados com `published_at <= now()`). Portanto `getLatestArticles(3)` retorna de fato os mais recentes — **não há bug aqui**. Mantido apenas como registro. Detalhes em [`BLOG-SEO.md`](./BLOG-SEO.md) §1.4.
 
 ### 1.4 Preservar a data ISO para o SEO — Impacto Alto · Esforço P · *(bug de SEO)*
 `BlogService.formatDate()` **sobrescreve** `article.date` com a string formatada em pt-BR (ex.: `"19 de Junho de 2026"`). Em seguida, `ArtigoComponent` passa esse mesmo valor como `publishedDate` para o `SeoService`, que o injeta em `article:published_time` e no `datePublished` do JSON-LD. Esses campos exigem **ISO 8601** (`2026-06-19`). Hoje os robôs recebem uma data inválida. Recomenda-se manter dois campos no modelo: `date` (ISO, cru) e `dateLabel` (formatado para exibição).
@@ -166,8 +166,7 @@ Estas são sugestões opcionais, alinhadas ao tom jurídico:
 
 Ordenados por retorno imediato, todos de baixo esforço e baixo risco:
 
-1. **Ordenar artigos por data** (`&order=date.desc`) — §1.3
-2. **Data ISO no SEO** (separar `date` cru de `dateLabel`) — §1.4
+1. **Data ISO no SEO** (expor `published_at`/`updated_at` na view; separar `date` cru de `dateLabel`) — §1.4 e [`BLOG-SEO.md`](./BLOG-SEO.md)
 3. **Campo `redirect` no formulário** → leva à `/sucesso` da marca — §3.6
 4. **Corrigir "Comartilhar" → "Compartilhar"** — §3.10
 5. **Navegação âncora com `routerLink`+`fragment`** — §3.1
