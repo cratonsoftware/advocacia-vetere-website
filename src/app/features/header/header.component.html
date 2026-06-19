@@ -1,6 +1,6 @@
 <header class="bg-n0 fixed top-0 right-0 left-0 z-50 shadow-md transition-all duration-300">
 	<nav class="mx-auto flex h-19 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-		<a href="#" class="flex items-center transition-opacity hover:opacity-80">
+		<a routerLink="/" class="flex items-center transition-opacity hover:opacity-80">
 			<img src="/assets/logo/mfv-logo-ico-esc.png" alt="Ícone Balança Direito" class="h-17 w-auto" />
 
 			<div class="text-n4 font- ml-2 inline-flex shrink-0 flex-col items-center" style="-webkit-text-stroke: 0.2px currentColor">
@@ -17,12 +17,12 @@
 		</a>
 
 		<div class="text-n3 hidden items-center space-x-6 lg:flex">
-			<a href="#" class="hover:text-destaque-m font-medium transition-colors"> Início </a>
-			<a href="#sobre" class="hover:text-destaque-m font-medium transition-colors"> Sobre Mim </a>
-			<a href="#areas" class="hover:text-destaque-m font-medium transition-colors"> Áreas de Atuação </a>
+			<a routerLink="/" fragment="home" class="hover:text-destaque-m font-medium transition-colors"> Início </a>
+			<a routerLink="/" fragment="sobre" class="hover:text-destaque-m font-medium transition-colors"> Sobre Mim </a>
+			<a routerLink="/" fragment="areas" class="hover:text-destaque-m font-medium transition-colors"> Áreas de Atuação </a>
 			<a routerLink="/blog" class="hover:text-destaque-m font-medium transition-colors"> Blog </a>
-			<a href="#avaliacoes" class="hover:text-destaque-m font-medium transition-colors"> Avaliações </a>
-			<a href="#contato" class="hover:text-destaque-m font-medium transition-colors"> Contato </a>
+			<a routerLink="/" fragment="avaliacoes" class="hover:text-destaque-m font-medium transition-colors"> Avaliações </a>
+			<a routerLink="/" fragment="contato" class="hover:text-destaque-m font-medium transition-colors"> Contato </a>
 		</div>
 
 		<button type="button" aria-label="Abrir menu" class="text-n4 hover:bg-n2 hover:text-n1 cursor-pointer rounded-md p-2 transition-colors lg:hidden" (click)="toggleMenu()">
@@ -35,12 +35,12 @@
 	@if (isMenuOpen()) {
 		<div class="bg-n4 border-n3/20 absolute top-19 left-0 w-full border-t shadow-xl lg:hidden">
 			<div class="flex flex-col space-y-4 p-6">
-				<a (click)="toggleMenu()" href="#home" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Início </a>
-				<a (click)="toggleMenu()" href="#sobre" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Sobre Mim </a>
-				<a (click)="toggleMenu()" href="#areas" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Áreas de Atuação </a>
+				<a (click)="toggleMenu()" routerLink="/" fragment="home" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Início </a>
+				<a (click)="toggleMenu()" routerLink="/" fragment="sobre" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Sobre Mim </a>
+				<a (click)="toggleMenu()" routerLink="/" fragment="areas" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Áreas de Atuação </a>
 				<a (click)="toggleMenu()" routerLink="/blog" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Blog </a>
-				<a (click)="toggleMenu()" href="#avaliacoes" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Avaliações </a>
-				<a (click)="toggleMenu()" href="#contato" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Contato </a>
+				<a (click)="toggleMenu()" routerLink="/" fragment="avaliacoes" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Avaliações </a>
+				<a (click)="toggleMenu()" routerLink="/" fragment="contato" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Contato </a>
 			</div>
 		</div>
 	}

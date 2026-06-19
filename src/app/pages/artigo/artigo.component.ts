@@ -36,7 +36,7 @@ export class ArtigoComponent implements OnInit {
 						slug: `blog/${data.slug}`,
 						type: 'article',
 						author: 'Dra. Maria Fernanda Vetere',
-						publishedDate: data.date,
+						publishedDate: data.dateIso,
 					});
 				}
 			});

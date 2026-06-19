@@ -57,6 +57,8 @@ export class BlogService {
 
 	private formatDate(article: Artigo): Artigo {
 		const dataObj = new Date(article.date);
+		// Preservar a data ISO antes de formatar — necessário para meta tags e JSON-LD
+		article.dateIso = article.date.split('T')[0];
 		const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long', year: 'numeric' };
 		article.date = dataObj.toLocaleDateString('pt-BR', options);
 		article.date = article.date.replace(/ de [a-z]/g, (match) => match.toUpperCase());

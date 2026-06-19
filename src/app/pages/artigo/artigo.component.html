@@ -33,7 +33,7 @@
 			@if (article.coverImage) {
 				<div class="mb-20">
 					<div class="border-n2/20 relative h-[40vh] w-full overflow-hidden border shadow-sm">
-						<img [src]="article.coverImage" [alt]="article.title" class="aspect-square! h-auto w-full object-cover grayscale-15 transition-transform duration-1000 hover:scale-105 hover:grayscale-0" />
+						<img [src]="article.coverImage" [alt]="article.title" loading="lazy" class="aspect-square! h-auto w-full object-cover grayscale-15 transition-transform duration-1000 hover:scale-105 hover:grayscale-0" />
 					</div>
 				</div>
 			}
@@ -53,7 +53,7 @@
 					</div>
 
 					<div class="flex items-center gap-4">
-						<span class="text-n3/70 text-[9px] font-bold tracking-[0.2em] uppercase">Comartilhar:</span>
+						<span class="text-n3/70 text-[9px] font-bold tracking-[0.2em] uppercase">Compartilhar:</span>
 						<a
 							[href]="'https://api.whatsapp.com/send?text=' + article.title + ' - https://www.mfernandavetere.adv.br/blog/' + article.slug"
 							target="_blank"
