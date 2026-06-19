@@ -40,7 +40,7 @@ O servidor Express em `src/server.ts` tem responsabilidade mínima: servir os es
 | ------------- | ----------- | ------------------------------------------ |
 | `/`           | `Prerender` | Conteúdo estático — máxima performance/SEO |
 | `/blog`       | `Prerender` | Listagem pré-renderizada                   |
-| `/blog/:slug` | `Server`    | SEO dinâmico por artigo (meta tags únicas) |
+| `/blog/:slug` | `Prerender` | Pré-renderizado por slug (`getPrerenderParams`) — HTML estático, SEO próprio, indexável |
 | `/sucesso`    | `Prerender` | Página simples, `noIndex`                  |
 | `/404`        | `Prerender` | Erro estático, `noIndex`                   |
 | `/**`         | `Server`    | Fallback                                   |
@@ -197,6 +197,6 @@ scripts/
 
 - **Home (`/`)**: prerender de `HeroComponent` … `MapaComponent`. `BlogPreviewComponent` e `ReviewsComponent` buscam Supabase durante o render.
 - **Blog (`/blog`)**: prerender com `getAllArticles()` + `getCategories()`; filtro, busca e paginação são **client-side**.
-- **Artigo (`/blog/:slug`)**: `Server` render; `getArticleBySlug()` define meta tags dinâmicas e renderiza Markdown.
+- **Artigo (`/blog/:slug`)**: `Prerender` com `getPrerenderParams()` (lê os slugs publicados no Supabase no build); `getArticleBySlug()` define meta tags próprias (canonical self, OG, JSON-LD) e renderiza Markdown. Rebuild ao publicar via Vercel Deploy Hook + webhook do Supabase.
 - **Contato**: `<form>` envia direto ao Web3Forms (POST). Página `/sucesso` existe para o pós-envio (ver `MELHORIAS.md` §3.6 sobre o campo `redirect`).
 - **Sitemap**: requisição a `/sitemap.xml` → rewrite → `api/sitemap` → Supabase → XML com cache `s-maxage=86400`.

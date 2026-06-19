@@ -323,6 +323,8 @@ O banco está **bem modelado e seguro** para o estágio atual (RLS correto, view
 ## 10. Diagnóstico crítico — artigo herdando o SEO da Home (P0)
 
 > **Severidade: P0 (crítico).** Identificado a partir de um crawl Ahrefs do site em produção (arquivos `overview.csv`, `duplicates.csv`, `outlinks_internal_links.csv`) e confirmado por requisição direta ao servidor em 2026-06-19. Este é o problema de SEO mais grave do projeto hoje: **o único artigo publicado não é indexável e duplica a Home.**
+>
+> **✅ RESOLVIDO na S1 (2026-06-19)** — `/blog/:slug` passou a ser pré-renderizado por slug (Opção A). Detalhes da correção em §10.6.
 
 ### 10.1 Sintoma (evidência)
 
@@ -410,6 +412,24 @@ Se for desejável publicação **instantânea** (sem rebuild), é preciso garant
 ### 10.5 Prioridade
 
 Este item é **P0 e antecede** as demais melhorias de SEO de artigo: enriquecer schema, autor e data (§4–§7) só tem efeito depois que a página do artigo **existir com SEO próprio e for indexável**. Registrado também no topo do [`MELHORIAS.md`](./MELHORIAS.md).
+
+---
+
+### 10.6 Resolução aplicada (S1 — 2026-06-19)
+
+**Status: ✅ Corrigido na S1** (branch `fix/article-prerender-seo`). Adotada a **Opção A** (pré-renderização).
+
+- `app.routes.server.ts`: `/blog/:slug` passou de `RenderMode.Server` para **`RenderMode.Prerender`** com `getPrerenderParams()`, que busca os slugs publicados na view `published_articles` do Supabase **em tempo de build** (credenciais via `environment`, geradas pelo hook `set-env.cjs`). Em falha de rede/Supabase no build, registra o erro e retorna `[]` para **não** quebrar o deploy.
+- Cada artigo passa a ser um `blog/<slug>/index.html` estático com **SEO próprio** (canonical self, `title`/`h1`, OG, JSON-LD `BlogPosting`), eliminando a dependência do roteamento da função SSR que causava o fallback para a Home.
+- `api/sitemap.ts` permanece válido (já lista os slugs).
+
+**Rebuild ao publicar — a configurar no painel (fora do repositório, pois a URL é um segredo):**
+
+1. **Vercel → Project → Settings → Git → Deploy Hooks:** criar um hook (ex.: nome `supabase-publish`, branch `main`) e copiar a URL gerada (contém token secreto — **não** commitar).
+2. **Supabase → Database → Webhooks → Create a new hook:** tabela `articles`, eventos `INSERT` e `UPDATE`, tipo HTTP `POST`, URL = a do Deploy Hook. _(Alternativa: trigger SQL com `net.http_post` lendo a URL do **Vault**, nunca hardcoded.)_
+3. Resultado: publicar/editar um artigo dispara o rebuild (~1–2 min) e gera o novo `index.html` estático. Publicação não é instantânea — aceitável para este caso (Opção B seria necessária para publicação instantânea).
+
+> Validação pós-deploy: ver §10.4 (curl com canonical self + título/H1/corpo; GSC Inspeção de URL; Rich Results; recrawl Ahrefs).
 
 ---
 

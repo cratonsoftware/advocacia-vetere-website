@@ -79,10 +79,12 @@ scripts/       → hooks de pré-build
 
 ## Render modes (SSR)
 
-| Rota                             | Modo      |
-| -------------------------------- | --------- |
-| `/`, `/blog`, `/sucesso`, `/404` | Prerender |
-| `/blog/:slug`, `/**`             | Server    |
+| Rota                                            | Modo      |
+| ----------------------------------------------- | --------- |
+| `/`, `/blog`, `/blog/:slug`, `/sucesso`, `/404` | Prerender |
+| `/**`                                           | Server    |
+
+> Cada artigo (`/blog/:slug`) é pré-renderizado como HTML estático: o `getPrerenderParams()` em `app.routes.server.ts` lê os slugs publicados no Supabase em tempo de build, garantindo SEO próprio (canonical self, title/H1, OG, JSON-LD) e indexabilidade. Ao publicar/editar um artigo, um **Vercel Deploy Hook** acionado por um **webhook do Supabase** dispara o rebuild (~1–2 min). Ver `BLOG-SEO.md` §10.
 
 ---
 

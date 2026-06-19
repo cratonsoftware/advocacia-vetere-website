@@ -67,10 +67,16 @@ O servidor Express (`src/server.ts`) é responsável exclusivamente por:
 | ------------- | ----------- | -------------------------------------------------------- |
 | `/`           | `Prerender` | Conteúdo estático — máxima performance e SEO             |
 | `/blog`       | `Prerender` | Listagem de artigos pré-renderizada com conteúdo real    |
-| `/blog/:slug` | `Server`    | SEO dinâmico por artigo — cada slug tem meta tags únicas |
+| `/blog/:slug` | `Prerender` | Pré-renderizado por slug via `getPrerenderParams()` (lê os slugs publicados no Supabase no build) — HTML estático com SEO próprio e indexável |
 | `/sucesso`    | `Prerender` | Página simples sem dados dinâmicos                       |
 | `/404`        | `Prerender` | Página de erro estática                                  |
 | `/**`         | `Server`    | Fallback para rotas não mapeadas                         |
+
+### Pré-renderização de artigos (`/blog/:slug`)
+
+Cada artigo é **pré-renderizado** como `blog/<slug>/index.html` estático. O `getPrerenderParams()` em `app.routes.server.ts` busca os slugs publicados na view `published_articles` do Supabase **em tempo de build** (credenciais via `environment`, geradas por `set-env.cjs`). Isso garante SEO próprio por artigo (canonical self, `title`/`h1`, Open Graph, JSON-LD `BlogPosting`) e elimina a dependência do roteamento da função SSR.
+
+Em falha de rede/Supabase durante o build, `getPrerenderParams()` registra o erro e retorna `[]` — o build não quebra. Para publicar/editar sem deploy manual, configurar um **Vercel Deploy Hook** acionado por um **webhook do Supabase** (`INSERT`/`UPDATE` em `articles`), disparando rebuild (~1–2 min). A URL do Deploy Hook é segredo e **não** entra no repositório. Histórico e passo a passo: `BLOG-SEO.md` §10.
 
 ### Domínios permitidos (security.allowedHosts)
 

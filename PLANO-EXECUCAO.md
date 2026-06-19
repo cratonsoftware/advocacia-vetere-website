@@ -92,7 +92,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 | Sessão              | Status | Data | Commit/PR | Notas                                       |
 | ------------------- | ------ | ---- | --------- | ------------------------------------------- |
-| S1 — P0 Indexação   | ⬜     | —    | —         | Prioridade máxima; fazer primeiro e sozinha |
+| S1 — P0 Indexação   | ✅     | 2026-06-19 | ff0a688  | Opção A: `/blog/:slug` Prerender + `getPrerenderParams`; rebuild ao publicar documentado |
 | S2 — Quick wins     | ⬜     | —    | —         |                                             |
 | S3 — Banco E-E-A-T  | ⬜     | —    | —         | Migração aditiva (não destrutiva)           |
 | S4 — Schema & SERP  | ⬜     | —    | —         | Depende de S3                               |
@@ -105,10 +105,10 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 **S1 — P0 Indexação do artigo** _(detalhes: `BLOG-SEO.md` §10)_
 
-- ⬜ `/blog/:slug` → `Prerender` com `getPrerenderParams()` lendo slugs do Supabase
-- ⬜ Vercel Deploy Hook + webhook do Supabase (rebuild ao publicar) — _ou_ garantir função SSR dinâmica (Opção B)
-- ⬜ Validar: HTML cru com canonical self, title/H1 do artigo, conteúdo presente
-- ⬜ Validar: GSC (Inspeção de URL) + Rich Results Test + recrawl Ahrefs
+- ✅ `/blog/:slug` → `Prerender` com `getPrerenderParams()` lendo slugs do Supabase _(2026-06-19, `ff0a688`)_
+- ✅ Rebuild ao publicar documentado (Deploy Hook + webhook) — `BLOG-SEO.md` §10.6 _(criação do hook/webhook no painel = ação do usuário, conforme combinado)_
+- 🔄 Validar: HTML cru com canonical self, title/H1 do artigo, conteúdo presente _(no preview da Vercel — build local indisponível no ambiente: node_modules sem binários Linux + rede bloqueada)_
+- ⬜ Validar: GSC (Inspeção de URL) + Rich Results Test + recrawl Ahrefs _(pós-deploy em produção — ação do usuário)_
 
 **S2 — Quick wins** _(detalhes: `MELHORIAS.md` §7)_
 
