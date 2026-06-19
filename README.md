@@ -10,18 +10,18 @@ Desenvolvido e mantido pela **[CRATON Software](https://craton.com.br)**.
 
 ## Stack
 
-| Camada | Tecnologia |
-|---|---|
-| Framework | Angular 21 (SSR — `@angular/ssr` + Express) |
-| Estilização | TailwindCSS 4 (`@theme` em CSS) + SCSS |
-| Ícones | Angular Material (`MatIcon`, SVGs próprios) |
+| Camada                  | Tecnologia                                       |
+| ----------------------- | ------------------------------------------------ |
+| Framework               | Angular 21 (SSR — `@angular/ssr` + Express)      |
+| Estilização             | TailwindCSS 4 (`@theme` em CSS) + SCSS           |
+| Ícones                  | Angular Material (`MatIcon`, SVGs próprios)      |
 | CMS (blog + avaliações) | Supabase via REST API (PostgREST + `HttpClient`) |
-| Markdown | `ngx-markdown` + `@tailwindcss/typography` |
-| Máscara de formulário | `ngx-mask` |
-| Envio de formulário | Web3Forms |
-| Sitemap | Vercel Serverless Function (`xmlbuilder2`) |
-| Métricas | `@vercel/analytics` + `@vercel/speed-insights` |
-| Hospedagem | Vercel (deploy automático na branch `main`) |
+| Markdown                | `ngx-markdown` + `@tailwindcss/typography`       |
+| Máscara de formulário   | `ngx-mask`                                       |
+| Envio de formulário     | Web3Forms                                        |
+| Sitemap                 | Vercel Serverless Function (`xmlbuilder2`)       |
+| Métricas                | `@vercel/analytics` + `@vercel/speed-insights`   |
+| Hospedagem              | Vercel (deploy automático na branch `main`)      |
 
 A arquitetura completa está documentada em **[`ARCHITECTURE.md`](./ARCHITECTURE.md)**. O contexto operacional e padrões de código estão em **[`CLAUDE.md`](./CLAUDE.md)**. Melhorias planejadas em **[`MELHORIAS.md`](./MELHORIAS.md)**.
 
@@ -79,10 +79,10 @@ scripts/       → hooks de pré-build
 
 ## Render modes (SSR)
 
-| Rota | Modo |
-|---|---|
+| Rota                             | Modo      |
+| -------------------------------- | --------- |
 | `/`, `/blog`, `/sucesso`, `/404` | Prerender |
-| `/blog/:slug`, `/**` | Server |
+| `/blog/:slug`, `/**`             | Server    |
 
 ---
 

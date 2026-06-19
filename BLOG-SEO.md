@@ -2,8 +2,7 @@
 
 > Levantamento técnico que documenta o banco Supabase do projeto **advocacia-vetere-website**, correlaciona sua estrutura com o site Angular e com o tratamento atual de SEO, e define o padrão-alvo para um blog jurídico com SEO **exemplar** — incluindo as mudanças de busca de 2025–2026 (E-E-A-T/YMYL, AI Overviews, GEO/AEO, Core Web Vitals e `llms.txt`).
 >
-> Mantido pela CRATON Software. Complementa [`ARCHITECTURE.md`](./ARCHITECTURE.md), [`CLAUDE.md`](./CLAUDE.md) e [`MELHORIAS.md`](./MELHORIAS.md).
-> Última revisão: 2026-06-19 · Projeto Supabase: `advocacia-vetere-website` (ref `ckcfiqluyoiaqjdjgfbl`, região `sa-east-1`, Postgres 17).
+> Mantido pela CRATON Software. Complementa [`ARCHITECTURE.md`](./ARCHITECTURE.md), [`CLAUDE.md`](./CLAUDE.md) e [`MELHORIAS.md`](./MELHORIAS.md). Última revisão: 2026-06-19 · Projeto Supabase: `advocacia-vetere-website` (ref `ckcfiqluyoiaqjdjgfbl`, região `sa-east-1`, Postgres 17).
 >
 > **Escopo:** documentação e planejamento. Nada aqui altera código ou banco — as migrações são propostas, não executadas.
 
@@ -15,41 +14,41 @@ O schema `public` tem **3 tabelas** e **1 view**. O RLS está ativo nas três ta
 
 ### 1.1 Tabela `articles`
 
-| Coluna | Tipo | Notas |
-|---|---|---|
-| `id` | `uuid` PK | `gen_random_uuid()` |
-| `category_id` | `uuid` FK → `categories.id` | sem índice próprio |
-| `title` | `varchar` | título (usado como `<title>` **e** `<h1>`) |
-| `slug` | `varchar` **unique** | índice `articles_slug_key` |
-| `excerpt` | `text` | resumo (usado no card **e** como meta description **e** como OG description) |
-| `content` | `text` | corpo em Markdown (amostra: ~9 KB) |
-| `cover_image` | `varchar` | **hoje aponta para URL externa (istockphoto)** — ver §5 |
-| `read_time_minutes` | `int` | default `3` |
-| `is_published` | `bool` | default `false` |
-| `published_at` | `timestamptz` | data de publicação (nullable) |
-| `created_at` | `timestamptz` | default `now()` |
-| `updated_at` | `timestamptz` | default `now()` — **existe, mas não é exposto à aplicação** |
+| Coluna              | Tipo                        | Notas                                                                        |
+| ------------------- | --------------------------- | ---------------------------------------------------------------------------- |
+| `id`                | `uuid` PK                   | `gen_random_uuid()`                                                          |
+| `category_id`       | `uuid` FK → `categories.id` | sem índice próprio                                                           |
+| `title`             | `varchar`                   | título (usado como `<title>` **e** `<h1>`)                                   |
+| `slug`              | `varchar` **unique**        | índice `articles_slug_key`                                                   |
+| `excerpt`           | `text`                      | resumo (usado no card **e** como meta description **e** como OG description) |
+| `content`           | `text`                      | corpo em Markdown (amostra: ~9 KB)                                           |
+| `cover_image`       | `varchar`                   | **hoje aponta para URL externa (istockphoto)** — ver §5                      |
+| `read_time_minutes` | `int`                       | default `3`                                                                  |
+| `is_published`      | `bool`                      | default `false`                                                              |
+| `published_at`      | `timestamptz`               | data de publicação (nullable)                                                |
+| `created_at`        | `timestamptz`               | default `now()`                                                              |
+| `updated_at`        | `timestamptz`               | default `now()` — **existe, mas não é exposto à aplicação**                  |
 
 ### 1.2 Tabela `categories`
 
-| Coluna | Tipo | Notas |
-|---|---|---|
-| `id` | `uuid` PK | |
-| `name` | `varchar` **unique** | hoje há 1 registro: **"Familia"** (sem acento — ver §5) |
-| `slug` | `varchar` **unique** | ex.: `familia` |
-| `created_at` / `updated_at` | `timestamptz` | |
+| Coluna                      | Tipo                 | Notas                                                   |
+| --------------------------- | -------------------- | ------------------------------------------------------- |
+| `id`                        | `uuid` PK            |                                                         |
+| `name`                      | `varchar` **unique** | hoje há 1 registro: **"Familia"** (sem acento — ver §5) |
+| `slug`                      | `varchar` **unique** | ex.: `familia`                                          |
+| `created_at` / `updated_at` | `timestamptz`        |                                                         |
 
 ### 1.3 Tabela `google_reviews`
 
-| Coluna | Tipo | Notas |
-|---|---|---|
-| `id` | `uuid` PK | |
-| `author_name` | `varchar` | |
-| `rating` | `int` | |
-| `text` | `text` | |
-| `profile_photo_url` | `text` | |
-| `relative_time_description` | `varchar` | |
-| `created_at` | `timestamptz` | 5 registros |
+| Coluna                      | Tipo          | Notas       |
+| --------------------------- | ------------- | ----------- |
+| `id`                        | `uuid` PK     |             |
+| `author_name`               | `varchar`     |             |
+| `rating`                    | `int`         |             |
+| `text`                      | `text`        |             |
+| `profile_photo_url`         | `text`        |             |
+| `relative_time_description` | `varchar`     |             |
+| `created_at`                | `timestamptz` | 5 registros |
 
 ### 1.4 View `published_articles` (a que o site realmente consome)
 
@@ -69,7 +68,7 @@ Observações relevantes:
 
 - A view **já entrega os campos em camelCase** exatamente como o modelo `Artigo` do Angular espera (`coverImage`, `readTime`).
 - A view **já ordena por `published_at DESC`** e **já filtra** publicados com data ≤ agora (agendamento de publicação funciona).
-- **Correção a um apontamento anterior:** o item §1.3 do `MELHORIAS.md` ("artigos sem `order`") estava **incorreto** — a ordenação existe na view. `getLatestArticles(3)` retorna de fato os 3 mais recentes. *(Corrigido também no `MELHORIAS.md`.)*
+- **Correção a um apontamento anterior:** o item §1.3 do `MELHORIAS.md` ("artigos sem `order`") estava **incorreto** — a ordenação existe na view. `getLatestArticles(3)` retorna de fato os 3 mais recentes. _(Corrigido também no `MELHORIAS.md`.)_
 - A view **não expõe**: `updated_at` (→ impossível gerar `dateModified`), `category.slug`, nem qualquer campo de SEO dedicado. Isso é a raiz de boa parte das lacunas da §5.
 
 ### 1.5 RLS e índices
@@ -83,19 +82,19 @@ Observações relevantes:
 
 Fluxo de dados (detalhado em `ARCHITECTURE.md`): **view `published_articles` → Supabase REST → `BlogService` (HttpClient) → componentes → `SeoService`**.
 
-| Campo da view | Modelo `Artigo` (Angular) | Onde é usado | Papel de SEO |
-|---|---|---|---|
-| `title` | `title` | `<h1>`, `<title>`, `og:title`, JSON-LD `headline` | Título / headline |
-| `excerpt` | `excerpt` | card, `description`, `og:description`, JSON-LD `description` | Meta description (papel acumulado) |
-| `content` | `content` | `<markdown>` no artigo | Corpo (palavras, headings, links) |
-| `coverImage` | `coverImage` | `<img>`, `og:image`, JSON-LD `image` | Imagem social/artigo |
-| `readTime` | `readTime` | exibição | — |
-| `category` | `category` | badge, "Especialista em {categoria}" | `articleSection` (não usado) |
-| `date` (= `published_at`) | `date` | exibição **e** `publishedDate` no SEO | `datePublished` / `article:published_time` |
+| Campo da view             | Modelo `Artigo` (Angular) | Onde é usado                                                 | Papel de SEO                               |
+| ------------------------- | ------------------------- | ------------------------------------------------------------ | ------------------------------------------ |
+| `title`                   | `title`                   | `<h1>`, `<title>`, `og:title`, JSON-LD `headline`            | Título / headline                          |
+| `excerpt`                 | `excerpt`                 | card, `description`, `og:description`, JSON-LD `description` | Meta description (papel acumulado)         |
+| `content`                 | `content`                 | `<markdown>` no artigo                                       | Corpo (palavras, headings, links)          |
+| `coverImage`              | `coverImage`              | `<img>`, `og:image`, JSON-LD `image`                         | Imagem social/artigo                       |
+| `readTime`                | `readTime`                | exibição                                                     | —                                          |
+| `category`                | `category`                | badge, "Especialista em {categoria}"                         | `articleSection` (não usado)               |
+| `date` (= `published_at`) | `date`                    | exibição **e** `publishedDate` no SEO                        | `datePublished` / `article:published_time` |
 
 **Pontos de atrito identificados na correlação:**
 
-1. **Data quebrada para robôs.** `BlogService.formatDate()` sobrescreve `date` com a string pt-BR (`"18 de Junho de 2026"`) e esse valor é passado como `publishedDate` ao `SeoService`, que o injeta em `article:published_time` e no `datePublished` do JSON-LD — campos que exigem **ISO 8601**. O banco tem `published_at` como `timestamptz` válido; o problema é só de transporte/formatação. *(= `MELHORIAS.md` §1.4, confirmado.)*
+1. **Data quebrada para robôs.** `BlogService.formatDate()` sobrescreve `date` com a string pt-BR (`"18 de Junho de 2026"`) e esse valor é passado como `publishedDate` ao `SeoService`, que o injeta em `article:published_time` e no `datePublished` do JSON-LD — campos que exigem **ISO 8601**. O banco tem `published_at` como `timestamptz` válido; o problema é só de transporte/formatação. _(= `MELHORIAS.md` §1.4, confirmado.)_
 2. **`dateModified` impossível hoje.** `updated_at` existe na tabela mas não é exposto na view → o JSON-LD nunca tem `dateModified`, sinal forte de frescor para conteúdo YMYL.
 3. **Papéis acumulados.** `title` serve a `<title>` e `<h1>`; `excerpt` serve a card, meta description e OG. Sem campos dedicados, é impossível otimizar cada um (comprimento, intenção, CTA) — ver §5/§6.
 4. **Autor inexistente no dado.** O autor é string fixa no componente (`'Dra. Maria Fernanda Vetere'`). Não há entidade de autor com credenciais (OAB), bio e `sameAs` — o sinal de E-E-A-T mais importante para conteúdo jurídico (§4.1).
@@ -124,7 +123,7 @@ As seções 4–7 elevam essa base ao patamar "exemplar".
 
 ### 4.1 E-E-A-T e YMYL — crítico para Direito
 
-Todo site de advocacia é **YMYL** (*Your Money or Your Life*) por padrão — Google aplica o escrutínio máximo de qualidade. O *core update* de dez/2025 atingiu duramente sites YMYL, e a atualização das *Quality Rater Guidelines* (set/2025) **endureceu a exigência de atribuição de autoria em páginas jurídicas**.
+Todo site de advocacia é **YMYL** (_Your Money or Your Life_) por padrão — Google aplica o escrutínio máximo de qualidade. O _core update_ de dez/2025 atingiu duramente sites YMYL, e a atualização das _Quality Rater Guidelines_ (set/2025) **endureceu a exigência de atribuição de autoria em páginas jurídicas**.
 
 A correção de maior impacto: **atribuir todo conteúdo a um advogado nomeado e credenciado, com página de bio vinculada e marcação em schema**. Um artigo assinado por advogada com **número de OAB verificável** e experiência real tem peso muito maior que o mesmo texto anônimo. As três falhas de E-E-A-T mais comuns — conteúdo anônimo, páginas-modelo e informação jurídica desatualizada — são todas corrigíveis. **Trust** é o sinal central do E-E-A-T.
 
@@ -148,11 +147,11 @@ Aplicação: artigos com **resumo/resposta direta no início (TL;DR)**, headings
 
 Confirmados como fator de ranqueamento (page experience). Limiares "bons" no 75º percentil:
 
-| Métrica | Mede | Limiar "bom" (2026) |
-|---|---|---|
-| **LCP** | carregamento | **< 2,0 s** *(apertado de 2,5 s no core update de mar/2026)* |
-| **INP** | responsividade | **< 200 ms** *(métrica mais reprovada — 43% dos sites falham)* |
-| **CLS** | estabilidade visual | **< 0,1** |
+| Métrica | Mede                | Limiar "bom" (2026)                                            |
+| ------- | ------------------- | -------------------------------------------------------------- |
+| **LCP** | carregamento        | **< 2,0 s** _(apertado de 2,5 s no core update de mar/2026)_   |
+| **INP** | responsividade      | **< 200 ms** _(métrica mais reprovada — 43% dos sites falham)_ |
+| **CLS** | estabilidade visual | **< 0,1**                                                      |
 
 Aplicação: priorizar o LCP do hero e da capa do artigo (preload/`fetchpriority`), reservar espaço de imagem (CLS), e manter o JS leve (INP — onde `OnPush`/zoneless da `MELHORIAS.md` ajudam).
 
@@ -166,21 +165,21 @@ Arquivo Markdown na raiz do domínio que **curadoria** o conteúdo mais valioso 
 
 O que **falta no dado** hoje para sustentar tudo da §4 (priorizado por impacto):
 
-| # | Lacuna | Impacto | Por quê |
-|---|---|---|---|
-| G1 | **Entidade de autor** (tabela `authors`) com bio, OAB, `sameAs` | Alto | Sinal #1 de E-E-A-T/YMYL para Direito (§4.1) |
-| G2 | **`updated_at` não exposto na view** | Alto | Sem `dateModified` — perde frescor (§4.2) |
-| G3 | **Data ISO não chega ao SEO** (formatação destrói o ISO) | Alto | `datePublished` inválido para robôs (§2.1) |
-| G4 | **`meta_title` e `meta_description` dedicados** | Alto | Hoje `title`/`excerpt` acumulam papéis; impossível otimizar SERP/CTR |
-| G5 | **`cover_image` é hotlink externo (istockphoto, 612px, com parâmetros de watermark)** | Alto | Risco de licença, LCP ruim, sem controle de 1200×630 e sem `alt` |
-| G6 | **`tags`/`keywords` por artigo** | Médio | Autoridade tópica, linkagem interna, `keywords` no schema |
-| G7 | **Páginas de categoria** (rota + uso de `category.slug`) | Médio | Hubs de topical authority; hoje filtro é client-side |
-| G8 | **Campos para FAQ/resposta direta** (TL;DR, FAQ) | Médio | GEO/AEO e rich result `FAQPage` (§4.3) |
-| G9 | **`cover_image_alt`** | Médio | Acessibilidade + SEO de imagem |
-| G10 | **`canonical_url` / `noindex` por artigo** | Baixo | Controle fino (conteúdo duplicado, despublicar) |
-| G11 | **`locale`/`inLanguage`** | Baixo | Multi-idioma futuro; hoje assumir `pt-BR` |
-| G12 | **Categoria "Familia" sem acento** | Baixo | Qualidade de dado / exibição |
-| G13 | **Índices em `category_id` e `published_at`** | Baixo (escala) | Performance de filtro/ordenção ao crescer |
+| #   | Lacuna                                                                                | Impacto        | Por quê                                                              |
+| --- | ------------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------- |
+| G1  | **Entidade de autor** (tabela `authors`) com bio, OAB, `sameAs`                       | Alto           | Sinal #1 de E-E-A-T/YMYL para Direito (§4.1)                         |
+| G2  | **`updated_at` não exposto na view**                                                  | Alto           | Sem `dateModified` — perde frescor (§4.2)                            |
+| G3  | **Data ISO não chega ao SEO** (formatação destrói o ISO)                              | Alto           | `datePublished` inválido para robôs (§2.1)                           |
+| G4  | **`meta_title` e `meta_description` dedicados**                                       | Alto           | Hoje `title`/`excerpt` acumulam papéis; impossível otimizar SERP/CTR |
+| G5  | **`cover_image` é hotlink externo (istockphoto, 612px, com parâmetros de watermark)** | Alto           | Risco de licença, LCP ruim, sem controle de 1200×630 e sem `alt`     |
+| G6  | **`tags`/`keywords` por artigo**                                                      | Médio          | Autoridade tópica, linkagem interna, `keywords` no schema            |
+| G7  | **Páginas de categoria** (rota + uso de `category.slug`)                              | Médio          | Hubs de topical authority; hoje filtro é client-side                 |
+| G8  | **Campos para FAQ/resposta direta** (TL;DR, FAQ)                                      | Médio          | GEO/AEO e rich result `FAQPage` (§4.3)                               |
+| G9  | **`cover_image_alt`**                                                                 | Médio          | Acessibilidade + SEO de imagem                                       |
+| G10 | **`canonical_url` / `noindex` por artigo**                                            | Baixo          | Controle fino (conteúdo duplicado, despublicar)                      |
+| G11 | **`locale`/`inLanguage`**                                                             | Baixo          | Multi-idioma futuro; hoje assumir `pt-BR`                            |
+| G12 | **Categoria "Familia" sem acento**                                                    | Baixo          | Qualidade de dado / exibição                                         |
+| G13 | **Índices em `category_id` e `published_at`**                                         | Baixo (escala) | Performance de filtro/ordenção ao crescer                            |
 
 ---
 
@@ -267,30 +266,31 @@ Estado atual (`BlogPosting`) vs. alvo. O `SeoService` passaria a montar:
 
 ```jsonc
 {
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.mfernandavetere.adv.br/blog/<slug>" },
-  "headline": "<title> (≤110 chars)",
-  "description": "<metaDescription>",
-  "image": { "@type": "ImageObject", "url": "<coverImage 1200x630>", "width": 1200, "height": 630 },
-  "datePublished": "<publishedAt ISO>",        // G3
-  "dateModified": "<updatedAt ISO>",           // G2
-  "inLanguage": "pt-BR",
-  "articleSection": "<category>",
-  "keywords": "<tags join>",
-  "author": {                                   // G1 / E-E-A-T
-    "@type": "Person",
-    "name": "Dra. Maria Fernanda Vetere",
-    "jobTitle": "Advogada",
-    "identifier": "OAB/SP 527.527",
-    "url": "https://www.mfernandavetere.adv.br/autor/maria-fernanda-vetere",
-    "sameAs": ["https://instagram.com/mfernandavetere", "..."]
-  },
-  "publisher": {
-    "@type": "LegalService",
-    "name": "Dra. Maria Fernanda Vetere | Advocacia & Consultoria",
-    "logo": { "@type": "ImageObject", "url": "https://www.mfernandavetere.adv.br/assets/cards/card-home.png" }
-  }
+	"@context": "https://schema.org",
+	"@type": "BlogPosting",
+	"mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.mfernandavetere.adv.br/blog/<slug>" },
+	"headline": "<title> (≤110 chars)",
+	"description": "<metaDescription>",
+	"image": { "@type": "ImageObject", "url": "<coverImage 1200x630>", "width": 1200, "height": 630 },
+	"datePublished": "<publishedAt ISO>", // G3
+	"dateModified": "<updatedAt ISO>", // G2
+	"inLanguage": "pt-BR",
+	"articleSection": "<category>",
+	"keywords": "<tags join>",
+	"author": {
+		// G1 / E-E-A-T
+		"@type": "Person",
+		"name": "Dra. Maria Fernanda Vetere",
+		"jobTitle": "Advogada",
+		"identifier": "OAB/SP 527.527",
+		"url": "https://www.mfernandavetere.adv.br/autor/maria-fernanda-vetere",
+		"sameAs": ["https://instagram.com/mfernandavetere", "..."],
+	},
+	"publisher": {
+		"@type": "LegalService",
+		"name": "Dra. Maria Fernanda Vetere | Advocacia & Consultoria",
+		"logo": { "@type": "ImageObject", "url": "https://www.mfernandavetere.adv.br/assets/cards/card-home.png" },
+	},
 }
 ```
 
@@ -301,30 +301,115 @@ Acrescentar, em blocos separados, **`BreadcrumbList`** (toda página de artigo) 
 ## 8. Roadmap priorizado
 
 **Fase 1 — Fundação E-E-A-T e dados (Alto impacto)**
+
 1. Expor `published_at` (ISO) e `updated_at` na view; corrigir o transporte da data no front (G2, G3).
 2. Criar `authors` + `author_id`, assinar artigos, criar página `/autor/:slug` e `author` no JSON-LD (G1).
 3. Migrar capas para Storage 1200×630 + `cover_image_alt` (G5, G9).
 
-**Fase 2 — Otimização de SERP e schema (Alto/Médio)**
-4. `meta_title`/`meta_description` dedicados (G4).
-5. Enriquecer JSON-LD do artigo (`dateModified`, `ImageObject`, `inLanguage`, `articleSection`, `keywords`, `mainEntityOfPage`) + `BreadcrumbList` (§7, §4.2).
-6. Enriquecer o `LegalService` da home (telefone, geo, horário, `sameAs`) — já listado em `MELHORIAS.md` §2.1.
+**Fase 2 — Otimização de SERP e schema (Alto/Médio)** 4. `meta_title`/`meta_description` dedicados (G4). 5. Enriquecer JSON-LD do artigo (`dateModified`, `ImageObject`, `inLanguage`, `articleSection`, `keywords`, `mainEntityOfPage`) + `BreadcrumbList` (§7, §4.2). 6. Enriquecer o `LegalService` da home (telefone, geo, horário, `sameAs`) — já listado em `MELHORIAS.md` §2.1.
 
-**Fase 3 — Topical authority e busca generativa (Médio)**
-7. `tags` + páginas de categoria (`/blog/categoria/:slug`) usando `category.slug` (G6, G7).
-8. `tldr` + `faq` por artigo → resposta direta e `FAQPage` (G8, §4.3).
-9. Gerar `/llms.txt` dinâmico a partir da view (§4.5).
+**Fase 3 — Topical authority e busca generativa (Médio)** 7. `tags` + páginas de categoria (`/blog/categoria/:slug`) usando `category.slug` (G6, G7). 8. `tldr` + `faq` por artigo → resposta direta e `FAQPage` (G8, §4.3). 9. Gerar `/llms.txt` dinâmico a partir da view (§4.5).
 
-**Fase 4 — Performance e escala (contínuo)**
-10. Core Web Vitals: LCP < 2,0 s (preload de capa/hero), INP (OnPush/zoneless), CLS (reserva de imagem) — §4.4.
-11. Índices `category_id` e `published_at`; `canonical_url`/`noindex`/`locale` (G10, G11, G13).
-12. Corrigir "Familia" → "Família" (G12).
+**Fase 4 — Performance e escala (contínuo)** 10. Core Web Vitals: LCP < 2,0 s (preload de capa/hero), INP (OnPush/zoneless), CLS (reserva de imagem) — §4.4. 11. Índices `category_id` e `published_at`; `canonical_url`/`noindex`/`locale` (G10, G11, G13). 12. Corrigir "Familia" → "Família" (G12).
 
 ---
 
 ## 9. Resumo executivo
 
 O banco está **bem modelado e seguro** para o estágio atual (RLS correto, view camelCase, ordenação e agendamento prontos), mas foi desenhado para **renderizar cards**, não para **SEO de alto nível**. As lacunas decisivas são três e todas de alto retorno: **(1)** ausência de entidade de autor credenciado — o sinal mais importante para conteúdo jurídico YMYL em 2026; **(2)** `updated_at` e a data ISO não chegam ao schema, enfraquecendo frescor e validade dos dados estruturados; **(3)** campos de SEO acumulam papéis e a capa é um hotlink externo. Resolver a Fase 1 já coloca o blog em outro patamar de confiança aos olhos do Google e dos motores generativos; as Fases 2–4 consolidam autoridade tópica, presença em AI Overviews/citação por LLMs e performance.
+
+---
+
+## 10. Diagnóstico crítico — artigo herdando o SEO da Home (P0)
+
+> **Severidade: P0 (crítico).** Identificado a partir de um crawl Ahrefs do site em produção (arquivos `overview.csv`, `duplicates.csv`, `outlinks_internal_links.csv`) e confirmado por requisição direta ao servidor em 2026-06-19. Este é o problema de SEO mais grave do projeto hoje: **o único artigo publicado não é indexável e duplica a Home.**
+
+### 10.1 Sintoma (evidência)
+
+Para a URL `https://www.mfernandavetere.adv.br/blog/traicao-da-direito-a-indenizacao`:
+
+| Sinal (Ahrefs)        | Valor observado                                                     | Esperado                |
+| --------------------- | ------------------------------------------------------------------- | ----------------------- |
+| HTTP status           | `200`                                                               | `200`                   |
+| **Is indexable page** | **`false`**                                                         | `true`                  |
+| **Canonical URL**     | **`https://www.mfernandavetere.adv.br/`** (a Home)                  | a própria URL do artigo |
+| Is self-canonical     | `false`                                                             | `true`                  |
+| Title                 | título da Home                                                      | título do artigo        |
+| H1                    | "Advocacia Estratégica com Olhar Humanizado." (hero da Home)        | título do artigo        |
+| Open Graph / Twitter  | da Home                                                             | do artigo               |
+| **Content hash**      | **idêntico ao da Home** (`No. of pages having the same content: 2`) | único                   |
+| Is in sitemap         | `true`                                                              | `true`                  |
+
+A **resposta crua do servidor** (sem JavaScript) para a URL do artigo retorna o HTML completo da **Home** (hero, "Sobre", "Áreas", contato, mapa, rodapé), com `canonical` e meta tags da Home. Confirmação direta, não apenas inferência do Ahrefs.
+
+### 10.2 Causa raiz
+
+A rota `/blog/:slug` está declarada como `RenderMode.Server` (`app.routes.server.ts`), mas **em produção ela não está sendo renderizada pelo servidor** — a plataforma (Vercel) está servindo o `index.html` **pré-renderizado da Home** como _fallback_ para a URL do artigo.
+
+Encadeamento do problema:
+
+1. As rotas `/` e `/blog` são `Prerender` → geram arquivos estáticos (`index.html`, `blog/index.html`).
+2. `/blog/:slug` é `Server` → deveria ser atendida pela **função SSR** do Angular.
+3. Como a requisição a `/blog/<slug>` **não chega à função SSR** (ou a função não está sendo deployada/roteada), e não existe arquivo estático para esse caminho, o servidor entrega o `index.html` da raiz (Home) como _catch-all_.
+4. Resultado: o navegador/robô recebe o HTML da Home naquela URL. O `ArtigoComponent` e o `SeoService` **nunca executam o passe de SSR do artigo**, então `canonical`, `title`, OG, JSON-LD e conteúdo são os da Home.
+5. Com o `canonical` apontando para a Home, o Google trata o artigo como duplicata e **não o indexa** (`Is indexable: false`).
+
+> Observação importante: o Supabase funciona no SSR — a prova é que o `blog-preview` da Home (que também lê o Supabase) renderiza o artigo corretamente no HTML da Home. O defeito é exclusivamente de **roteamento/entrega da rota dinâmica**, não de dados.
+
+### 10.3 Tratamento
+
+Duas abordagens. A primeira é a recomendada para este projeto.
+
+#### Opção A — Pré-renderizar os artigos (recomendada)
+
+Para um blog jurídico de baixo volume e conteúdo que muda pouco, **pré-renderizar cada artigo** é a solução mais robusta, mais rápida (melhor Core Web Vitals) e que **elimina a dependência do roteamento da função SSR**.
+
+- Mudar `/blog/:slug` de `Server` para **`Prerender` com `getPrerenderParams()`**, buscando todos os slugs publicados no Supabase em tempo de build:
+
+```typescript
+// app.routes.server.ts (conceito)
+{
+  path: 'blog/:slug',
+  renderMode: RenderMode.Prerender,
+  async getPrerenderParams() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/published_articles?select=slug`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    const articles = await res.json();
+    return articles.map((a: { slug: string }) => ({ slug: a.slug }));
+  },
+}
+```
+
+- Cada artigo passa a ser um `blog/<slug>/index.html` estático, com **SEO próprio embutido** (title, canonical self, OG, JSON-LD, conteúdo completo).
+- Para manter o conteúdo fresco sem deploy manual, configurar um **Vercel Deploy Hook** acionado por um **webhook do Supabase** em `INSERT`/`UPDATE` da tabela `articles` (publicação dispara rebuild). Custo: a publicação não é instantânea (~1–2 min de build) — aceitável para este caso.
+- Atualizar o `api/sitemap.ts` continua válido (já lista os slugs).
+
+#### Opção B — Fazer o SSR dinâmico realmente rodar
+
+Se for desejável publicação **instantânea** (sem rebuild), é preciso garantir que a Vercel invoque a **função SSR** do Angular para `/blog/:slug`:
+
+- Verificar se o deploy está realmente publicando a função SSR (`@angular/ssr` + adaptador Vercel) e não tratando o app como SPA estática.
+- Revisar o `vercel.json`: hoje ele só tem o _rewrite_ do sitemap. Garantir que **não exista** um _catch-all_ para `/index.html` e que o _framework preset_ detecte o SSR. Um `vercel.json` custom pode desativar a configuração zero-config do Angular — alinhar `buildCommand`/`outputDirectory`/`functions` ao output do `@angular/ssr`.
+- Confirmar que as variáveis `SUPABASE_URL`/`SUPABASE_KEY` existem no ambiente da função em produção.
+
+#### Reforços de robustez (valem para A ou B)
+
+- **Resolver de rota** para o artigo: buscar o dado via _route resolver_ antes da ativação do componente, definindo o SEO de forma determinística **antes** do render — mais confiável que depender do timing do `ngOnInit`.
+- Garantir que o `SeoService` sempre escreva um **canonical self** quando houver `slug` (já faz, desde que execute no passe correto).
+- Combinar com as correções de SEO de artigo da §7 (data ISO, `dateModified`, autor/E-E-A-T, `BreadcrumbList`).
+
+### 10.4 Validação (após a correção)
+
+1. `curl -sL https://www.mfernandavetere.adv.br/blog/<slug>` → conferir no HTML cru: `<title>` do artigo, `<link rel="canonical">` apontando para a própria URL, `<h1>` = título do artigo e o corpo do artigo presente.
+2. **Google Search Console → Inspeção de URL → Testar URL ativa**: indexável, canonical = self.
+3. **Rich Results Test**: schema `Article`/`BlogPosting` válido.
+4. Recrawl no **Ahrefs**: `Is indexable: true`, `Is self-canonical: true`, content hash único.
+5. Reenviar o sitemap e solicitar indexação no GSC.
+
+### 10.5 Prioridade
+
+Este item é **P0 e antecede** as demais melhorias de SEO de artigo: enriquecer schema, autor e data (§4–§7) só tem efeito depois que a página do artigo **existir com SEO próprio e for indexável**. Registrado também no topo do [`MELHORIAS.md`](./MELHORIAS.md).
 
 ---
 
