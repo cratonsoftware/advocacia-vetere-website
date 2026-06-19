@@ -90,16 +90,16 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 ### 6.1 Status das sessões
 
-| Sessão              | Status | Data       | Commit/PR | Notas                                                                                                                      |
-| ------------------- | ------ | ---------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
-| S1 — P0 Indexação   | ✅     | 2026-06-19 | ff0a688   | Opção A: `/blog/:slug` Prerender + `getPrerenderParams`; **merge + validado em produção**; rebuild ao publicar documentado |
-| S2 — Quick wins     | ✅     | 2026-06-19 | f499d40   | 7 de 8 itens aplicados; §3.6 (redirect) N/A — configurado na plataforma Web3Forms                                         |
-| S3 — Banco E-E-A-T  | ⬜     | —          | —         | Migração aditiva (não destrutiva)                                                                                          |
-| S4 — Schema & SERP  | ⬜     | —          | —         | Depende de S3                                                                                                              |
-| S5 — Topical & GEO  | ⬜     | —          | —         | Depende de S3                                                                                                              |
-| S6 — Performance    | ⬜     | —          | —         |                                                                                                                            |
-| S7 — Acessibilidade | ⬜     | —          | —         |                                                                                                                            |
-| S8 — Testes (opc.)  | ⬜     | —          | —         |                                                                                                                            |
+| Sessão | Status | Data | Commit/PR | Notas |
+| --- | --- | --- | --- | --- |
+| S1 — P0 Indexação | ✅ | 2026-06-19 | ff0a688 | Opção A: `/blog/:slug` Prerender + `getPrerenderParams`; **merge + validado em produção**; rebuild ao publicar documentado |
+| S2 — Quick wins | ✅ | 2026-06-19 | f499d40 | 7 de 8 itens aplicados; §3.6 (redirect) N/A — configurado na plataforma Web3Forms |
+| S3 — Banco E-E-A-T | ✅ | 2026-06-19 | `<commit>` | Migração aditiva aplicada via MCP Supabase; view retrocompatível com ISO+author; `get_advisors security` **limpo**; capa em Storage **⏸️ parcial** (bucket criado, upload da imagem = follow-up do operador) |
+| S4 — Schema & SERP | ⬜ | — | — | Depende de S3 |
+| S5 — Topical & GEO | ⬜ | — | — | Depende de S3 |
+| S6 — Performance | ⬜ | — | — |  |
+| S7 — Acessibilidade | ⬜ | — | — |  |
+| S8 — Testes (opc.) | ⬜ | — | — |  |
 
 ### 6.2 Status por item (granular)
 
@@ -123,11 +123,11 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 **S3 — Banco: fundação E-E-A-T** _(detalhes: `BLOG-SEO.md` §6 e §7)_
 
-- ⬜ Tabela `authors` (+ RLS SELECT público) — G1
-- ⬜ Colunas aditivas em `articles` + índices — G4/G6/G8/G9/G10/G11/G13
-- ⬜ View `published_articles` expõe `publishedAt`/`updatedAt` (ISO), autor, novos campos — G2/G3
-- ⬜ Migrar capas para Supabase Storage 1200×630 + `cover_image_alt` — G5/G9
-- ⬜ Corrigir categoria "Familia" → "Família" — G12
+- ✅ Tabela `authors` (+ RLS SELECT público) + seed da autora (OAB/SP 527.527, `same_as` Instagram/Facebook) — G1 _(2026-06-19, migração `create_authors_table`)_
+- ✅ Colunas aditivas em `articles` (`author_id`, `meta_title`, `meta_description`, `cover_image_alt`, `tags`, `tldr`, `faq`, `canonical_url`, `noindex`, `locale`) + índices `category_id`/`published_at desc`; backfill do artigo (autora + alt) — G4/G6/G8/G9/G10/G11/G13 _(2026-06-19, migração `add_eeat_columns_to_articles`)_
+- ✅ View `published_articles` expõe `publishedAt`/`updatedAt` (ISO), `author`, `metaTitle`/`metaDescription`, `coverImageAlt`, `tags`, `tldr`, `faq`, `locale`, `canonicalUrl`, `noindex`, `categorySlug` — retrocompatível + `security_invoker` — G2/G3 _(2026-06-19, migrações `evolve_published_articles_view` e `harden_view_and_storage_security`)_
+- 🔄 Migrar capas para Supabase Storage 1200×630 + `cover_image_alt` — G5/G9: **infra concluída** (bucket público `article-covers` + `cover_image_alt` preenchido). **Pendente do operador:** subir a imagem 1200×630 e apontar `cover_image` para o Storage. _(2026-06-19, migração `create_article_covers_storage_bucket`)_
+- ✅ Corrigir categoria "Familia" → "Família" — G12 _(2026-06-19, migração `fix_familia_category_accent`)_
 
 **S4 — Schema & SERP** _(detalhes: `BLOG-SEO.md` §7; `MELHORIAS.md` §2)_
 

@@ -52,7 +52,10 @@ O schema `public` tem **3 tabelas** e **1 view**. O RLS está ativo nas três ta
 
 ### 1.4 View `published_articles` (a que o site realmente consome)
 
+> **Atualizado na S3 (2026-06-19):** a view abaixo é o **estado pré-S3** (histórico). O estado vigente é o da §6.3 — retrocompatível e enriquecido com `publishedAt`/`updatedAt` (ISO), `author`, campos de SEO dedicados e `security_invoker`.
+
 ```sql
+-- ESTADO PRÉ-S3 (histórico)
 SELECT a.id, a.slug, a.title, a.excerpt, a.content,
        a.cover_image          AS "coverImage",
        (a.read_time_minutes || ' min de leitura') AS "readTime",
@@ -73,8 +76,8 @@ Observações relevantes:
 
 ### 1.5 RLS e índices
 
-- **RLS:** `articles` → `SELECT public` com `is_published = true AND published_at <= now()`; `categories` e `google_reviews` → `SELECT public` (`true`). Sem políticas de escrita anônima. ✅
-- **Índices:** apenas PKs e uniques (`slug`, `name`). **Não há índice em `articles.category_id` nem em `published_at`** — irrelevante hoje (1 artigo), relevante para escala (§6).
+- **RLS:** `articles` → `SELECT public` com `is_published = true AND published_at <= now()`; `categories`, `google_reviews` e (S3) `authors` → `SELECT public` (`true`). Sem políticas de escrita anônima. ✅
+- **Índices:** PKs e uniques (`slug`, `name`) + **(S3)** `articles_category_id_idx` e `articles_published_at_idx (desc)`.
 
 ---
 
@@ -165,6 +168,8 @@ Arquivo Markdown na raiz do domínio que **curadoria** o conteúdo mais valioso 
 
 O que **falta no dado** hoje para sustentar tudo da §4 (priorizado por impacto):
 
+> **Atualização S3 (2026-06-19):** o lado-banco das lacunas foi resolvido. ✅ resolvidos: **G1** (tabela `authors` + seed), **G2** (`updatedAt` na view), **G3** (ISO na view; transporte no front feito na S2), **G4** (`meta_title`/`meta_description` — consumo no front = S4), **G6** (`tags`), **G8** (`tldr`/`faq` — `FAQPage` no front = S5), **G9** (`cover_image_alt`), **G11** (`locale`), **G12** (categoria "Família"), **G13** (índices). 🔄 **G5** parcial: bucket `article-covers` criado; falta enviar a imagem 1200×630. ⬜ Restam para front: **G7** (rota `/blog/categoria/:slug` — S5) e o uso de **G10** (`canonical_url`/`noindex` já existem como colunas — consumo = S4).
+
 | #   | Lacuna                                                                                | Impacto        | Por quê                                                              |
 | --- | ------------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------- |
 | G1  | **Entidade de autor** (tabela `authors`) com bio, OAB, `sameAs`                       | Alto           | Sinal #1 de E-E-A-T/YMYL para Direito (§4.1)                         |
@@ -185,7 +190,7 @@ O que **falta no dado** hoje para sustentar tudo da §4 (priorizado por impacto)
 
 ## 6. Esquema-alvo proposto (migração **aditiva**, não destrutiva)
 
-> Proposta — não aplicada. Tudo aditivo e retrocompatível com a view atual.
+> **✅ APLICADO na S3 (2026-06-19)** — toda a §6 foi executada via MCP Supabase como migração aditiva e não destrutiva (migrações `create_authors_table`, `add_eeat_columns_to_articles`, `evolve_published_articles_view`, `fix_familia_category_accent`, `create_article_covers_storage_bucket`, `harden_view_and_storage_security`). A view é `security_invoker` e o `get_advisors security` ficou **limpo**. Único item parcial: a **imagem** de capa 1200×630 ainda será enviada ao bucket pelo operador (infra de Storage e `cover_image_alt` já concluídos). O texto abaixo descreve o esquema agora vigente.
 
 ### 6.1 Nova tabela `authors` (E-E-A-T)
 
@@ -226,37 +231,49 @@ create index on public.articles (published_at desc);
 
 ### 6.3 View `published_articles` evoluída
 
-Expor os novos campos **mantendo** os nomes atuais (retrocompatível) e **adicionando** o que falta — em especial `published_at` cru (ISO) e `updated_at`:
+Expor os novos campos **mantendo** os nomes atuais (retrocompatível) e **adicionando** o que falta — em especial `published_at` cru (ISO) e `updated_at`. **Definição efetivamente aplicada na S3** (`security_invoker` para respeitar o RLS das tabelas base):
 
 ```sql
--- pseudo: adicionar à view existente
-... ,
-a.published_at                      AS "publishedAt",   -- ISO cru p/ schema
-a.updated_at                        AS "updatedAt",     -- dateModified
-coalesce(a.meta_title, a.title)     AS "metaTitle",
-coalesce(a.meta_description, a.excerpt) AS "metaDescription",
-a.cover_image_alt                   AS "coverImageAlt",
-a.tags                              AS tags,
-a.tldr                              AS tldr,
-a.faq                               AS faq,
-a.locale                            AS locale,
-c.slug                              AS "categorySlug",
-json_build_object(
-  'name', au.name, 'role', au.role, 'oab', au.oab,
-  'slug', au.slug, 'avatar', au.avatar_url, 'sameAs', au.same_as
-)                                   AS author
-FROM articles a
-JOIN categories c ON a.category_id = c.id
-LEFT JOIN authors au ON a.author_id = au.id
-WHERE a.is_published AND a.published_at <= now()
-ORDER BY a.published_at DESC;
+create or replace view public.published_articles as
+select
+  a.id, a.slug, a.title, a.excerpt, a.content,
+  a.cover_image                              as "coverImage",
+  (a.read_time_minutes || ' min de leitura'::text) as "readTime",
+  c.name                                     as category,
+  a.published_at                             as date,
+  -- novos campos (anexados ao final p/ compatibilidade do CREATE OR REPLACE)
+  a.published_at                             as "publishedAt",   -- ISO cru p/ schema
+  a.updated_at                               as "updatedAt",     -- dateModified
+  coalesce(a.meta_title, a.title)            as "metaTitle",
+  coalesce(a.meta_description, a.excerpt)    as "metaDescription",
+  a.cover_image_alt                          as "coverImageAlt",
+  a.tags                                     as tags,
+  a.tldr                                     as tldr,
+  a.faq                                      as faq,
+  a.locale                                   as locale,
+  a.canonical_url                            as "canonicalUrl",
+  a.noindex                                  as noindex,
+  c.slug                                     as "categorySlug",
+  json_build_object(
+    'name', au.name, 'role', au.role, 'oab', au.oab,
+    'slug', au.slug, 'avatar', au.avatar_url, 'bio', au.bio, 'sameAs', au.same_as
+  )                                          as author
+from articles a
+join categories c on a.category_id = c.id
+left join authors au on a.author_id = au.id
+where a.is_published = true and a.published_at <= now()
+order by a.published_at desc;
+
+alter view public.published_articles set (security_invoker = true);
 ```
 
-> O front mantém `date` (label) para exibição, mas passa a usar `publishedAt`/`updatedAt` (ISO) para o `SeoService`. Resolve G2 e G3 de uma vez.
+> O front mantém `date` (label) para exibição, mas passa a usar `publishedAt`/`updatedAt` (ISO) para o `SeoService` (consumo = S4). Resolve G2 e G3 no banco de uma vez. Como o `BlogService` usa `select=*`, os campos novos trafegam sem alterar o modelo `Artigo`.
 
 ### 6.4 Imagens de capa (G5) — armazenamento próprio
 
 Migrar capas para **Supabase Storage** (bucket público `article-covers`), em **1200×630** (proporção OG) e formato moderno (WebP/AVIF), preenchendo `cover_image_alt`. Elimina risco de licença do istockphoto, melhora LCP e dá controle do cartão social.
+
+> **Status S3 (2026-06-19):** infra criada — bucket público `article-covers` (objetos servidos via URL pública; sem policy de listagem, por recomendação do linter) e `cover_image_alt` preenchido para o artigo existente. **Pendente (operador):** subir a imagem 1200×630 ao bucket e atualizar `cover_image` para a URL do Storage. Enquanto isso, `cover_image` segue apontando para o hotlink atual (a substituir).
 
 ---
 

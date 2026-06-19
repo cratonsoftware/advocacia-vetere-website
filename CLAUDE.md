@@ -206,6 +206,8 @@ this.http.get<Artigo[]>(`${this.apiUrl}/published_articles?select=*`, { headers:
 
 **Transfer Cache (evitar double-fetch na hidratação):** Configurado em `app.config.ts` via `withHttpTransferCacheOptions({ includeRequestsWithAuthHeaders: true })`. Como as chamadas têm o header `apikey`, a opção `includeRequestsWithAuthHeaders: true` é obrigatória para que o cache funcione corretamente. Sem isso, o cliente refaria todas as chamadas ao hidratar.
 
+**Schema E-E-A-T (S3 — aplicado 2026-06-19, migração aditiva e não destrutiva):** existe a tabela `authors` (entidade de autor com `oab`, `bio`, `same_as` — RLS `SELECT` público) e `articles` ganhou colunas aditivas (`author_id`, `meta_title`, `meta_description`, `cover_image_alt`, `tags`, `tldr`, `faq`, `canonical_url`, `noindex`, `locale`) + índices em `category_id` e `published_at`. A view `published_articles` é **retrocompatível** (mantém os campos antigos) e agora também expõe `publishedAt`/`updatedAt` em **ISO**, `author` (objeto), `metaTitle`/`metaDescription`, `coverImageAlt`, `tags`, `tldr`, `faq`, `locale`, `canonicalUrl`, `noindex` e `categorySlug`; é `security_invoker` (respeita o RLS das tabelas base). Capas: bucket público `article-covers` no Storage (a imagem 1200×630 é enviada manualmente; `cover_image` migra para o Storage como follow-up). Detalhes e schema completo em `BLOG-SEO.md` §6. **Não** quebrar a retrocompatibilidade da view nem remover colunas.
+
 **Boas práticas obrigatórias:**
 
 - Sempre tratar erros com `catchError` retornando `of([])` ou `of(null)`

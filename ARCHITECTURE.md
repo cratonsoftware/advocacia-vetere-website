@@ -68,13 +68,14 @@ private readonly headers = new HttpHeaders({
 
 ### Tabelas consumidas
 
-| Tabela               | Consumida por    | Campos relevantes                                                         |
-| -------------------- | ---------------- | ------------------------------------------------------------------------- |
-| `published_articles` | `BlogService`    | `id, slug, title, excerpt, content, coverImage, readTime, category, date` |
-| `categories`         | `BlogService`    | `id, name, slug`                                                          |
-| `google_reviews`     | `ReviewsService` | `author_name, rating, text, profile_photo_url, relative_time_description` |
+| Tabela / view | Consumida por | Campos relevantes |
+| --- | --- | --- |
+| `published_articles` | `BlogService` | retrocompat: `id, slug, title, excerpt, content, coverImage, readTime, category, date`; **novos (S3)**: `publishedAt`/`updatedAt` (ISO), `metaTitle`, `metaDescription`, `coverImageAlt`, `tags`, `tldr`, `faq`, `locale`, `canonicalUrl`, `noindex`, `categorySlug`, `author` (objeto) |
+| `categories` | `BlogService` | `id, name, slug` |
+| `google_reviews` | `ReviewsService` | `author_name, rating, text, profile_photo_url, relative_time_description` |
+| `authors` _(S3)_ | via view `author` | `name, slug, role, oab, bio, avatar_url, same_as` — entidade de autor (E-E-A-T) |
 
-> A view `published_articles` aplica `ORDER BY published_at DESC` e filtra `is_published AND published_at <= now()`. **Schema completo das tabelas base (`articles`, `categories`, `google_reviews`), RLS, índices e a proposta de evolução para SEO** estão em [`BLOG-SEO.md`](./BLOG-SEO.md).
+> A view `published_articles` aplica `ORDER BY published_at DESC`, filtra `is_published AND published_at <= now()` e é `security_invoker` (respeita o RLS das tabelas base). O front consome a view com `select=*`, então os campos novos da S3 trafegam sem quebrar o modelo `Artigo`. **Schema completo das tabelas base (`articles`, `categories`, `authors`, `google_reviews`), RLS, índices e a evolução para SEO (aplicada na S3)** estão em [`BLOG-SEO.md`](./BLOG-SEO.md).
 
 ### Transfer Cache
 
