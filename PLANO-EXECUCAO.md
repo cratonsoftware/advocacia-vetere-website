@@ -90,16 +90,16 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 ### 6.1 Status das sessões
 
-| Sessão              | Status | Data | Commit/PR | Notas                                       |
-| ------------------- | ------ | ---- | --------- | ------------------------------------------- |
-| S1 — P0 Indexação   | ✅     | 2026-06-19 | ff0a688  | Opção A: `/blog/:slug` Prerender + `getPrerenderParams`; rebuild ao publicar documentado |
-| S2 — Quick wins     | ⬜     | —    | —         |                                             |
-| S3 — Banco E-E-A-T  | ⬜     | —    | —         | Migração aditiva (não destrutiva)           |
-| S4 — Schema & SERP  | ⬜     | —    | —         | Depende de S3                               |
-| S5 — Topical & GEO  | ⬜     | —    | —         | Depende de S3                               |
-| S6 — Performance    | ⬜     | —    | —         |                                             |
-| S7 — Acessibilidade | ⬜     | —    | —         |                                             |
-| S8 — Testes (opc.)  | ⬜     | —    | —         |                                             |
+| Sessão              | Status | Data       | Commit/PR | Notas                                                                                                                      |
+| ------------------- | ------ | ---------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| S1 — P0 Indexação   | ✅     | 2026-06-19 | ff0a688   | Opção A: `/blog/:slug` Prerender + `getPrerenderParams`; **merge + validado em produção**; rebuild ao publicar documentado |
+| S2 — Quick wins     | ⬜     | —          | —         |                                                                                                                            |
+| S3 — Banco E-E-A-T  | ⬜     | —          | —         | Migração aditiva (não destrutiva)                                                                                          |
+| S4 — Schema & SERP  | ⬜     | —          | —         | Depende de S3                                                                                                              |
+| S5 — Topical & GEO  | ⬜     | —          | —         | Depende de S3                                                                                                              |
+| S6 — Performance    | ⬜     | —          | —         |                                                                                                                            |
+| S7 — Acessibilidade | ⬜     | —          | —         |                                                                                                                            |
+| S8 — Testes (opc.)  | ⬜     | —          | —         |                                                                                                                            |
 
 ### 6.2 Status por item (granular)
 
@@ -107,8 +107,8 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 - ✅ `/blog/:slug` → `Prerender` com `getPrerenderParams()` lendo slugs do Supabase _(2026-06-19, `ff0a688`)_
 - ✅ Rebuild ao publicar documentado (Deploy Hook + webhook) — `BLOG-SEO.md` §10.6 _(criação do hook/webhook no painel = ação do usuário, conforme combinado)_
-- 🔄 Validar: HTML cru com canonical self, title/H1 do artigo, conteúdo presente _(no preview da Vercel — build local indisponível no ambiente: node_modules sem binários Linux + rede bloqueada)_
-- ⬜ Validar: GSC (Inspeção de URL) + Rich Results Test + recrawl Ahrefs _(pós-deploy em produção — ação do usuário)_
+- ✅ Validar: HTML cru com canonical self, title/H1 do artigo, conteúdo presente _(preview Vercel + produção, 2026-06-19)_
+- ✅ Validado em produção (2026-06-19): home, blog e artigo carregam SEO próprio e separado após o merge. GSC/Rich Results/Ahrefs em monitoramento de reindexação.
 
 **S2 — Quick wins** _(detalhes: `MELHORIAS.md` §7)_
 

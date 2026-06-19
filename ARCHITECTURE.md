@@ -36,14 +36,14 @@ O servidor Express em `src/server.ts` tem responsabilidade mínima: servir os es
 
 ### Render modes por rota (`src/app/app.routes.server.ts`)
 
-| Rota          | Modo        | Motivo                                     |
-| ------------- | ----------- | ------------------------------------------ |
-| `/`           | `Prerender` | Conteúdo estático — máxima performance/SEO |
-| `/blog`       | `Prerender` | Listagem pré-renderizada                   |
+| Rota          | Modo        | Motivo                                                                                  |
+| ------------- | ----------- | --------------------------------------------------------------------------------------- |
+| `/`           | `Prerender` | Conteúdo estático — máxima performance/SEO                                              |
+| `/blog`       | `Prerender` | Listagem pré-renderizada                                                                |
 | `/blog/:slug` | `Prerender` | Pré-renderizado por slug (`getPrerenderParams`) — HTML estático, SEO próprio, indexável |
-| `/sucesso`    | `Prerender` | Página simples, `noIndex`                  |
-| `/404`        | `Prerender` | Erro estático, `noIndex`                   |
-| `/**`         | `Server`    | Fallback                                   |
+| `/sucesso`    | `Prerender` | Página simples, `noIndex`                                                               |
+| `/404`        | `Prerender` | Erro estático, `noIndex`                                                                |
+| `/**`         | `Server`    | Fallback                                                                                |
 
 > O roteamento de aplicação (`app.routes.ts`) usa `loadComponent` (lazy) em todas as rotas. As páginas que dependem de dados (`/blog`, `/blog/:slug`) buscam via `HttpClient` para que o SSR aguarde a resposta antes de emitir o HTML.
 
