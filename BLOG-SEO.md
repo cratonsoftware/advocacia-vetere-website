@@ -317,6 +317,8 @@ Estado atual (`BlogPosting`) vs. alvo. O `SeoService` passaria a montar:
 
 Acrescentar, em blocos separados, **`BreadcrumbList`** (toda página de artigo) e **`FAQPage`** (quando `faq` existir). Validar sempre no Rich Results Test.
 
+> **Pendência conhecida (follow-up S5):** o campo `author.url` do `Person` aponta hoje para a **home** (`baseUrl`), e **não** para `/autor/maria-fernanda-vetere` como na spec acima. Isso é proposital: a rota `/autor/:slug` só será criada na S5 e apontar para uma URL inexistente geraria 404 (sinal ruim ao Google). Quando a página de autor existir, trocar `author.url` em `ArtigoComponent` para `${baseUrl}/autor/${slug}`. Rastreado em `PLANO-EXECUCAO.md` §6.2 (S5).
+
 ---
 
 ## 8. Roadmap priorizado

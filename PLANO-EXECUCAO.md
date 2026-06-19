@@ -95,7 +95,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S1 — P0 Indexação | ✅ | 2026-06-19 | ff0a688 | Opção A: `/blog/:slug` Prerender + `getPrerenderParams`; **merge + validado em produção**; rebuild ao publicar documentado |
 | S2 — Quick wins | ✅ | 2026-06-19 | f499d40 | 7 de 8 itens aplicados; §3.6 (redirect) N/A — configurado na plataforma Web3Forms |
 | S3 — Banco E-E-A-T | ✅ | 2026-06-19 | 5c8de94 · 9e74ae4 | Migração aditiva aplicada via MCP Supabase; view retrocompatível com ISO+author; `get_advisors security` **limpo**; capa migrada ao Storage (`cover_image` → URL pública do bucket `article-covers`) |
-| S4 — Schema & SERP | 🔄 | 2026-06-19 | _(pendente build+commit do operador)_ | Código pronto na branch `feat/seo-schema-serp`: meta dedicados, JSON-LD Article rico, BreadcrumbList, LegalService enriquecido, og:locale + lastmod no sitemap. Falta: `npm run build` verde + commit + preview Vercel + Rich Results Test |
+| S4 — Schema & SERP | ✅ | 2026-06-19 | 3f22e3e | Branch `feat/seo-schema-serp`; build verde + push. Meta dedicados, JSON-LD Article rico, BreadcrumbList, LegalService enriquecido, og:locale + lastmod no sitemap. **Pós-deploy:** validar no Rich Results Test (preview/produção). **Follow-up S5:** trocar `author.url` da home para `/autor/maria-fernanda-vetere` quando a rota existir (ver §6.2 S5) |
 | S5 — Topical & GEO | ⬜ | — | — | Depende de S3 |
 | S6 — Performance | ⬜ | — | — |  |
 | S7 — Acessibilidade | ⬜ | — | — |  |
@@ -143,6 +143,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 - ⬜ Páginas de categoria `/blog/categoria/:slug` (usar `category.slug`) — G7
 - ⬜ `tldr` + `faq` por artigo → `FAQPage` — G8
 - ⬜ `/llms.txt` dinâmico a partir da view — §4.5
+- ⬜ **Follow-up da S4:** criar a rota/página `/autor/:slug` (perfil da autora — bio, OAB, `sameAs`) e **trocar `author.url`** no `ArtigoComponent` de `baseUrl` (home) para `${baseUrl}/autor/${data.author?.slug}`. Hoje o campo `url` do JSON-LD `Person` aponta para a home **propositadamente**, para não gerar 404 antes da página existir (decisão registrada na S4). Ao criar a página, incluir a rota no `api/sitemap.ts`.
 
 **S6 — Performance & modernização** _(detalhes: `MELHORIAS.md` §1.1, §4; `BLOG-SEO.md` §4.4)_
 
