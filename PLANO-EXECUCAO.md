@@ -1,7 +1,6 @@
 # PLANO-EXECUCAO.md — Runbook de Execução
 
-> Guia operacional para executar, em sessões separadas e sem retrabalho, todas as correções e melhorias documentadas em [`MELHORIAS.md`](./MELHORIAS.md) e [`BLOG-SEO.md`](./BLOG-SEO.md).
-> Este arquivo é a **fonte única de verdade do progresso** — sempre leia o §6 (Registro de progresso) antes de começar e atualize-o ao terminar.
+> Guia operacional para executar, em sessões separadas e sem retrabalho, todas as correções e melhorias documentadas em [`MELHORIAS.md`](./MELHORIAS.md) e [`BLOG-SEO.md`](./BLOG-SEO.md). Este arquivo é a **fonte única de verdade do progresso** — sempre leia o §6 (Registro de progresso) antes de começar e atualize-o ao terminar.
 >
 > Mantido pela CRATON Software. Última revisão: 2026-06-19.
 
@@ -24,16 +23,16 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 
 **7 sessões essenciais + 1 opcional (testes).** Ordem por dependência e risco:
 
-| # | Sessão | Foco | Depende de | Modelo | Risco |
-|---|---|---|---|---|---|
-| **S1** | **P0 — Indexação do artigo** | Pré-renderizar `/blog/:slug` + deploy hook | — | **Opus** | Médio |
-| **S2** | Quick wins de SEO/UX | Correções pequenas e seguras | — | Sonnet | Baixo |
-| **S3** | Banco — fundação E-E-A-T | `authors`, view ISO/`updated_at`, capas no Storage | S1 | **Opus** | Médio-Alto |
-| **S4** | Schema & SERP | meta dedicados, JSON-LD Article rico, Breadcrumb, LegalService | S3 | **Opus** | Médio |
-| **S5** | Topical authority & GEO/AEO | tags, páginas de categoria, TL;DR/FAQ, `llms.txt` | S3 | Sonnet/Opus | Médio |
-| **S6** | Performance & modernização | OnPush/zoneless, fontes WOFF2, preconnect, NgOptimizedImage, índices | — | Sonnet | Médio |
-| **S7** | Acessibilidade & UX | reduced-motion, skip link, foco, contraste, skeletons, manifest | — | Sonnet | Baixo |
-| **S8** *(opcional)* | Testes & verificação final | smoke tests + auditoria de fechamento | todas | Opus/Sonnet | Baixo |
+| #                   | Sessão                       | Foco                                                                 | Depende de | Modelo      | Risco      |
+| ------------------- | ---------------------------- | -------------------------------------------------------------------- | ---------- | ----------- | ---------- |
+| **S1**              | **P0 — Indexação do artigo** | Pré-renderizar `/blog/:slug` + deploy hook                           | —          | **Opus**    | Médio      |
+| **S2**              | Quick wins de SEO/UX         | Correções pequenas e seguras                                         | —          | Sonnet      | Baixo      |
+| **S3**              | Banco — fundação E-E-A-T     | `authors`, view ISO/`updated_at`, capas no Storage                   | S1         | **Opus**    | Médio-Alto |
+| **S4**              | Schema & SERP                | meta dedicados, JSON-LD Article rico, Breadcrumb, LegalService       | S3         | **Opus**    | Médio      |
+| **S5**              | Topical authority & GEO/AEO  | tags, páginas de categoria, TL;DR/FAQ, `llms.txt`                    | S3         | Sonnet/Opus | Médio      |
+| **S6**              | Performance & modernização   | OnPush/zoneless, fontes WOFF2, preconnect, NgOptimizedImage, índices | —          | Sonnet      | Médio      |
+| **S7**              | Acessibilidade & UX          | reduced-motion, skip link, foco, contraste, skeletons, manifest      | —          | Sonnet      | Baixo      |
+| **S8** _(opcional)_ | Testes & verificação final   | smoke tests + auditoria de fechamento                                | todas      | Opus/Sonnet | Baixo      |
 
 > S2, S6 e S7 são independentes e podem ser feitas em qualquer ordem após a S1. S4 e S5 **dependem** da S3 (precisam dos campos novos do banco). **S1 deve ser a primeira e sozinha** — destrava todo o resto de SEO.
 
@@ -51,9 +50,9 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 
 1. **Use o Plan Mode primeiro** — peça o plano da sessão, aprove, depois execute. Reduz drasticamente erro e desvio de escopo.
 2. **Conecte os MCPs necessários** antes de começar:
-   - **Supabase** (migrações, leitura de schema) — essencial em S1, S3, S5.
-   - **Vercel** (deploy, logs, deploy hooks) — essencial em S1.
-   - **GitHub** (branch/PR) — todas as sessões.
+    - **Supabase** (migrações, leitura de schema) — essencial em S1, S3, S5.
+    - **Vercel** (deploy, logs, deploy hooks) — essencial em S1.
+    - **GitHub** (branch/PR) — todas as sessões.
 3. **Trabalhe sempre em branch de feature** (`feat/...`, `fix/...`) — nunca direto na `main`. O preview deploy da Vercel valida antes do merge.
 4. **Mantenha o task list ativo** durante a sessão (uma task por item do escopo).
 5. **Não acumule:** se a sessão ficar longa/pesada, encerre, faça commit do que está pronto, marque o progresso e retome em nova sessão.
@@ -78,7 +77,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 - [ ] `npm run build` completa **sem erros nem warnings críticos**.
 - [ ] A **validação específica** da sessão passou (ver checklist de cada sessão, §7).
-- [ ] **`README.md` e `CLAUDE.md` atualizados** se algo mudou (stack, rotas, schema, comandos, padrões). *(Obrigatório por governança — ver `CLAUDE.md`.)*
+- [ ] **`README.md` e `CLAUDE.md` atualizados** se algo mudou (stack, rotas, schema, comandos, padrões). _(Obrigatório por governança — ver `CLAUDE.md`.)_
 - [ ] Documentos de referência atualizados se a decisão mudou (`ARCHITECTURE.md`, `BLOG-SEO.md`, `MELHORIAS.md`).
 - [ ] **§6 Registro de progresso atualizado**: itens marcados ✅ com data e hash do commit/PR.
 - [ ] Commit em **Conventional Commits** + push + **preview deploy verificado** na Vercel.
@@ -87,31 +86,32 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 ## 6. Registro de progresso (FONTE ÚNICA DE VERDADE)
 
-> Legenda: ⬜ Pendente · 🔄 Em andamento · ✅ Concluído · ⏸️ Bloqueado
-> Ao concluir um item, troque o status, preencha **Data** e **Commit/PR**, e adicione nota se necessário.
+> Legenda: ⬜ Pendente · 🔄 Em andamento · ✅ Concluído · ⏸️ Bloqueado Ao concluir um item, troque o status, preencha **Data** e **Commit/PR**, e adicione nota se necessário.
 
 ### 6.1 Status das sessões
 
-| Sessão | Status | Data | Commit/PR | Notas |
-|---|---|---|---|---|
-| S1 — P0 Indexação | ⬜ | — | — | Prioridade máxima; fazer primeiro e sozinha |
-| S2 — Quick wins | ⬜ | — | — | |
-| S3 — Banco E-E-A-T | ⬜ | — | — | Migração aditiva (não destrutiva) |
-| S4 — Schema & SERP | ⬜ | — | — | Depende de S3 |
-| S5 — Topical & GEO | ⬜ | — | — | Depende de S3 |
-| S6 — Performance | ⬜ | — | — | |
-| S7 — Acessibilidade | ⬜ | — | — | |
-| S8 — Testes (opc.) | ⬜ | — | — | |
+| Sessão              | Status | Data | Commit/PR | Notas                                       |
+| ------------------- | ------ | ---- | --------- | ------------------------------------------- |
+| S1 — P0 Indexação   | ⬜     | —    | —         | Prioridade máxima; fazer primeiro e sozinha |
+| S2 — Quick wins     | ⬜     | —    | —         |                                             |
+| S3 — Banco E-E-A-T  | ⬜     | —    | —         | Migração aditiva (não destrutiva)           |
+| S4 — Schema & SERP  | ⬜     | —    | —         | Depende de S3                               |
+| S5 — Topical & GEO  | ⬜     | —    | —         | Depende de S3                               |
+| S6 — Performance    | ⬜     | —    | —         |                                             |
+| S7 — Acessibilidade | ⬜     | —    | —         |                                             |
+| S8 — Testes (opc.)  | ⬜     | —    | —         |                                             |
 
 ### 6.2 Status por item (granular)
 
-**S1 — P0 Indexação do artigo** *(detalhes: `BLOG-SEO.md` §10)*
+**S1 — P0 Indexação do artigo** _(detalhes: `BLOG-SEO.md` §10)_
+
 - ⬜ `/blog/:slug` → `Prerender` com `getPrerenderParams()` lendo slugs do Supabase
-- ⬜ Vercel Deploy Hook + webhook do Supabase (rebuild ao publicar) — *ou* garantir função SSR dinâmica (Opção B)
+- ⬜ Vercel Deploy Hook + webhook do Supabase (rebuild ao publicar) — _ou_ garantir função SSR dinâmica (Opção B)
 - ⬜ Validar: HTML cru com canonical self, title/H1 do artigo, conteúdo presente
 - ⬜ Validar: GSC (Inspeção de URL) + Rich Results Test + recrawl Ahrefs
 
-**S2 — Quick wins** *(detalhes: `MELHORIAS.md` §7)*
+**S2 — Quick wins** _(detalhes: `MELHORIAS.md` §7)_
+
 - ⬜ Data ISO no SEO (expor `published_at`/`updated_at`; separar `date` cru de `dateLabel`) — §1.4
 - ⬜ Campo `redirect` no formulário → `/sucesso` — §3.6
 - ⬜ Corrigir "Comartilhar" → "Compartilhar" — §3.10
@@ -121,27 +121,31 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 - ⬜ Honeypot anti-spam no formulário — §3.7
 - ⬜ Remover código morto do contato — §1.5
 
-**S3 — Banco: fundação E-E-A-T** *(detalhes: `BLOG-SEO.md` §6 e §7)*
+**S3 — Banco: fundação E-E-A-T** _(detalhes: `BLOG-SEO.md` §6 e §7)_
+
 - ⬜ Tabela `authors` (+ RLS SELECT público) — G1
 - ⬜ Colunas aditivas em `articles` + índices — G4/G6/G8/G9/G10/G11/G13
 - ⬜ View `published_articles` expõe `publishedAt`/`updatedAt` (ISO), autor, novos campos — G2/G3
 - ⬜ Migrar capas para Supabase Storage 1200×630 + `cover_image_alt` — G5/G9
 - ⬜ Corrigir categoria "Familia" → "Família" — G12
 
-**S4 — Schema & SERP** *(detalhes: `BLOG-SEO.md` §7; `MELHORIAS.md` §2)*
+**S4 — Schema & SERP** _(detalhes: `BLOG-SEO.md` §7; `MELHORIAS.md` §2)_
+
 - ⬜ `meta_title`/`meta_description` dedicados no front — G4
 - ⬜ JSON-LD Article rico (`dateModified`, `ImageObject`, `inLanguage`, `articleSection`, `keywords`, `mainEntityOfPage`, `author` Person)
 - ⬜ `BreadcrumbList` nas páginas de artigo — §2.2
 - ⬜ Enriquecer `LegalService` da home (telefone, geo, horário, `sameAs`) — §2.1
 - ⬜ `og:locale` + `lastmod` de home/blog no sitemap — §2.3/§2.4
 
-**S5 — Topical authority & GEO/AEO** *(detalhes: `BLOG-SEO.md` §4.3, §6, §7)*
+**S5 — Topical authority & GEO/AEO** _(detalhes: `BLOG-SEO.md` §4.3, §6, §7)_
+
 - ⬜ `tags` por artigo + linkagem interna — G6
 - ⬜ Páginas de categoria `/blog/categoria/:slug` (usar `category.slug`) — G7
 - ⬜ `tldr` + `faq` por artigo → `FAQPage` — G8
 - ⬜ `/llms.txt` dinâmico a partir da view — §4.5
 
-**S6 — Performance & modernização** *(detalhes: `MELHORIAS.md` §1.1, §4; `BLOG-SEO.md` §4.4)*
+**S6 — Performance & modernização** _(detalhes: `MELHORIAS.md` §1.1, §4; `BLOG-SEO.md` §4.4)_
+
 - ⬜ `OnPush` em todos os componentes (e avaliar zoneless) — §1.1
 - ⬜ Migrar estado para signals/`AsyncPipe` — §1.2
 - ⬜ Fontes WOFF2 + preload das críticas — §4.1
@@ -149,7 +153,8 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 - ⬜ `NgOptimizedImage` + alvo LCP < 2,0s / CLS < 0,1 — §3.8/§4.4
 - ⬜ Índices `category_id` e `published_at` — G13
 
-**S7 — Acessibilidade & UX** *(detalhes: `MELHORIAS.md` §3)*
+**S7 — Acessibilidade & UX** _(detalhes: `MELHORIAS.md` §3)_
+
 - ⬜ `prefers-reduced-motion` (pulse/bounce/autoplay) — §3.2
 - ⬜ Skip link para `<main>` — §3.3
 - ⬜ Estados de foco visíveis (`focus-visible`) — §3.4
@@ -157,7 +162,8 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 - ⬜ Skeletons de carregamento — §3.11
 - ⬜ `manifest.webmanifest` + apple-touch-icon — §2.5
 
-**S8 — Testes & verificação final** *(opcional)*
+**S8 — Testes & verificação final** _(opcional)_
+
 - ⬜ Smoke tests: `SeoService`, `BlogService.formatDate` — `MELHORIAS.md` §1.8
 - ⬜ Auditoria final: Lighthouse/CWV, Rich Results, sitemap, indexação
 
@@ -186,3 +192,126 @@ Estado atual dos documentos para execução **sem erro**:
 - `PLANO-EXECUCAO.md` (este) — transforma os documentos de **referência** em **runbook executável** (sessões, DoD, registro de progresso) ✅.
 
 > Os documentos eram fortes como **referência**, mas faltava o passo a passo de execução e o controle de progresso — exatamente o que este runbook adiciona. Com ele, cada sessão tem entrada, escopo, validação e saída inequívocos.
+
+---
+
+## 9. Prompt padrão de sessão
+
+Cole o prompt da sessão correspondente no **início de uma conversa nova** (uma sessão = uma conversa). Use o **modelo recomendado** (§3) e deixe o agente entrar em **Plan Mode** antes de executar.
+
+### 9.1 Template genérico (preencha `{{...}}`)
+
+```
+Você vai executar a {{SESSÃO: ex. S2}} do projeto Advocacia Vetere.
+
+CONTEXTO (leia ANTES de propor qualquer coisa, nesta ordem):
+1. CLAUDE.md e ARCHITECTURE.md (contexto permanente e arquitetura).
+2. PLANO-EXECUCAO.md §6 (Registro de progresso) — a FONTE ÚNICA DE VERDADE.
+   NÃO refaça nada que já esteja ✅. Considere as dependências entre sessões.
+3. A seção de escopo desta sessão: {{REFERÊNCIAS: ex. MELHORIAS.md §7}}.
+
+ESCOPO (faça SOMENTE isto, nada além):
+{{LISTA DE ITENS da §6.2 desta sessão}}
+
+REGRAS:
+- Primeiro entre em Plan Mode e me apresente o plano APENAS desta sessão; aguarde minha aprovação antes de editar qualquer arquivo.
+- Trabalhe em uma branch de feature ({{feat|fix}}/{{nome-curto}}); nunca direto na main.
+- Mantenha o task list ativo (uma task por item do escopo).
+- Se descobrir algo fora do escopo, NÃO faça: registre em MELHORIAS.md e siga.
+
+DEFINITION OF DONE (obrigatório antes de encerrar):
+- `npm run build` sem erros nem warnings críticos.
+- Validação específica desta sessão (PLANO-EXECUCAO.md §7) aprovada.
+- README.md e CLAUDE.md atualizados se algo mudou; docs de referência também.
+- PLANO-EXECUCAO.md §6 atualizado: itens ✅ com data e hash do commit/PR.
+- Commit em Conventional Commits + push + preview deploy verificado na Vercel.
+
+Ao concluir, faça um resumo do que foi feito, do que ficou ⏸️ (com causa) e encerre a sessão.
+```
+
+### 9.2 Prompts prontos por sessão
+
+**S1 — P0 Indexação do artigo (modelo: Opus + Plan Mode)**
+
+```
+Execute a S1 do projeto Advocacia Vetere.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6 e BLOG-SEO.md §10. Não refaça o que já estiver ✅.
+Escopo (somente isto): corrigir a indexação do artigo, que hoje herda o SEO da Home.
+- Mudar /blog/:slug para RenderMode.Prerender com getPrerenderParams() lendo os slugs do Supabase no build (Opção A do §10). Se eu pedir publicação instantânea, em vez disso aplicar a Opção B (garantir a função SSR dinâmica na Vercel).
+- Configurar rebuild ao publicar (Vercel Deploy Hook + webhook do Supabase).
+- Garantir SEO próprio do artigo (canonical self, title/H1/OG/JSON-LD).
+Entre em Plan Mode e aguarde aprovação. Trabalhe em branch fix/article-prerender-seo.
+Validação (§7 S1): curl da URL do artigo com canonical self + título/H1/corpo do artigo; GSC Inspeção de URL indexável; Rich Results sem erro; recrawl Ahrefs.
+DoD: build verde, README/CLAUDE + docs atualizados, §6 marcado ✅ com data e commit, Conventional Commits + push + preview verificado. Resuma e encerre.
+```
+
+**S2 — Quick wins (modelo: Sonnet + Plan Mode)**
+
+```
+Execute a S2 do projeto Advocacia Vetere.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6 e MELHORIAS.md §7. Não refaça o que já estiver ✅.
+Escopo (somente os itens da S2 no §6.2): data ISO no SEO (§1.4), campo redirect → /sucesso (§3.6), corrigir "Comartilhar" (§3.10), navegação âncora com routerLink+fragment (§3.1), loading=lazy + prioridade no hero (§3.8), title no iframe do mapa (§3.9), honeypot anti-spam (§3.7), remover código morto do contato (§1.5).
+Entre em Plan Mode e aguarde aprovação. Branch fix/quick-wins-seo-ux.
+Validação (§7 S2). DoD completo (build, docs, §6 ✅ com data/commit, push, preview). Resuma e encerre.
+```
+
+**S3 — Banco: fundação E-E-A-T (modelo: Opus + Plan Mode)**
+
+```
+Execute a S3 do projeto Advocacia Vetere. Pré-requisito: S1 concluída.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6 e BLOG-SEO.md §6 e §7. Não refaça o que já estiver ✅.
+Escopo (somente S3): tabela authors + RLS SELECT público (G1); colunas aditivas em articles + índices (G4/G6/G8/G9/G10/G11/G13); evoluir a view published_articles expondo publishedAt/updatedAt (ISO), author e novos campos (G2/G3); migrar capas para Supabase Storage 1200×630 + cover_image_alt (G5/G9); corrigir categoria "Familia"→"Família" (G12).
+IMPORTANTE: migração ADITIVA e não destrutiva; manter a view retrocompatível.
+Entre em Plan Mode e aguarde aprovação. Use o MCP do Supabase. Branch feat/db-eeat-foundation.
+Validação (§7 S3): select na view retorna ISO + author; get_advisors security sem alertas de RLS; capas servidas do Storage. DoD completo. Resuma e encerre.
+```
+
+**S4 — Schema & SERP (modelo: Opus + Plan Mode)**
+
+```
+Execute a S4 do projeto Advocacia Vetere. Pré-requisito: S3 concluída.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6, BLOG-SEO.md §7 e MELHORIAS.md §2. Não refaça o que já estiver ✅.
+Escopo (somente S4): usar meta_title/meta_description dedicados (G4); JSON-LD Article rico (dateModified, ImageObject, inLanguage, articleSection, keywords, mainEntityOfPage, author Person); BreadcrumbList nos artigos (§2.2); enriquecer LegalService da home (telefone, geo, horário, sameAs) (§2.1); og:locale + lastmod de home/blog no sitemap (§2.3/§2.4).
+Entre em Plan Mode e aguarde aprovação. Branch feat/seo-schema-serp.
+Validação (§7 S4): Rich Results Test valida BlogPosting (author/datePublished/dateModified) e LegalService; cartões sociais corretos. DoD completo. Resuma e encerre.
+```
+
+**S5 — Topical authority & GEO/AEO (modelo: Opus ou Sonnet + Plan Mode)**
+
+```
+Execute a S5 do projeto Advocacia Vetere. Pré-requisito: S3 concluída.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6 e BLOG-SEO.md §4.3/§6/§7. Não refaça o que já estiver ✅.
+Escopo (somente S5): tags por artigo + linkagem interna (G6); páginas de categoria /blog/categoria/:slug usando category.slug (G7); tldr + faq por artigo com FAQPage (G8); /llms.txt dinâmico a partir da view (§4.5).
+Entre em Plan Mode e aguarde aprovação. Branch feat/topical-geo-aeo.
+Validação (§7 S5): /blog/categoria/familia com SEO próprio; FAQPage válido; /llms.txt acessível e correto. DoD completo. Resuma e encerre.
+```
+
+**S6 — Performance & modernização (modelo: Sonnet + Plan Mode)**
+
+```
+Execute a S6 do projeto Advocacia Vetere.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6, MELHORIAS.md §1.1/§4 e BLOG-SEO.md §4.4. Não refaça o que já estiver ✅.
+Escopo (somente S6): OnPush em todos os componentes e avaliar zoneless (§1.1); migrar estado para signals/AsyncPipe (§1.2); fontes WOFF2 + preload das críticas (§4.1); preconnect Supabase/Maps/Web3Forms (§4.2); NgOptimizedImage com alvo LCP<2,0s e CLS<0,1 (§3.8/§4.4); índices category_id e published_at (G13).
+Entre em Plan Mode e aguarde aprovação. Branch perf/cwv-modernization.
+Validação (§7 S6): Lighthouse LCP<2,0s, INP<200ms, CLS<0,1; WOFF2 no network. DoD completo. Resuma e encerre.
+```
+
+**S7 — Acessibilidade & UX (modelo: Sonnet + Plan Mode)**
+
+```
+Execute a S7 do projeto Advocacia Vetere.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6 e MELHORIAS.md §3. Não refaça o que já estiver ✅.
+Escopo (somente S7): prefers-reduced-motion em pulse/bounce/autoplay (§3.2); skip link para <main> (§3.3); focus-visible consistente (§3.4); contraste e tamanho de micro-textos (§3.5); skeletons de carregamento (§3.11); manifest.webmanifest + apple-touch-icon (§2.5).
+Entre em Plan Mode e aguarde aprovação. Branch feat/a11y-ux.
+Validação (§7 S7): navegação 100% por teclado; skip link visível ao focar; contraste AA; reduced-motion respeitado. DoD completo. Resuma e encerre.
+```
+
+**S8 — Testes & verificação final (opcional; modelo: Opus/Sonnet + Plan Mode)**
+
+```
+Execute a S8 (verificação final) do projeto Advocacia Vetere. Pré-requisito: S1–S7 concluídas.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6 (confirme tudo ✅) e MELHORIAS.md §1.8.
+Escopo (somente S8): smoke tests de SeoService e BlogService.formatDate; auditoria final (Lighthouse/CWV, Rich Results, sitemap, indexação no GSC).
+Entre em Plan Mode e aguarde aprovação. Branch test/final-verification.
+Validação: testes passando; auditoria sem regressões. DoD completo. Resuma o estado final do projeto e encerre.
+```
