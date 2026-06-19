@@ -1,59 +1,106 @@
-# AdvocaciaVetereWebsite
+# Advocacia Vetere — Website
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.7.
+Site profissional da **Dra. Maria Fernanda Vetere**, advogada com escritório em Tambaú/SP, com atuação em Direito de Família e Sucessões, Cível e Trabalhista.
 
-## Development server
+Desenvolvido e mantido pela **[CRATON Software](https://craton.com.br)**.
 
-To start a local development server, run:
+🔗 **Produção:** https://www.mfernandavetere.adv.br
 
-```bash
-ng serve
+---
+
+## Stack
+
+| Camada | Tecnologia |
+|---|---|
+| Framework | Angular 21 (SSR — `@angular/ssr` + Express) |
+| Estilização | TailwindCSS 4 (`@theme` em CSS) + SCSS |
+| Ícones | Angular Material (`MatIcon`, SVGs próprios) |
+| CMS (blog + avaliações) | Supabase via REST API (PostgREST + `HttpClient`) |
+| Markdown | `ngx-markdown` + `@tailwindcss/typography` |
+| Máscara de formulário | `ngx-mask` |
+| Envio de formulário | Web3Forms |
+| Sitemap | Vercel Serverless Function (`xmlbuilder2`) |
+| Métricas | `@vercel/analytics` + `@vercel/speed-insights` |
+| Hospedagem | Vercel (deploy automático na branch `main`) |
+
+A arquitetura completa está documentada em **[`ARCHITECTURE.md`](./ARCHITECTURE.md)**. O contexto operacional e padrões de código estão em **[`CLAUDE.md`](./CLAUDE.md)**. Melhorias planejadas em **[`MELHORIAS.md`](./MELHORIAS.md)**.
+
+---
+
+## Pré-requisitos
+
+- Node.js (LTS) e npm
+- Um arquivo `.env` na raiz (ver `.env.example`):
+
+```
+SUPABASE_URL=sua_url_supabase
+SUPABASE_KEY=sua_chave_anon_supabase
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+> A chave/URL são injetadas no build pelo script `scripts/set-env.cjs` (gera `src/environments/environment.ts`, não versionado) e lidas em runtime pela função de sitemap.
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Como rodar
 
 ```bash
-ng generate --help
+# instalar dependências
+npm install
+
+# desenvolvimento (http://localhost:4200)
+npm run dev
+
+# build de produção
+npm run build
+
+# servir o build SSR localmente
+npm run serve:ssr:advocacia-vetere-website
+
+# formatar o projeto (Prettier)
+npm run format
 ```
 
-## Building
+> Os scripts `pre*` (`prebuild`/`predev`/`preserve`) rodam automaticamente `generate-icons.cjs` e `set-env.cjs`. **Não remover** — eles geram a lista de ícones e o arquivo de ambiente.
 
-To build the project run:
+---
 
-```bash
-ng build
+## Estrutura
+
+```
+src/app/
+  core/        → models e services (blog, reviews, SEO)
+  features/    → blocos da home (header, hero, sobre, areas, reviews, contato, mapa, footer…)
+  pages/       → rotas (home, blog, artigo, sucesso, not-found)
+api/sitemap.ts → Serverless Function do sitemap dinâmico
+scripts/       → hooks de pré-build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## Render modes (SSR)
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+| Rota | Modo |
+|---|---|
+| `/`, `/blog`, `/sucesso`, `/404` | Prerender |
+| `/blog/:slug`, `/**` | Server |
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+## Deploy
 
-For end-to-end (e2e) testing, run:
+Deploy automático na Vercel a cada push na branch `main` (branches de feature geram preview deployments).
 
-```bash
-ng e2e
-```
+> **Sempre rodar `npm run build` localmente antes de mergear na `main`** — o build deve completar sem erros.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
+## Convenções
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Código em **inglês**; conteúdo em **português brasileiro**.
+- Commits no padrão **Conventional Commits** (ex.: `feat(...)`, `fix(...)`, `refactor(...)`).
+- Formatação automática via Prettier (`prettier-plugin-organize-imports` + `prettier-plugin-tailwindcss`).
+- Detalhes de padrões em [`CLAUDE.md`](./CLAUDE.md).
+
+---
+
+© Dra. Maria Fernanda Vetere · OAB/SP 527.527 — Desenvolvido por [CRATON Software](https://craton.com.br).

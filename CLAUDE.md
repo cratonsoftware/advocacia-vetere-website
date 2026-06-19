@@ -1,6 +1,8 @@
 # CLAUDE.md — Advocacia Vetere Website
 > Contexto permanente para o Claude Code. Leia antes de qualquer intervenção no projeto.
 
+> **Documentação relacionada:** [`README.md`](./README.md) (uso) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) (arquitetura técnica e fluxo de dados) · [`MELHORIAS.md`](./MELHORIAS.md) (backlog de melhorias priorizado).
+
 ---
 
 ## Sobre o Projeto
@@ -25,9 +27,11 @@ Este é um dos projetos mais representativos do portfólio da CRATON — qualque
 | SSR | @angular/ssr + Express | ^21.2.7 / ^5.1.0 |
 | Estilização | TailwindCSS | ^4.0.0 |
 | CSS preprocessador | SCSS | — |
-| UI Components | Angular Material | ^21.0.0 |
+| UI Components | Angular Material (apenas `MatIcon`, para SVGs próprios) | ^21.0.0 |
 | Banco de dados / CMS | Supabase (via REST API + HttpClient) | ^2.103.3 |
 | Markdown | ngx-markdown | ^21.2.0 |
+| Máscara de formulário | ngx-mask | ^21.0.1 |
+| Envio de formulário | Web3Forms (endpoint externo via `<form action>`) | — |
 | Sitemap dinâmico | xmlbuilder2 (via Vercel Serverless Function) | ^4.0.3 |
 | Analytics | @vercel/analytics + @vercel/speed-insights | ^2.0.x |
 | Formatação | Prettier + plugins (organize-imports, tailwindcss) | ^3.7.4 |
@@ -178,16 +182,23 @@ Configurado em `app.config.ts` via `withHttpTransferCacheOptions({ includeReques
 
 ---
 
-## Google Cloud — Integração de Mapas e Avaliações
+## Avaliações (Google ↔ Supabase) e Mapa
 
-O site usa uma instância própria no Google Cloud para:
-- Buscar localização do escritório no Google Maps
-- Exibir avaliações relevantes do Google Business em tempo real
+### Avaliações — estado real
+As avaliações exibidas são avaliações reais do Google Business, mas **o site NÃO chama a Google Cloud API em tempo de execução**. O fluxo é:
+1. Um processo de sincronização **agendado e pontual** consulta o Google Cloud (Places/Business) para capturar as avaliações do estabelecimento.
+2. Os dados são gravados na tabela **`google_reviews`** do Supabase.
+3. O site lê apenas o Supabase via `HttpClient` (`ReviewsService.getReviews()`, `limit=5`).
 
-**Regras:**
+Isso evita expor chave Google no cliente e poupa quota. O `ReviewsComponent` mantém um **fallback estático** de avaliações para os casos em que o Supabase retorna vazio ou falha.
+
+### Mapa — estado real
+A localização usa um **iframe de embed do Google Maps** (`mapa.component.html`). A integração Supabase ↔ Google Cloud para um mapa personalizado foi **planejada, mas não executada** — hoje é apenas o embed padrão.
+
+**Regras (para futura integração via Google Cloud API):**
 - Chave da API exclusiva para este projeto — não reutilizar em outros
-- Requisições feitas server-side sempre que possível para não expor a chave no client
-- Implementar cache das respostas do Google (avaliações não mudam a cada segundo) — evitar quota desnecessária
+- Requisições feitas server-side / em pipeline de sincronização, nunca expondo a chave no client
+- Manter o cache em Supabase (avaliações mudam raramente) — evitar quota desnecessária
 
 ---
 
