@@ -168,7 +168,7 @@ Arquivo Markdown na raiz do domínio que **curadoria** o conteúdo mais valioso 
 
 O que **falta no dado** hoje para sustentar tudo da §4 (priorizado por impacto):
 
-> **Atualização S3 (2026-06-19):** o lado-banco das lacunas foi resolvido. ✅ resolvidos: **G1** (tabela `authors` + seed), **G2** (`updatedAt` na view), **G3** (ISO na view; transporte no front feito na S2), **G4** (`meta_title`/`meta_description` — consumo no front = S4), **G6** (`tags`), **G8** (`tldr`/`faq` — `FAQPage` no front = S5), **G9** (`cover_image_alt`), **G11** (`locale`), **G12** (categoria "Família"), **G13** (índices). 🔄 **G5** parcial: bucket `article-covers` criado; falta enviar a imagem 1200×630. ⬜ Restam para front: **G7** (rota `/blog/categoria/:slug` — S5) e o uso de **G10** (`canonical_url`/`noindex` já existem como colunas — consumo = S4).
+> **Atualização S3 (2026-06-19):** o lado-banco das lacunas foi resolvido. ✅ resolvidos: **G1** (tabela `authors` + seed), **G2** (`updatedAt` na view), **G3** (ISO na view; transporte no front feito na S2), **G4** (`meta_title`/`meta_description` — consumo no front = S4), **G6** (`tags`), **G8** (`tldr`/`faq` — `FAQPage` no front = S5), **G9** (`cover_image_alt`), **G11** (`locale`), **G12** (categoria "Família"), **G13** (índices). **G5** ✅: capa 1200×630 no bucket `article-covers` e `cover_image` apontando para a URL pública do Storage. ⬜ Restam para front: **G7** (rota `/blog/categoria/:slug` — S5) e o uso de **G10** (`canonical_url`/`noindex` já existem como colunas — consumo = S4).
 
 | #   | Lacuna                                                                                | Impacto        | Por quê                                                              |
 | --- | ------------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------- |
@@ -273,7 +273,7 @@ alter view public.published_articles set (security_invoker = true);
 
 Migrar capas para **Supabase Storage** (bucket público `article-covers`), em **1200×630** (proporção OG) e formato moderno (WebP/AVIF), preenchendo `cover_image_alt`. Elimina risco de licença do istockphoto, melhora LCP e dá controle do cartão social.
 
-> **Status S3 (2026-06-19):** infra criada — bucket público `article-covers` (objetos servidos via URL pública; sem policy de listagem, por recomendação do linter) e `cover_image_alt` preenchido para o artigo existente. **Pendente (operador):** subir a imagem 1200×630 ao bucket e atualizar `cover_image` para a URL do Storage. Enquanto isso, `cover_image` segue apontando para o hotlink atual (a substituir).
+> **Status S3 (2026-06-19) — concluído:** bucket público `article-covers` (objetos servidos via URL pública; sem policy de listagem, por recomendação do linter); imagem `traicao-da-direito-a-indenizacao.png` (1200×630) enviada ao bucket e `cover_image` do artigo atualizado para a URL pública do Storage (`/storage/v1/object/public/article-covers/<slug>.png`); `cover_image_alt` preenchido. Hotlink do istockphoto eliminado. Convenção: **nome do arquivo da capa = `<slug>.png`**.
 
 ---
 
