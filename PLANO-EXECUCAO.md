@@ -2,7 +2,7 @@
 
 > Guia operacional para executar, em sessões separadas e sem retrabalho, todas as correções e melhorias documentadas em [`MELHORIAS.md`](./MELHORIAS.md) e [`BLOG-SEO.md`](./BLOG-SEO.md). Este arquivo é a **fonte única de verdade do progresso** — sempre leia o §6 (Registro de progresso) antes de começar e atualize-o ao terminar.
 >
-> Mantido pela CRATON Software. Última revisão: 2026-06-19.
+> Mantido pela CRATON Software. Última revisão: 2026-06-20.
 
 ---
 
@@ -23,16 +23,16 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 
 **7 sessões essenciais + 1 opcional (testes).** Ordem por dependência e risco:
 
-| #                   | Sessão                       | Foco                                                                 | Depende de | Modelo      | Risco      |
-| ------------------- | ---------------------------- | -------------------------------------------------------------------- | ---------- | ----------- | ---------- |
-| **S1**              | **P0 — Indexação do artigo** | Pré-renderizar `/blog/:slug` + deploy hook                           | —          | **Opus**    | Médio      |
-| **S2**              | Quick wins de SEO/UX         | Correções pequenas e seguras                                         | —          | Sonnet      | Baixo      |
-| **S3**              | Banco — fundação E-E-A-T     | `authors`, view ISO/`updated_at`, capas no Storage                   | S1         | **Opus**    | Médio-Alto |
-| **S4**              | Schema & SERP                | meta dedicados, JSON-LD Article rico, Breadcrumb, LegalService       | S3         | **Opus**    | Médio      |
-| **S5**              | Topical authority & GEO/AEO  | tags, páginas de categoria, TL;DR/FAQ, `llms.txt`                    | S3         | Sonnet/Opus | Médio      |
-| **S6**              | Performance & modernização   | OnPush/zoneless, fontes WOFF2, preconnect, NgOptimizedImage, índices | —          | Sonnet      | Médio      |
-| **S7**              | Acessibilidade & UX          | reduced-motion, skip link, foco, contraste, skeletons, manifest      | —          | Sonnet      | Baixo      |
-| **S8** _(opcional)_ | Testes & verificação final   | smoke tests + auditoria de fechamento                                | todas      | Opus/Sonnet | Baixo      |
+| #                   | Sessão                      | Foco                                                                 | Depende de | Modelo      | Risco      |
+| ------------------- | --------------------------- | -------------------------------------------------------------------- | ---------- | ----------- | ---------- |
+| **S1**              | P0 — Indexação do artigo    | Pré-renderizar `/blog/:slug` + deploy hook                           | —          | **Opus**    | Médio      |
+| **S2**              | Quick wins de SEO/UX        | Correções pequenas e seguras                                         | —          | Sonnet      | Baixo      |
+| **S3**              | Banco — fundação E-E-A-T    | `authors`, view ISO/`updated_at`, capas no Storage                   | S1         | **Opus**    | Médio-Alto |
+| **S4**              | Schema & SERP               | meta dedicados, JSON-LD Article rico, Breadcrumb, LegalService       | S3         | **Opus**    | Médio      |
+| **S5**              | Topical authority & GEO/AEO | tags, páginas de categoria, TL;DR/FAQ, `llms.txt`                    | S3         | Sonnet/Opus | Médio      |
+| **S6**              | Performance & modernização  | OnPush/zoneless, fontes WOFF2, preconnect, NgOptimizedImage, índices | —          | Sonnet      | Médio      |
+| **S7**              | Acessibilidade & UX         | reduced-motion, skip link, foco, contraste, skeletons, manifest      | —          | Sonnet      | Baixo      |
+| **S8** _(opcional)_ | Testes & verificação final  | smoke tests + auditoria de fechamento                                | todas      | Opus/Sonnet | Baixo      |
 
 > S2, S6 e S7 são independentes e podem ser feitas em qualquer ordem após a S1. S4 e S5 **dependem** da S3 (precisam dos campos novos do banco). **S1 deve ser a primeira e sozinha** — destrava todo o resto de SEO.
 
@@ -97,7 +97,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S3 — Banco E-E-A-T | ✅ | 2026-06-19 | 5c8de94 · 9e74ae4 | Migração aditiva aplicada via MCP Supabase; view retrocompatível com ISO+author; `get_advisors security` **limpo**; capa migrada ao Storage (`cover_image` → URL pública do bucket `article-covers`) |
 | S4 — Schema & SERP | ✅ | 2026-06-19 | 3f22e3e | Branch `feat/seo-schema-serp`; build verde + push. Meta dedicados, JSON-LD Article rico, BreadcrumbList, LegalService enriquecido, og:locale + lastmod no sitemap. **Pós-deploy:** validar no Rich Results Test (preview/produção). **Follow-up S5:** trocar `author.url` da home para `/autor/maria-fernanda-vetere` quando a rota existir (ver §6.2 S5) |
 | S5 — Topical & GEO | ✅ | 2026-06-20 | f5e8b711 | **Build verde + commit na `main`.** Tags + linkagem interna (G6), páginas de categoria `/blog/categoria/:slug` (G7), TL;DR + FAQ + `FAQPage` (G8), `/llms.txt` dinâmico (§4.5) + categorias no sitemap. Artigo de exemplo semeado (tags/tldr/faq) via Supabase; FAQ migrada do Markdown p/ o campo `faq`. **Pós-deploy:** validar no preview/produção (Rich Results / `/blog/categoria/familia` / `/llms.txt`). Follow-up: página `/autor/:slug` |
-| S6 — Performance | 🔄 | 2026-06-20 | — | Código aplicado (OnPush, signals, WOFF2, preconnect, NgOptimizedImage, zoneless). Build + commit + push pendentes do operador. |
+| S6 — Performance | ✅ | 2026-06-20 | 0a4243d6 | OnPush + zoneless (zone.js removido), signals/toSignal/computed, WOFF2 (~60% menor), preconnect, NgOptimizedImage (hero priority, fill nos cards, identity loader). Build verde. |
 | S7 — Acessibilidade | ⬜ | — | — |  |
 | S8 — Testes (opc.) | ⬜ | — | — |  |
 
@@ -148,12 +148,12 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 **S6 — Performance & modernização** _(detalhes: `MELHORIAS.md` §1.1, §4; `BLOG-SEO.md` §4.4)_ — _código aplicado 2026-06-20 na branch `perf/cwv-modernization`; build/commit/push pendentes do operador_
 
-- ✅ `OnPush` em todos os componentes + `provideZonelessChangeDetection()` + zone.js removido de `angular.json` polyfills — §1.1 _(2026-06-20, pendente commit)_
-- ✅ Estado migrado para `toSignal()` + `computed()` + `signal()` nos componentes com lógica (`BlogComponent`, `BlogPreviewComponent`); `ChangeDetectorRef.markForCheck()` nos componentes com `subscribe` direto (`ReviewsComponent`, `ArtigoComponent`, `CategoriaComponent`) — §1.2 _(2026-06-20, pendente commit)_
-- ✅ 8 fontes convertidas para WOFF2 (~60% menores); `@font-face` atualizado para WOFF2 como formato primário + TTF/OTF como fallback — §4.1 _(2026-06-20, pendente commit)_
-- ✅ `<link rel="preload">` para AnticDidone e Inter VariableFont em `src/index.html` — §4.1 _(2026-06-20, pendente commit)_
-- ✅ `<link rel="preconnect">` para Supabase, Google Maps e Web3Forms em `src/index.html` — §4.2 _(2026-06-20, pendente commit)_
-- ✅ `NgOptimizedImage` + `IMAGE_LOADER` identity (para URLs externas Supabase); hero com `priority` + `fill`; sobre com `width`/`height` reais (1365×2048); cards com `fill` em containers `relative h-*` — §3.8/§4.4 _(2026-06-20, pendente commit)_
+- ✅ `OnPush` em todos os componentes + `provideZonelessChangeDetection()` + zone.js removido de `angular.json` polyfills — §1.1 _(2026-06-20, 0a4243d6)_
+- ✅ Estado migrado para `toSignal()` + `computed()` + `signal()` nos componentes com lógica (`BlogComponent`, `BlogPreviewComponent`); `ChangeDetectorRef.markForCheck()` nos componentes com `subscribe` direto (`ReviewsComponent`, `ArtigoComponent`, `CategoriaComponent`) — §1.2 _(2026-06-20, 0a4243d6)_
+- ✅ 8 fontes convertidas para WOFF2 (~60% menores); `@font-face` atualizado para WOFF2 como formato primário + TTF/OTF como fallback — §4.1 _(2026-06-20, 0a4243d6)_
+- ✅ `<link rel="preload">` para AnticDidone e Inter VariableFont em `src/index.html` — §4.1 _(2026-06-20, 0a4243d6)_
+- ✅ `<link rel="preconnect">` para Supabase, Google Maps e Web3Forms em `src/index.html` — §4.2 _(2026-06-20, 0a4243d6)_
+- ✅ `NgOptimizedImage` + `IMAGE_LOADER` identity (para URLs externas Supabase); hero com `priority` + `fill`; sobre com `width`/`height` reais (1365×2048); cards com `fill` em containers `relative h-*` — §3.8/§4.4 _(2026-06-20, 0a4243d6)_
 - ✅ Índices `category_id` e `published_at desc` — G13 _(já aplicados em S3, migração `add_eeat_columns_to_articles`, 2026-06-19, 5c8de94)_
 
 **S7 — Acessibilidade & UX** _(detalhes: `MELHORIAS.md` §3)_
