@@ -18,6 +18,7 @@ export class ArtigoComponent implements OnInit {
 	private seoService = inject(SeoService);
 
 	article: Artigo | null = null;
+	relatedArticles: Artigo[] = [];
 	isLoading = true;
 
 	ngOnInit(): void {
@@ -30,6 +31,12 @@ export class ArtigoComponent implements OnInit {
 
 				if (data) {
 					const baseUrl = 'https://www.mfernandavetere.adv.br';
+
+					// Linkagem interna (G6): artigos da mesma categoria, exceto o atual.
+					if (data.categorySlug) {
+						this.blogService.getRelatedArticles(data.categorySlug, data.slug).subscribe((related) => (this.relatedArticles = related));
+					}
+
 					this.seoService.updateMetaTags({
 						title: data.metaTitle || data.title,
 						description: data.metaDescription || data.excerpt,
@@ -42,7 +49,7 @@ export class ArtigoComponent implements OnInit {
 							name: data.author?.name || 'Dra. Maria Fernanda Vetere',
 							jobTitle: data.author?.role || 'Advogada',
 							oab: data.author?.oab || undefined,
-							// Página /autor/:slug será criada na S5 — por ora aponta para a home (sem 404).
+							// Página /autor/:slug ainda não existe (follow-up) — por ora aponta para a home (sem 404).
 							url: baseUrl,
 							sameAs: data.author?.sameAs || undefined,
 						},
@@ -56,6 +63,7 @@ export class ArtigoComponent implements OnInit {
 							{ name: 'Blog', url: `${baseUrl}/blog` },
 							{ name: data.title, url: `${baseUrl}/blog/${data.slug}` },
 						],
+						faq: data.faq?.length ? data.faq.map((item) => ({ q: item.q, a: item.a })) : undefined,
 					});
 				}
 			});

@@ -4,6 +4,12 @@ export interface CategoriaArtigo {
 	slug: string;
 }
 
+/** Par pergunta/resposta de FAQ — alimenta a seção visível e o `FAQPage` (S5). */
+export interface FaqItem {
+	q: string;
+	a: string;
+}
+
 /** Entidade de autor (E-E-A-T) — exposta pela view `published_articles` como objeto `author` (S3). */
 export interface AutorArtigo {
 	name: string;
@@ -42,8 +48,12 @@ export interface Artigo {
 	metaDescription?: string;
 	/** texto alternativo da capa (acessibilidade + SEO de imagem). */
 	coverImageAlt?: string;
-	/** tags do artigo (keywords no schema + linkagem interna na S5). */
+	/** tags do artigo (keywords no schema + linkagem interna — S5). */
 	tags?: string[];
+	/** resposta direta (GEO/AEO) exibida no topo do artigo — S5. */
+	tldr?: string | null;
+	/** perguntas frequentes do artigo → seção visível + `FAQPage` — S5. */
+	faq?: FaqItem[] | null;
 	/** idioma do conteúdo (ex.: `pt-BR`) — `inLanguage` no schema. */
 	locale?: string;
 	/** slug da categoria — base para `/blog/categoria/:slug` (S5). */

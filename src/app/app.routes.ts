@@ -13,6 +13,10 @@ export const routes: Routes = [
 		pathMatch: 'full',
 	},
 	{
+		path: 'blog/categoria/:slug',
+		loadComponent: () => import('./pages/categoria/categoria.component').then((m) => m.CategoriaComponent),
+	},
+	{
 		path: 'blog/:slug',
 		loadComponent: () => import('./pages/artigo/artigo.component').then((m) => m.ArtigoComponent),
 	},

@@ -70,6 +70,7 @@ O servidor Express (`src/server.ts`) é responsável exclusivamente por:
 | `/`           | `Prerender` | Conteúdo estático — máxima performance e SEO                                                                                                  |
 | `/blog`       | `Prerender` | Listagem de artigos pré-renderizada com conteúdo real                                                                                         |
 | `/blog/:slug` | `Prerender` | Pré-renderizado por slug via `getPrerenderParams()` (lê os slugs publicados no Supabase no build) — HTML estático com SEO próprio e indexável |
+| `/blog/categoria/:slug` | `Prerender` | Página de categoria (hub) pré-renderizada por slug via `getPrerenderParams()` (lê os slugs de `categories` no build) — SEO próprio `CollectionPage` + `BreadcrumbList` (S5) |
 | `/sucesso`    | `Prerender` | Página simples sem dados dinâmicos                                                                                                            |
 | `/404`        | `Prerender` | Página de erro estática                                                                                                                       |
 | `/**`         | `Server`    | Fallback para rotas não mapeadas                                                                                                              |
@@ -97,19 +98,24 @@ Três scripts são executados antes de `serve`, `dev` e `build`:
 
 **Nunca remover os hooks `pre*` do package.json.** Qualquer build sem esses scripts pode gerar assets inconsistentes ou variáveis ausentes em produção.
 
-### Sitemap dinâmico
+### Sitemap dinâmico e `/llms.txt`
 
-O sitemap **não** é gerado pelo Express. É uma **Vercel Serverless Function** em `api/sitemap.ts`, reescrita para `/sitemap.xml` via `vercel.json`:
+Nem o sitemap nem o `llms.txt` são gerados pelo Express. São **Vercel Serverless Functions** (`api/sitemap.ts` e `api/llms.ts`), reescritas via `vercel.json`:
 
 ```json
 {
-	"rewrites": [{ "source": "/sitemap.xml", "destination": "/api/sitemap" }]
+	"rewrites": [
+		{ "source": "/sitemap.xml", "destination": "/api/sitemap" },
+		{ "source": "/llms.txt", "destination": "/api/llms" }
+	]
 }
 ```
 
-A função busca os slugs de artigos no Supabase e gera o XML com xmlbuilder2. O `robots.txt` aponta para `https://www.mfernandavetere.adv.br/sitemap.xml`.
+O `api/sitemap.ts` busca os slugs de artigos no Supabase e gera o XML com xmlbuilder2, incluindo home, `/blog`, cada **página de categoria** (`/blog/categoria/:slug`, derivada dos `categorySlug` distintos) e cada artigo, todos com `lastmod`. O `robots.txt` aponta para `https://www.mfernandavetere.adv.br/sitemap.xml`.
 
-Quando novas rotas forem adicionadas, atualizar `api/sitemap.ts` para incluí-las.
+O `api/llms.ts` (S5, §4.5 do `BLOG-SEO.md`) gera dinamicamente um Markdown curado para crawlers de IA (GEO/AEO) a partir da view `published_articles`: cabeçalho do escritório, páginas principais, áreas de atuação, categorias do blog e cada artigo com uma linha (`tldr` → fallback `excerpt`).
+
+Quando novas rotas forem adicionadas, atualizar `api/sitemap.ts` (e, se fizer sentido, `api/llms.ts`) para incluí-las.
 
 ---
 
@@ -209,6 +215,10 @@ this.http.get<Artigo[]>(`${this.apiUrl}/published_articles?select=*`, { headers:
 **Schema E-E-A-T (S3 — aplicado 2026-06-19, migração aditiva e não destrutiva):** existe a tabela `authors` (entidade de autor com `oab`, `bio`, `same_as` — RLS `SELECT` público) e `articles` ganhou colunas aditivas (`author_id`, `meta_title`, `meta_description`, `cover_image_alt`, `tags`, `tldr`, `faq`, `canonical_url`, `noindex`, `locale`) + índices em `category_id` e `published_at`. A view `published_articles` é **retrocompatível** (mantém os campos antigos) e agora também expõe `publishedAt`/`updatedAt` em **ISO**, `author` (objeto), `metaTitle`/`metaDescription`, `coverImageAlt`, `tags`, `tldr`, `faq`, `locale`, `canonicalUrl`, `noindex` e `categorySlug`; é `security_invoker` (respeita o RLS das tabelas base). Capas: bucket público `article-covers` no Storage (a imagem 1200×630 é enviada manualmente; `cover_image` migra para o Storage como follow-up). Detalhes e schema completo em `BLOG-SEO.md` §6. **Não** quebrar a retrocompatibilidade da view nem remover colunas.
 
 **Consumo de SEO no front (S4 — aplicado 2026-06-19):** o `ArtigoComponent` usa `metaTitle`/`metaDescription` dedicados e o `BlogService.formatDate` deriva `dateIso`/`updatedAtIso` de `publishedAt`/`updatedAt` via `.toISOString()` — os timestamps do PostgREST não têm `T`, então **não** usar `split('T')`. O `SeoService` monta um `BlogPosting` rico (`mainEntityOfPage`, `ImageObject` 1200×630 com `caption`, `datePublished`/`dateModified`, `inLanguage`, `articleSection`, `keywords`, `author` `Person` com `identifier` OAB e `sameAs`) + um bloco `BreadcrumbList` separado, e enriquece o `LegalService` da home (telefone, e-mail, endereço, `geo`, `openingHoursSpecification`, `sameAs`, `priceRange`, `logo`). Múltiplos blocos JSON-LD coexistem via atributo `data-seo` (`main`/`breadcrumb`). Também emite `og:locale=pt_BR` e `og:image:alt`; o `api/sitemap.ts` emite `lastmod` em home/`blog`. Detalhes em `BLOG-SEO.md` §7.
+
+**Topical authority & GEO/AEO (S5 — aplicado 2026-06-20):** **G6** — `ArtigoComponent` exibe `tags` como chips, transforma o badge de categoria em link para `/blog/categoria/:slug` (no artigo e nos cards do `/blog`) e renderiza a seção "Leia também" (`BlogService.getRelatedArticles`, mesma categoria via `categorySlug`, exclui o atual). **G7** — nova rota `/blog/categoria/:slug` (`CategoriaComponent`), pré-renderizada (`getCategorySlugs` lê `categories` no build), com SEO próprio (`CollectionPage` + `BreadcrumbList`); `BlogService.getCategoryBySlug`/`getArticlesByCategorySlug`. **G8** — bloco TL;DR (`tldr`) no topo e seção visível de FAQ (`faq`) por artigo, com `FAQPage` em bloco JSON-LD separado (`data-seo="faq"`, criado/removido conforme presença) no `SeoService`. **§4.5** — `/llms.txt` dinâmico (`api/llms.ts`). Um novo bloco JSON-LD `data-seo="faq"` soma-se a `main`/`breadcrumb`. O `SeoConfig` ganhou `faq`; o modelo `Artigo` ganhou `tldr`/`faq` (`FaqItem`). Detalhes em `BLOG-SEO.md` §4.3/§4.5/§7.
+
+> **Conteúdo do artigo vs. campo `faq`:** o FAQ é renderizado a partir do campo estruturado `faq` (fonte única) e gera o `FAQPage`. Ao cadastrar `faq`, **não** duplicar as mesmas perguntas no Markdown `content` (regra "só marcar o que aparece na página": a seção visível vem do campo). O artigo de exemplo teve a seção "Perguntas frequentes" migrada do `content` para o campo `faq`.
 
 **Boas práticas obrigatórias:**
 

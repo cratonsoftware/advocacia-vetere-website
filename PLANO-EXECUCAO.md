@@ -96,7 +96,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S2 — Quick wins | ✅ | 2026-06-19 | f499d40 | 7 de 8 itens aplicados; §3.6 (redirect) N/A — configurado na plataforma Web3Forms |
 | S3 — Banco E-E-A-T | ✅ | 2026-06-19 | 5c8de94 · 9e74ae4 | Migração aditiva aplicada via MCP Supabase; view retrocompatível com ISO+author; `get_advisors security` **limpo**; capa migrada ao Storage (`cover_image` → URL pública do bucket `article-covers`) |
 | S4 — Schema & SERP | ✅ | 2026-06-19 | 3f22e3e | Branch `feat/seo-schema-serp`; build verde + push. Meta dedicados, JSON-LD Article rico, BreadcrumbList, LegalService enriquecido, og:locale + lastmod no sitemap. **Pós-deploy:** validar no Rich Results Test (preview/produção). **Follow-up S5:** trocar `author.url` da home para `/autor/maria-fernanda-vetere` quando a rota existir (ver §6.2 S5) |
-| S5 — Topical & GEO | ⬜ | — | — | Depende de S3 |
+| S5 — Topical & GEO | ✅ | 2026-06-20 | _(pendente do operador)_ | Branch `feat/topical-geo-aeo`. Código aplicado: tags + linkagem interna (G6), páginas de categoria `/blog/categoria/:slug` (G7), TL;DR + FAQ + `FAQPage` (G8), `/llms.txt` dinâmico (§4.5) + categorias no sitemap. Artigo de exemplo semeado (tags/tldr/faq) via Supabase; FAQ migrada do Markdown p/ o campo `faq`. **Pendentes do operador:** `npm run build`, commit (Conventional Commits), push e validação no preview (Rich Results/`/blog/categoria/familia`/`/llms.txt`). Follow-up: página `/autor/:slug` |
 | S6 — Performance | ⬜ | — | — |  |
 | S7 — Acessibilidade | ⬜ | — | — |  |
 | S8 — Testes (opc.) | ⬜ | — | — |  |
@@ -137,13 +137,14 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 - ✅ Enriquecer `LegalService` da home (telefone, e-mail, endereço completo, geo, `openingHoursSpecification`, `sameAs`, `priceRange`, `logo`) — §2.1
 - ✅ `og:locale` (`pt_BR`) + `og:image:alt` no `SeoService`; `lastmod` de home/blog no `api/sitemap.ts` (data de modificação mais recente) — §2.3/§2.4
 
-**S5 — Topical authority & GEO/AEO** _(detalhes: `BLOG-SEO.md` §4.3, §6, §7)_
+**S5 — Topical authority & GEO/AEO** _(detalhes: `BLOG-SEO.md` §4.3, §6, §7)_ — _código aplicado 2026-06-20 na branch `feat/topical-geo-aeo`; build/commit/preview pendentes do operador_
 
-- ⬜ `tags` por artigo + linkagem interna — G6
-- ⬜ Páginas de categoria `/blog/categoria/:slug` (usar `category.slug`) — G7
-- ⬜ `tldr` + `faq` por artigo → `FAQPage` — G8
-- ⬜ `/llms.txt` dinâmico a partir da view — §4.5
-- ⬜ **Follow-up da S4:** criar a rota/página `/autor/:slug` (perfil da autora — bio, OAB, `sameAs`) e **trocar `author.url`** no `ArtigoComponent` de `baseUrl` (home) para `${baseUrl}/autor/${data.author?.slug}`. Hoje o campo `url` do JSON-LD `Person` aponta para a home **propositadamente**, para não gerar 404 antes da página existir (decisão registrada na S4). Ao criar a página, incluir a rota no `api/sitemap.ts`.
+- ✅ `tags` por artigo + linkagem interna — G6 _(chips de `tags` no artigo; badge de categoria clicável no artigo e nos cards do `/blog`; seção "Leia também" via `BlogService.getRelatedArticles`)_
+- ✅ Páginas de categoria `/blog/categoria/:slug` (usar `categorySlug`) — G7 _(`CategoriaComponent` + rota; Prerender via `getCategorySlugs`; `CollectionPage` + `BreadcrumbList`; `getCategoryBySlug`/`getArticlesByCategorySlug`)_
+- ✅ `tldr` + `faq` por artigo → `FAQPage` — G8 _(bloco TL;DR no topo; seção de FAQ a partir do campo `faq`; `SeoService` emite `FAQPage` em bloco `data-seo="faq"`; modelo `Artigo` ganhou `tldr`/`faq`)_
+- ✅ `/llms.txt` dinâmico a partir da view — §4.5 _(`api/llms.ts` + rewrite no `vercel.json`; páginas de categoria também adicionadas ao `api/sitemap.ts`)_
+- ✅ Dados de validação semeados no artigo de exemplo (tags, TL;DR, 5 FAQs) via Supabase; a seção "Perguntas frequentes" foi migrada do Markdown `content` para o campo `faq` (fonte única, sem duplicação)
+- ⬜ **Follow-up (fora do escopo declarado da S5):** criar a rota/página `/autor/:slug` (perfil da autora — bio, OAB, `sameAs`) e **trocar `author.url`** no `ArtigoComponent` de `baseUrl` (home) para `${baseUrl}/autor/${data.author?.slug}`. Hoje o campo `url` do JSON-LD `Person` aponta para a home **propositadamente**, para não gerar 404 antes da página existir (decisão registrada na S4). Ao criar a página, incluir a rota no `api/sitemap.ts`.
 
 **S6 — Performance & modernização** _(detalhes: `MELHORIAS.md` §1.1, §4; `BLOG-SEO.md` §4.4)_
 

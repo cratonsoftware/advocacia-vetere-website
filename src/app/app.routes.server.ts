@@ -25,6 +25,28 @@ async function getPublishedArticleSlugs(): Promise<Array<{ slug: string }>> {
 	}
 }
 
+// Busca, em tempo de build, os slugs das categorias para pre-renderizar cada
+// pagina de arquivo (/blog/categoria/:slug) como HTML estatico com SEO proprio.
+// Mesma estrategia de robustez dos artigos: em falha, retorna [] sem quebrar o build.
+async function getCategorySlugs(): Promise<Array<{ slug: string }>> {
+	try {
+		const response = await fetch(`${environment.supabaseUrl}/rest/v1/categories?select=slug`, {
+			headers: {
+				apikey: environment.supabaseKey,
+				Authorization: `Bearer ${environment.supabaseKey}`,
+			},
+		});
+
+		if (!response.ok) throw new Error(`Supabase respondeu ${response.status} ao listar categorias`);
+
+		const categories = (await response.json()) as Array<{ slug: string }>;
+		return categories.map((category) => ({ slug: category.slug }));
+	} catch (error) {
+		console.error('[prerender] Falha ao buscar slugs de categorias no Supabase:', error);
+		return [];
+	}
+}
+
 export const serverRoutes: ServerRoute[] = [
 	{
 		path: '',
@@ -33,6 +55,11 @@ export const serverRoutes: ServerRoute[] = [
 	{
 		path: 'blog',
 		renderMode: RenderMode.Prerender,
+	},
+	{
+		path: 'blog/categoria/:slug',
+		renderMode: RenderMode.Prerender,
+		getPrerenderParams: getCategorySlugs,
 	},
 	{
 		path: 'blog/:slug',

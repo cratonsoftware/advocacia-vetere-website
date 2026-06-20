@@ -15,6 +15,12 @@ export interface SeoBreadcrumb {
 	url: string;
 }
 
+/** Par pergunta/resposta para o `FAQPage` (S5). */
+export interface SeoFaqItem {
+	q: string;
+	a: string;
+}
+
 export interface SeoConfig {
 	title: string;
 	description: string;
@@ -36,5 +42,7 @@ export interface SeoConfig {
 	inLanguage?: string;
 	/** trilha de navegação → `BreadcrumbList` (somente quando presente). */
 	breadcrumbs?: SeoBreadcrumb[];
+	/** perguntas frequentes → `FAQPage` em bloco JSON-LD separado (somente quando presente). */
+	faq?: SeoFaqItem[];
 	noIndex?: boolean;
 }

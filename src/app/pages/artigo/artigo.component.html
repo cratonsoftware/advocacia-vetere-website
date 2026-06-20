@@ -19,7 +19,11 @@
 				</a>
 
 				<div class="mb-6 flex flex-wrap items-center gap-4 text-[9px] font-bold tracking-[0.2em] uppercase">
-					<span class="bg-n4 text-n0 rounded-sm px-3 py-1.5">{{ article.category }}</span>
+					@if (article.categorySlug) {
+						<a [routerLink]="['/blog/categoria', article.categorySlug]" class="bg-n4 text-n0 hover:bg-n3 rounded-sm px-3 py-1.5 transition-colors">{{ article.category }}</a>
+					} @else {
+						<span class="bg-n4 text-n0 rounded-sm px-3 py-1.5">{{ article.category }}</span>
+					}
 					<span class="text-n3">{{ article.date }}</span>
 					<span class="text-n3/50">•</span>
 					<span class="text-n3">{{ article.readTime }}</span>
@@ -38,11 +42,46 @@
 				</div>
 			}
 
+			@if (article.tldr) {
+				<aside class="border-l-n4 bg-n0 border-n2/20 mb-16 border border-l-4 px-6 py-6 shadow-sm sm:px-8">
+					<p class="text-n4/70 mb-3 text-[9px] font-bold tracking-[0.3em] uppercase">Resposta direta</p>
+					<p class="text-n3 font-inter text-base leading-relaxed font-light sm:text-lg">{{ article.tldr }}</p>
+				</aside>
+			}
+
 			<article>
 				<div
 					class="prose md:prose-lg text-n3 font-inter prose-headings:font-antic-didone prose-headings:text-n4 prose-headings:font-normal prose-p:mb-6 prose-p:leading-relaxed prose-p:font-light prose-a:text-n4 prose-a:font-bold prose-blockquote:border-l-n4 prose-blockquote:bg-n1/40 prose-blockquote:px-8 prose-blockquote:py-4 prose-blockquote:font-serif prose-blockquote:text-xl prose-blockquote:italic prose-blockquote:text-n4/80 max-w-none">
 					<markdown [data]="article.content"></markdown>
 				</div>
+
+				@if (article.faq && article.faq.length > 0) {
+					<section class="border-n4/10 mt-20 border-t pt-12" aria-labelledby="faq-heading">
+						<h2 id="faq-heading" class="font-antic-didone text-n4 mb-8 text-3xl lg:text-4xl">Perguntas frequentes</h2>
+						<div class="divide-n4/10 divide-y">
+							@for (item of article.faq; track item.q) {
+								<details class="group py-5">
+									<summary class="text-n4 font-antic-didone flex cursor-pointer items-center justify-between gap-4 text-lg marker:content-none lg:text-xl">
+										{{ item.q }}
+										<svg class="text-n4/50 h-5 w-5 shrink-0 transition-transform duration-300 group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
+										</svg>
+									</summary>
+									<p class="text-n3 font-inter mt-4 text-sm leading-relaxed font-light sm:text-base">{{ item.a }}</p>
+								</details>
+							}
+						</div>
+					</section>
+				}
+
+				@if (article.tags && article.tags.length > 0) {
+					<div class="mt-16 flex flex-wrap items-center gap-3">
+						<span class="text-n3/70 text-[9px] font-bold tracking-[0.2em] uppercase">Temas:</span>
+						@for (tag of article.tags; track tag) {
+							<span class="border-n4/20 text-n3 rounded-full border px-3 py-1 text-[11px] font-medium">{{ tag }}</span>
+						}
+					</div>
+				}
 
 				<div class="border-n4/10 mt-20 flex flex-col items-center justify-between gap-8 border-t pt-12 md:flex-row">
 					<div class="flex items-center gap-4">
@@ -66,6 +105,30 @@
 					</div>
 				</div>
 			</article>
+
+			@if (relatedArticles.length > 0) {
+				<section class="mt-24" aria-labelledby="related-heading">
+					<h2 id="related-heading" class="font-antic-didone text-n4 mb-10 text-3xl lg:text-4xl">Leia também</h2>
+					<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+						@for (related of relatedArticles; track related.id) {
+							<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
+								<div class="relative h-44 w-full overflow-hidden">
+									<img [src]="related.coverImage" [alt]="related.coverImageAlt || related.title" loading="lazy" class="h-full w-full object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
+									<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">{{ related.category }}</div>
+								</div>
+								<div class="flex flex-1 flex-col p-6">
+									<span class="text-n3 mb-3 text-xs font-medium">{{ related.date }} • {{ related.readTime }}</span>
+									<h3 class="font-antic-didone text-n4 mb-4 line-clamp-2 text-xl leading-tight">{{ related.title }}</h3>
+									<a [routerLink]="['/blog', related.slug]" class="text-n4 hover:text-n3 mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-colors">
+										Ler Artigo
+										<svg class="h-4 w-4 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+									</a>
+								</div>
+							</article>
+						}
+					</div>
+				</section>
+			}
 		</div>
 	</main>
 } @else {

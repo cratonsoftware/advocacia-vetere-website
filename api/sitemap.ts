@@ -13,7 +13,7 @@ export default async function handler(req: any, res: any) {
 			auth: { persistSession: false },
 		});
 
-		const { data: articles, error } = await supabase.from('published_articles').select('slug, date, updatedAt').order('updatedAt', { ascending: false });
+		const { data: articles, error } = await supabase.from('published_articles').select('slug, date, updatedAt, category, "categorySlug"').order('updatedAt', { ascending: false });
 		if (error) throw error;
 
 		// Normaliza um timestamp para "YYYY-MM-DD" (formato aceito em <lastmod>).
@@ -27,6 +27,15 @@ export default async function handler(req: any, res: any) {
 		doc.ele('url').ele('loc').txt(`${baseUrl}/`).up().ele('lastmod').txt(siteLastMod).up().ele('priority').txt('1.0').up().ele('changefreq').txt('monthly').up().up();
 
 		doc.ele('url').ele('loc').txt(`${baseUrl}/blog`).up().ele('lastmod').txt(siteLastMod).up().ele('priority').txt('0.8').up().ele('changefreq').txt('weekly').up().up();
+
+		// Páginas de categoria (hubs de topical authority) — uma por categorySlug distinto entre os publicados.
+		const categorySlugs = new Set<string>();
+		(articles || []).forEach((artigo: any) => {
+			if (artigo.categorySlug) categorySlugs.add(artigo.categorySlug);
+		});
+		categorySlugs.forEach((categorySlug) => {
+			doc.ele('url').ele('loc').txt(`${baseUrl}/blog/categoria/${categorySlug}`).up().ele('lastmod').txt(siteLastMod).up().ele('priority').txt('0.6').up().ele('changefreq').txt('weekly').up().up();
+		});
 
 		if (articles) {
 			articles.forEach((artigo: any) => {

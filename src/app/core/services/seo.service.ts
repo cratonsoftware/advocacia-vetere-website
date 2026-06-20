@@ -89,6 +89,7 @@ export class SeoService {
 		this.setCanonicalUrl(url);
 		this.setJsonLd(config, url, absoluteImageUrl, fullTitle, imageAlt);
 		this.setBreadcrumbJsonLd(config.breadcrumbs);
+		this.setFaqJsonLd(config.faq);
 	}
 
 	private setCanonicalUrl(url: string) {
@@ -155,6 +156,17 @@ export class SeoService {
 				description: config.description,
 				url: url,
 				inLanguage: 'pt-BR',
+				publisher: { '@type': 'LegalService', name: this.siteName },
+			};
+		} else if (config.slug?.startsWith('blog/categoria')) {
+			schema = {
+				'@context': 'https://schema.org',
+				'@type': 'CollectionPage',
+				name: fullTitle,
+				description: config.description,
+				url: url,
+				inLanguage: 'pt-BR',
+				isPartOf: { '@type': 'Blog', name: 'Blog Jurídico | Dra. Maria Fernanda Vetere', url: `${this.baseUrl}/blog` },
 				publisher: { '@type': 'LegalService', name: this.siteName },
 			};
 		} else {
@@ -225,6 +237,27 @@ export class SeoService {
 				position: index + 1,
 				name: item.name,
 				item: item.url,
+			})),
+		};
+		script.textContent = JSON.stringify(schema);
+	}
+
+	/** Injeta (ou remove) o `FAQPage` — presente apenas quando o artigo fornece `faq`. */
+	private setFaqJsonLd(faq?: SeoConfig['faq']) {
+		const existing = this.document.querySelector('script[type="application/ld+json"][data-seo="faq"]');
+		if (!faq || faq.length === 0) {
+			existing?.remove();
+			return;
+		}
+
+		const script = this.getJsonLdScript('faq');
+		const schema = {
+			'@context': 'https://schema.org',
+			'@type': 'FAQPage',
+			mainEntity: faq.map((item) => ({
+				'@type': 'Question',
+				name: item.q,
+				acceptedAnswer: { '@type': 'Answer', text: item.a },
 			})),
 		};
 		script.textContent = JSON.stringify(schema);

@@ -160,6 +160,8 @@ Aplicação: priorizar o LCP do hero e da capa do artigo (preload/`fetchpriority
 
 ### 4.5 `llms.txt` — padrão emergente para crawlers de IA
 
+> **✅ APLICADO na S5 (2026-06-20)** — `/llms.txt` é gerado dinamicamente pela Serverless `api/llms.ts` (reescrita de `/llms.txt` via `vercel.json`), a partir da view `published_articles`: cabeçalho do escritório, páginas principais, áreas de atuação, categorias do blog e cada artigo com uma linha (`tldr`→fallback `excerpt`). Cache `s-maxage=86400`.
+
 Arquivo Markdown na raiz do domínio que **curadoria** o conteúdo mais valioso e "AI-friendly" para LLMs — análogo a um sitemap voltado a IA. Adoção crescente, ainda não honrado por todos os provedores, mas **baixo custo e upside real** de citação. Recomendação: gerar um `/llms.txt` (e opcionalmente `/llms-full.txt`) listando home, áreas de atuação e os artigos do blog com uma linha de descrição cada — preferencialmente **gerado dinamicamente** a partir da view `published_articles`, como já é feito com o sitemap.
 
 ---
@@ -171,6 +173,8 @@ O que **falta no dado** hoje para sustentar tudo da §4 (priorizado por impacto)
 > **Atualização S3 (2026-06-19):** o lado-banco das lacunas foi resolvido. ✅ resolvidos: **G1** (tabela `authors` + seed), **G2** (`updatedAt` na view), **G3** (ISO na view; transporte no front feito na S2), **G4** (`meta_title`/`meta_description` — consumo no front = S4), **G6** (`tags`), **G8** (`tldr`/`faq` — `FAQPage` no front = S5), **G9** (`cover_image_alt`), **G11** (`locale`), **G12** (categoria "Família"), **G13** (índices). **G5** ✅: capa 1200×630 no bucket `article-covers` e `cover_image` apontando para a URL pública do Storage. ⬜ Restam para front: **G7** (rota `/blog/categoria/:slug` — S5) e o uso de **G10** (`canonical_url`/`noindex` já existem como colunas — consumo = S4).
 >
 > **Atualização S4 (2026-06-19):** **consumo no front** das lacunas resolvido — **G4** (`metaTitle`/`metaDescription` consumidos pelo `ArtigoComponent`), **G9** (`coverImageAlt` → `og:image:alt` + `caption` do `ImageObject`), **G11** (`locale` → `inLanguage`) e a entidade de autor **G1** agora viram JSON-LD `Person` (com `identifier` OAB e `sameAs`). O JSON-LD do artigo passou a `BlogPosting` rico + `BreadcrumbList`; o `LegalService` da home foi enriquecido. **G10** (`canonicalUrl`/`noindex`) segue como coluna disponível; o consumo fino foi deixado para a S5 junto com o restante do controle por artigo.
+>
+> **Atualização S5 (2026-06-20):** **consumo no front** das lacunas de topical authority e GEO/AEO resolvido — **G6** (`tags` como chips + linkagem interna: categoria clicável e seção "Leia também"), **G7** (rota `/blog/categoria/:slug` com `CollectionPage` + `BreadcrumbList`, pré-renderizada) e **G8** (`tldr` em bloco de resposta direta + `faq` em seção visível com `FAQPage` JSON-LD). Adicionado o `/llms.txt` dinâmico (§4.5, `api/llms.ts`). **G10** (`canonicalUrl`/`noindex`) **permanece** como coluna disponível, ainda não cabeada no front (fora do escopo declarado da S5). Follow-up remanescente: página `/autor/:slug` (o `author.url` segue apontando para a home).
 
 | #   | Lacuna                                                                                | Impacto        | Por quê                                                              |
 | --- | ------------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------- |
@@ -281,7 +285,9 @@ Migrar capas para **Supabase Storage** (bucket público `article-covers`), em **
 
 ## 7. JSON-LD alvo para artigos (spec de referência)
 
-> **✅ APLICADO na S4 (2026-06-19)** — o `SeoService` passou a montar exatamente o `BlogPosting` abaixo (`mainEntityOfPage`, `ImageObject` 1200×630 com `caption`, `datePublished`/`dateModified` ISO, `inLanguage`, `articleSection`, `keywords` quando há `tags`, `author` `Person` com `jobTitle`, `identifier` OAB e `sameAs`). Foram acrescentados, em blocos JSON-LD separados (identificados por `data-seo`), o **`BreadcrumbList`** (Início › Blog › Artigo) em toda página de artigo. O `LegalService` da home foi enriquecido (telefone, e-mail, endereço completo, `geo`, `openingHoursSpecification`, `sameAs`, `priceRange`, `logo`). Pendente apenas a validação no Rich Results Test pós-deploy (precisa de URL de preview/produção). O `FAQPage` (quando `faq` existir) fica para a S5.
+> **✅ APLICADO na S4 (2026-06-19)** — o `SeoService` passou a montar exatamente o `BlogPosting` abaixo (`mainEntityOfPage`, `ImageObject` 1200×630 com `caption`, `datePublished`/`dateModified` ISO, `inLanguage`, `articleSection`, `keywords` quando há `tags`, `author` `Person` com `jobTitle`, `identifier` OAB e `sameAs`). Foram acrescentados, em blocos JSON-LD separados (identificados por `data-seo`), o **`BreadcrumbList`** (Início › Blog › Artigo) em toda página de artigo. O `LegalService` da home foi enriquecido (telefone, e-mail, endereço completo, `geo`, `openingHoursSpecification`, `sameAs`, `priceRange`, `logo`). Pendente apenas a validação no Rich Results Test pós-deploy (precisa de URL de preview/produção).
+
+> **✅ S5 (2026-06-20):** o `FAQPage` foi implementado — o `SeoService` emite um bloco JSON-LD separado (`data-seo="faq"`) quando o artigo tem `faq`, em paralelo a `main`/`breadcrumb`, e a seção visível de FAQ é renderizada a partir do mesmo campo `faq` (fonte única; ver nota em `CLAUDE.md` sobre não duplicar no Markdown). Também na S5: páginas de categoria (`/blog/categoria/:slug`, `CollectionPage` + `BreadcrumbList`), `tags` + linkagem interna (G6) e `/llms.txt` (§4.5).
 
 Estado atual (`BlogPosting`) vs. alvo. O `SeoService` passaria a montar:
 
