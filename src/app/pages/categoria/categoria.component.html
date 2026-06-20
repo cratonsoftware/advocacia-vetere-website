@@ -1,23 +1,47 @@
 @if (isLoading) {
-	<main class="bg-n1 flex min-h-screen items-center justify-center pt-28">
-		<div class="text-n4/60 flex flex-col items-center gap-4">
-			<div class="bg-n4/20 h-px w-24 animate-pulse"></div>
-			<span class="animate-pulse text-[10px] font-bold tracking-[0.4em] uppercase">Carregando categoria</span>
+	<!-- skeleton da categoria — imita o layout real durante o fetch (S7 §3.11) -->
+	<main class="bg-n1 min-h-screen pt-32 pb-24" aria-busy="true" aria-label="Carregando categoria">
+		<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+			<div class="mb-10 flex gap-2">
+				<div class="bg-n2/40 h-3 w-10 rounded-sm motion-safe:animate-pulse"></div>
+				<div class="bg-n2/30 h-3 w-3 rounded-sm motion-safe:animate-pulse"></div>
+				<div class="bg-n2/40 h-3 w-10 rounded-sm motion-safe:animate-pulse"></div>
+			</div>
+			<div class="mb-16 flex flex-col items-center gap-4 text-center">
+				<div class="bg-n2/40 h-3 w-20 rounded-sm motion-safe:animate-pulse"></div>
+				<div class="bg-n2/40 h-14 w-56 rounded-sm motion-safe:animate-pulse lg:h-20 lg:w-80"></div>
+				<div class="bg-n2/30 h-4 w-full max-w-lg rounded-sm motion-safe:animate-pulse"></div>
+			</div>
+			<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+				@for (i of [1, 2, 3]; track i) {
+					<div class="border-n2/20 bg-n0 flex flex-col border" aria-hidden="true">
+						<div class="bg-n2/40 h-56 w-full motion-safe:animate-pulse"></div>
+						<div class="flex flex-1 flex-col p-8">
+							<div class="bg-n2/40 mb-3 h-3 w-24 rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/40 mb-2 h-6 w-full rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/40 mb-8 h-6 w-3/4 rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/30 mb-2 h-3 w-full rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/30 mb-8 h-3 w-2/3 rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/40 mt-auto h-3 w-32 rounded-sm motion-safe:animate-pulse"></div>
+						</div>
+					</div>
+				}
+			</div>
 		</div>
 	</main>
 } @else if (category) {
 	<main class="bg-n1 min-h-screen pt-32 pb-24">
 		<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 			<nav class="mb-10 flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase" aria-label="Trilha de navegação">
-				<a routerLink="/" class="text-n3/60 hover:text-n4 transition-colors">Início</a>
-				<span class="text-n3/40">/</span>
-				<a routerLink="/blog" class="text-n3/60 hover:text-n4 transition-colors">Blog</a>
-				<span class="text-n3/40">/</span>
+				<a routerLink="/" class="text-n3 hover:text-n4 transition-colors">Início</a>
+				<span class="text-n3/50" aria-hidden="true">/</span>
+				<a routerLink="/blog" class="text-n3 hover:text-n4 transition-colors">Blog</a>
+				<span class="text-n3/50" aria-hidden="true">/</span>
 				<span class="text-n4">{{ category.name }}</span>
 			</nav>
 
 			<header class="mb-16 text-center">
-				<span class="text-n4/60 mb-4 block text-[10px] font-bold tracking-[0.4em] uppercase">Categoria</span>
+				<span class="text-n4/80 mb-4 block text-[10px] font-bold tracking-[0.4em] uppercase">Categoria</span>
 				<h1 class="font-antic-didone text-n4 mb-6 text-5xl lg:text-7xl">{{ category.name }}</h1>
 				<p class="text-n3 mx-auto max-w-2xl text-lg">Artigos, análises e orientações sobre {{ category.name }}, traduzidos de forma clara e acessível para você.</p>
 			</header>
@@ -28,7 +52,7 @@
 						<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
 							<div class="relative h-56 w-full overflow-hidden">
 								<img [ngSrc]="article.coverImage" fill [alt]="article.coverImageAlt || article.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
-								<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">{{ article.category }}</div>
+								<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[11px] font-bold tracking-widest uppercase">{{ article.category }}</div>
 							</div>
 							<div class="flex flex-1 flex-col p-8">
 								<span class="text-n3 mb-3 text-xs font-medium">{{ article.date }} • {{ article.readTime }}</span>
@@ -53,7 +77,7 @@
 			}
 
 			<div class="mt-20 text-center">
-				<a routerLink="/blog" class="text-n4/60 hover:text-n4 inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors">
+				<a routerLink="/blog" class="text-n4/80 hover:text-n4 inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors">
 					<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
 					Voltar para o Blog
 				</a>

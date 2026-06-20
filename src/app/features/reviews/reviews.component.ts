@@ -72,7 +72,11 @@ export class ReviewsComponent implements OnInit, OnDestroy {
 					const container = this.slider.nativeElement;
 					const setWidth = container.scrollWidth / 3;
 					container.scrollLeft = setWidth;
-					this.startAutoplay();
+					// não iniciar autoplay se o usuário preferir movimento reduzido (S7 — §3.2)
+					const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+					if (!prefersReduced) {
+						this.startAutoplay();
+					}
 				}
 			}, 100);
 		});

@@ -1,7 +1,7 @@
 <main class="bg-n1 min-h-screen pt-32 pb-24">
 	<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 		<div class="mb-16 text-center">
-			<span class="text-n4/60 mb-4 block text-[10px] font-bold tracking-[0.4em] uppercase"> Conteúdo Exclusivo </span>
+			<span class="text-n4/80 mb-4 block text-[10px] font-bold tracking-[0.4em] uppercase"> Conteúdo Exclusivo </span>
 			<h1 class="font-antic-didone text-n4 mb-6 text-5xl lg:text-7xl">Blog <span class="text-n3 italic">Vetere</span></h1>
 			<p class="text-n3 mx-auto max-w-2xl text-lg">Análises, orientações e atualizações sobre o mundo jurídico, traduzidas de forma clara e acessível para você.</p>
 		</div>
@@ -48,11 +48,11 @@
 					<div class="relative h-56 w-full overflow-hidden">
 						<img [ngSrc]="article.coverImage" fill [alt]="article.coverImageAlt || article.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
 						@if (article.categorySlug) {
-							<a [routerLink]="['/blog/categoria', article.categorySlug]" class="bg-n0 text-n4 hover:bg-n4 hover:text-n0 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase transition-colors">{{
+							<a [routerLink]="['/blog/categoria', article.categorySlug]" class="bg-n0 text-n4 hover:bg-n4 hover:text-n0 absolute top-4 left-4 px-3 py-1 text-[11px] font-bold tracking-widest uppercase transition-colors">{{
 								article.category
 							}}</a>
 						} @else {
-							<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">{{ article.category }}</div>
+							<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[11px] font-bold tracking-widest uppercase">{{ article.category }}</div>
 						}
 					</div>
 

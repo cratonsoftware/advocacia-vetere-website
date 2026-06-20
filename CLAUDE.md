@@ -52,6 +52,7 @@ Este é um dos projetos mais representativos do portfólio da CRATON — qualque
 | Change Detection      | Zoneless (`provideZonelessChangeDetection`) + `OnPush`  | Angular 21 (S6)  |
 | Imagens               | `NgOptimizedImage` (identity loader para URLs externas) | Angular 21 (S6)  |
 | Fontes                | WOFF2 (primário) + TTF/OTF fallback; preload críticas   | S6               |
+| Web Manifest          | `manifest.webmanifest` + apple-touch-icon               | S7               |
 
 ---
 
@@ -163,6 +164,15 @@ Quando novas rotas forem adicionadas, atualizar `api/sitemap.ts` (e, se fizer se
 - SCSS apenas para estilos que Tailwind não consegue expressar (animações complexas, pseudo-elementos específicos, estilos de terceiros)
 - Sem `@import` — usar `@use` e `@forward`
 - Variáveis globais no `src/styles.scss` apenas se forem consumidas em múltiplos lugares
+
+### Acessibilidade (S7 — aplicado 2026-06-20)
+
+- **`prefers-reduced-motion`:** usar `motion-safe:animate-*` em vez de `animate-*` em todos os templates. O `styles.scss` já tem bloco `@media (prefers-reduced-motion: reduce)` global que zera durações. Em JS (ex: autoplay), checar `window.matchMedia('(prefers-reduced-motion: reduce)').matches` dentro de `afterNextRender` antes de iniciar.
+- **Skip link:** presente em `app.component.html` (`<a href="#main-content" class="skip-link">`); `<main>` tem `id="main-content" tabindex="-1"`. Não remover.
+- **`focus-visible`:** regra global em `styles.scss` (`*:focus-visible { outline: 2px solid var(--color-n4); }`). Não usar `focus:outline-none` sem alternativa visível.
+- **Micro-textos:** piso mínimo de `text-[11px]` para rótulos com opacidade sobre fundo claro. Separadores decorativos (`•`, `/`) com `aria-hidden="true"`. Opacidade mínima `/70` em supra-headings sobre fundo claro.
+- **Skeletons:** `blog-preview` usa `toSignal()` sem `initialValue` — `undefined` → skeleton 3 cards; `[]` → estado vazio; `[...]` → artigos. `artigo` e `categoria` têm skeleton com `aria-busy="true"` no estado `isLoading`.
+- **Elementos decorativos:** SVGs puramente decorativos (seta do hero) com `aria-hidden="true"`.
 
 ---
 

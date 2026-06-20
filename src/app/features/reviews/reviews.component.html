@@ -9,7 +9,7 @@
 		<div class="relative" (mouseenter)="pauseAutoplay()" (mouseleave)="resumeAutoplay()">
 			<div #slider (scroll)="onScroll()" class="flex snap-x snap-mandatory [scrollbar-width:none] gap-8 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
 				@if (isLoading) {
-					<div class="text-n0/50 w-full animate-pulse py-10 text-center text-xs tracking-widest uppercase">Carregando avaliações...</div>
+					<div class="text-n0/50 w-full py-10 text-center text-xs tracking-widest uppercase motion-safe:animate-pulse">Carregando avaliações...</div>
 				} @else {
 					@for (review of infiniteReviews; track review._infiniteId) {
 						<div class="border-n0/10 bg-n0/5 hover:bg-n0/10 flex w-full shrink-0 snap-center flex-col border p-10 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 md:w-[calc(33.333333%-1.33rem)]">

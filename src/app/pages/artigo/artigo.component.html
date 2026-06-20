@@ -1,8 +1,21 @@
 @if (isLoading) {
-	<main class="bg-n1 flex min-h-screen items-center justify-center pt-28">
-		<div class="text-n4/60 flex flex-col items-center gap-4">
-			<div class="bg-n4/20 h-px w-24 animate-pulse"></div>
-			<span class="animate-pulse text-[10px] font-bold tracking-[0.4em] uppercase">Carregando conteúdo</span>
+	<!-- skeleton do artigo — imita o layout real durante o fetch (S7 §3.11) -->
+	<main class="bg-n1 min-h-screen pt-32 pb-24 lg:pt-40" aria-busy="true" aria-label="Carregando artigo">
+		<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+			<div class="bg-n2/40 mb-10 h-3 w-28 rounded-sm motion-safe:animate-pulse"></div>
+			<div class="mb-6 flex gap-4">
+				<div class="bg-n2/40 h-6 w-20 rounded-sm motion-safe:animate-pulse"></div>
+				<div class="bg-n2/30 h-6 w-24 rounded-sm motion-safe:animate-pulse"></div>
+			</div>
+			<div class="bg-n2/40 mb-4 h-10 w-full max-w-xl rounded-sm motion-safe:animate-pulse lg:h-14"></div>
+			<div class="bg-n2/40 mb-20 h-10 w-2/3 rounded-sm motion-safe:animate-pulse lg:h-14"></div>
+			<div class="bg-n2/30 mb-20 h-[40vh] w-full rounded-sm motion-safe:animate-pulse"></div>
+			<div class="space-y-4">
+				@for (i of [1, 2, 3, 4, 5]; track i) {
+					<div class="bg-n2/30 h-4 w-full rounded-sm motion-safe:animate-pulse"></div>
+				}
+				<div class="bg-n2/30 h-4 w-3/4 rounded-sm motion-safe:animate-pulse"></div>
+			</div>
 		</div>
 	</main>
 } @else if (article) {
@@ -13,19 +26,19 @@
 
 		<div class="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 			<header class="mb-12 lg:mb-20 lg:text-left">
-				<a routerLink="/blog" class="text-n4/60 hover:text-n4 mb-10 inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors">
+				<a routerLink="/blog" class="text-n4/80 hover:text-n4 mb-10 inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors">
 					<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
 					Voltar para o Blog
 				</a>
 
-				<div class="mb-6 flex flex-wrap items-center gap-4 text-[9px] font-bold tracking-[0.2em] uppercase">
+				<div class="mb-6 flex flex-wrap items-center gap-4 text-[11px] font-bold tracking-[0.2em] uppercase">
 					@if (article.categorySlug) {
 						<a [routerLink]="['/blog/categoria', article.categorySlug]" class="bg-n4 text-n0 hover:bg-n3 rounded-sm px-3 py-1.5 transition-colors">{{ article.category }}</a>
 					} @else {
 						<span class="bg-n4 text-n0 rounded-sm px-3 py-1.5">{{ article.category }}</span>
 					}
 					<span class="text-n3">{{ article.date }}</span>
-					<span class="text-n3/50">•</span>
+					<span class="text-n3/50" aria-hidden="true">•</span>
 					<span class="text-n3">{{ article.readTime }}</span>
 				</div>
 
@@ -45,7 +58,7 @@
 
 			@if (article.tldr) {
 				<aside class="border-l-n4 bg-n0 border-n2/20 mb-16 border border-l-4 px-6 py-6 shadow-sm sm:px-8">
-					<p class="text-n4/70 mb-3 text-[9px] font-bold tracking-[0.3em] uppercase">Resposta direta</p>
+					<p class="text-n4 mb-3 text-[11px] font-bold tracking-[0.3em] uppercase">Resposta direta</p>
 					<p class="text-n3 font-inter text-base leading-relaxed font-light sm:text-lg">{{ article.tldr }}</p>
 				</aside>
 			}
@@ -77,7 +90,7 @@
 
 				@if (article.tags && article.tags.length > 0) {
 					<div class="mt-16 flex flex-wrap items-center gap-3">
-						<span class="text-n3/70 text-[9px] font-bold tracking-[0.2em] uppercase">Temas:</span>
+						<span class="text-n3 text-[11px] font-bold tracking-[0.2em] uppercase">Temas:</span>
 						@for (tag of article.tags; track tag) {
 							<span class="border-n4/20 text-n3 rounded-full border px-3 py-1 text-[11px] font-medium">{{ tag }}</span>
 						}
@@ -88,12 +101,12 @@
 					<div class="flex items-center gap-4">
 						<div>
 							<p class="font-antic-didone text-n4 text-xl">Dra. Maria Fernanda Vetere</p>
-							<p class="text-n3/60 text-[8px] font-bold tracking-widest uppercase">Especialista em {{ article.category }}</p>
+							<p class="text-n3 text-[11px] font-bold tracking-widest uppercase">Especialista em {{ article.category }}</p>
 						</div>
 					</div>
 
 					<div class="flex items-center gap-4">
-						<span class="text-n3/70 text-[9px] font-bold tracking-[0.2em] uppercase">Compartilhar:</span>
+						<span class="text-n3 text-[11px] font-bold tracking-[0.2em] uppercase">Compartilhar:</span>
 						<a
 							[href]="'https://api.whatsapp.com/send?text=' + article.title + ' - https://www.mfernandavetere.adv.br/blog/' + article.slug"
 							target="_blank"
@@ -115,7 +128,7 @@
 							<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
 								<div class="relative h-44 w-full overflow-hidden">
 									<img [ngSrc]="related.coverImage" fill [alt]="related.coverImageAlt || related.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
-									<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">{{ related.category }}</div>
+									<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[11px] font-bold tracking-widest uppercase">{{ related.category }}</div>
 								</div>
 								<div class="flex flex-1 flex-col p-6">
 									<span class="text-n3 mb-3 text-xs font-medium">{{ related.date }} • {{ related.readTime }}</span>

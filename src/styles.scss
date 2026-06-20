@@ -121,3 +121,53 @@ body {
 	font-family: 'Inter', sans-serif;
 	scroll-behavior: smooth;
 }
+
+/* acessibilidade: respeitar prefers-reduced-motion (S7) */
+@media (prefers-reduced-motion: reduce) {
+	html,
+	body {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* skip link — visível apenas ao focar via teclado (S7) */
+.skip-link {
+	position: fixed;
+	top: -100%;
+	left: 1rem;
+	z-index: 9999;
+	padding: 0.625rem 1.25rem;
+	background-color: var(--color-n4);
+	color: var(--color-n0);
+	font-family: 'Inter', sans-serif;
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	text-decoration: none;
+	border: 2px solid var(--color-n0);
+	transition: top 0.15s ease;
+
+	&:focus {
+		top: 1rem;
+	}
+}
+
+/* focus-visible consistente — anel discreto na cor da marca (S7) */
+*:focus {
+	outline: none;
+}
+
+*:focus-visible {
+	outline: 2px solid var(--color-n4);
+	outline-offset: 3px;
+}

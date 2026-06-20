@@ -98,7 +98,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S4 — Schema & SERP | ✅ | 2026-06-19 | 3f22e3e | Branch `feat/seo-schema-serp`; build verde + push. Meta dedicados, JSON-LD Article rico, BreadcrumbList, LegalService enriquecido, og:locale + lastmod no sitemap. **Pós-deploy:** validar no Rich Results Test (preview/produção). **Follow-up S5:** trocar `author.url` da home para `/autor/maria-fernanda-vetere` quando a rota existir (ver §6.2 S5) |
 | S5 — Topical & GEO | ✅ | 2026-06-20 | f5e8b711 | **Build verde + commit na `main`.** Tags + linkagem interna (G6), páginas de categoria `/blog/categoria/:slug` (G7), TL;DR + FAQ + `FAQPage` (G8), `/llms.txt` dinâmico (§4.5) + categorias no sitemap. Artigo de exemplo semeado (tags/tldr/faq) via Supabase; FAQ migrada do Markdown p/ o campo `faq`. **Pós-deploy:** validar no preview/produção (Rich Results / `/blog/categoria/familia` / `/llms.txt`). Follow-up: página `/autor/:slug` |
 | S6 — Performance | ✅ | 2026-06-20 | 0a4243d6 | OnPush + zoneless (zone.js removido), signals/toSignal/computed, WOFF2 (~60% menor), preconnect, NgOptimizedImage (hero priority, fill nos cards, identity loader). Build verde. |
-| S7 — Acessibilidade | ⬜ | — | — |  |
+| S7 — Acessibilidade | ✅ | 2026-06-20 | — | reduced-motion, skip link, focus-visible, contraste micro-textos, skeletons, manifest. Build pendente do operador. |
 | S8 — Testes (opc.) | ⬜ | — | — |  |
 
 ### 6.2 Status por item (granular)
@@ -158,12 +158,12 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 **S7 — Acessibilidade & UX** _(detalhes: `MELHORIAS.md` §3)_
 
-- ⬜ `prefers-reduced-motion` (pulse/bounce/autoplay) — §3.2
-- ⬜ Skip link para `<main>` — §3.3
-- ⬜ Estados de foco visíveis (`focus-visible`) — §3.4
-- ⬜ Contraste e tamanho de micro-textos — §3.5
-- ⬜ Skeletons de carregamento — §3.11
-- ⬜ `manifest.webmanifest` + apple-touch-icon — §2.5
+- ✅ `prefers-reduced-motion` — §3.2 _(2026-06-20): `styles.scss` com bloco `@media` global; `motion-safe:animate-pulse/bounce` nos templates; autoplay do carrossel condicional via `window.matchMedia`_
+- ✅ Skip link para `<main>` — §3.3 _(2026-06-20): `<a href="#main-content" class="skip-link">` antes do header; `id="main-content" tabindex="-1"` no `<main>`; classe `.skip-link` em `styles.scss`_
+- ✅ Estados de foco visíveis (`focus-visible`) — §3.4 _(2026-06-20): regra global `*:focus-visible { outline: 2px solid var(--color-n4); outline-offset: 3px; }` em `styles.scss`; `*:focus { outline: none }` remove o outline padrão apenas onde o `focus-visible` assume_
+- ✅ Contraste e tamanho de micro-textos — §3.5 _(2026-06-20): `text-[8px]` → `text-[11px]` no badge "Especialista" do artigo; labels `text-[9px]` com opacidade (TL;DR, Temas, Compartilhar) → `text-[11px]` sem opacidade; supra-headings `/60` → `/80`; separadores decorativos com `aria-hidden="true"`; badges de categoria uniformizados para `text-[11px]`_
+- ✅ Skeletons de carregamento — §3.11 _(2026-06-20): `blog-preview` distingue `undefined` (skeleton 3 cards) de `[]` (estado vazio) via remoção do `initialValue`; `artigo` e `categoria` com skeleton que imita layout real com `aria-busy`_
+- ✅ `manifest.webmanifest` + apple-touch-icon — §2.5 _(2026-06-20): `src/manifest.webmanifest` criado; adicionado ao `angular.json` assets; `<link rel="manifest">` e `<link rel="apple-touch-icon">` no `index.html`_
 
 **S8 — Testes & verificação final** _(opcional)_
 

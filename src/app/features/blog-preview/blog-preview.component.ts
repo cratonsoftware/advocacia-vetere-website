@@ -13,6 +13,11 @@ import { BlogService } from 'src/app/core/services/blog.service';
 export class BlogPreviewComponent {
 	private blogService = inject(BlogService);
 
-	/** Signal com os 3 artigos mais recentes. Atualiza automaticamente; `@empty` no template cobre o estado inicial vazio. */
-	latestArticles = toSignal(this.blogService.getLatestArticles(3), { initialValue: [] });
+	/**
+	 * Signal com os 3 artigos mais recentes.
+	 * - undefined: fetch ainda em andamento → template exibe skeleton (S7 §3.11)
+	 * - []: sem artigos → template exibe bloco @empty
+	 * - [...]: artigos disponíveis → template exibe cards
+	 */
+	latestArticles = toSignal(this.blogService.getLatestArticles(3));
 }

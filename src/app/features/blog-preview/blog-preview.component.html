@@ -2,7 +2,7 @@
 	<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 		<div class="mb-16 flex flex-col items-center justify-between gap-8 md:flex-row">
 			<div class="text-center md:text-left">
-				<span class="text-n4/60 mb-3 block text-[10px] font-bold tracking-[0.4em] uppercase"> Informativo </span>
+				<span class="text-n4/80 mb-3 block text-[10px] font-bold tracking-[0.4em] uppercase"> Informativo </span>
 				<h2 class="font-antic-didone text-n4 text-4xl lg:text-5xl">Artigos & <span class="text-n3 italic">Atualizações</span></h2>
 			</div>
 
@@ -10,53 +10,71 @@
 		</div>
 
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-			@for (article of latestArticles(); track article.id) {
-				<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
-					<div class="relative h-56 w-full overflow-hidden">
-						<!-- fill ocupa o container relative h-56; loading=lazy automático pelo NgOptimizedImage — S6 -->
-						<img [ngSrc]="article.coverImage" fill [alt]="article.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
-						<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">
-							{{ article.category }}
+			@if (latestArticles() === undefined) {
+				<!-- skeleton de carregamento — 3 cards placeholder enquanto o fetch SSR não completou (S7 §3.11) -->
+				@for (i of [1, 2, 3]; track i) {
+					<div class="border-n2/20 bg-n0 flex flex-col border" aria-hidden="true">
+						<div class="bg-n2/40 h-56 w-full motion-safe:animate-pulse"></div>
+						<div class="flex flex-1 flex-col p-8">
+							<div class="bg-n2/40 mb-3 h-3 w-24 rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/40 mb-2 h-6 w-full rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/40 mb-8 h-6 w-3/4 rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/30 mb-2 h-3 w-full rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/30 mb-2 h-3 w-full rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/30 mb-8 h-3 w-2/3 rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/40 mt-auto h-3 w-32 rounded-sm motion-safe:animate-pulse"></div>
 						</div>
 					</div>
+				}
+			} @else {
+				@for (article of latestArticles()!; track article.id) {
+					<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
+						<div class="relative h-56 w-full overflow-hidden">
+							<!-- fill ocupa o container relative h-56; loading=lazy automático pelo NgOptimizedImage — S6 -->
+							<img [ngSrc]="article.coverImage" fill [alt]="article.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
+							<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[11px] font-bold tracking-widest uppercase">
+								{{ article.category }}
+							</div>
+						</div>
 
-					<div class="flex flex-1 flex-col p-8">
-						<span class="text-n3 mb-3 text-xs font-medium">{{ article.date }} • {{ article.readTime }}</span>
+						<div class="flex flex-1 flex-col p-8">
+							<span class="text-n3 mb-3 text-xs font-medium">{{ article.date }} • {{ article.readTime }}</span>
 
-						<h3 class="font-antic-didone text-n4 mb-4 line-clamp-2 text-2xl leading-tight">
-							{{ article.title }}
-						</h3>
+							<h3 class="font-antic-didone text-n4 mb-4 line-clamp-2 text-2xl leading-tight">
+								{{ article.title }}
+							</h3>
 
-						<p class="text-n3 mb-8 line-clamp-3 flex-1 text-sm leading-relaxed">
-							{{ article.excerpt }}
-						</p>
+							<p class="text-n3 mb-8 line-clamp-3 flex-1 text-sm leading-relaxed">
+								{{ article.excerpt }}
+							</p>
 
-						<a [routerLink]="['/blog', article.slug]" class="text-n4 hover:text-n3 mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-colors">
-							Ler Artigo Completo
-							<svg class="h-4 w-4 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-							</svg>
-						</a>
+							<a [routerLink]="['/blog', article.slug]" class="text-n4 hover:text-n3 mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-colors">
+								Ler Artigo Completo
+								<svg class="h-4 w-4 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+								</svg>
+							</a>
+						</div>
+					</article>
+				} @empty {
+					<div class="border-n2/20 bg-n0 group relative flex flex-col items-center justify-center overflow-hidden border px-8 py-24 text-center shadow-sm md:col-span-3">
+						<div class="bg-n1/10 absolute inset-0 translate-y-full transition-transform duration-1000 ease-in-out group-hover:translate-y-0"></div>
+
+						<div class="relative z-10 flex flex-col items-center">
+							<span class="text-n4/70 mb-6 block text-[10px] font-bold tracking-[0.4em] uppercase"> Em Preparação </span>
+
+							<h3 class="font-antic-didone text-n4 mb-6 text-3xl md:text-4xl">Conteúdo <span class="text-n3 italic">Exclusivo</span></h3>
+
+							<div class="bg-n4/30 mb-8 h-px w-16"></div>
+
+							<p class="text-n3 mx-auto mb-10 max-w-lg text-sm leading-relaxed">
+								A Dra. Maria Fernanda está elaborando novas análises e orientações jurídicas. O nosso compromisso é entregar informações com o máximo rigor técnico, relevância e clareza para si.
+							</p>
+
+							<a [routerLink]="['/']" fragment="contato" class="text-n4 hover:text-n3 border-n4/30 hover:border-n3 border-b pb-1 text-[10px] font-bold tracking-widest uppercase transition-all"> Deseja falar sobre o seu caso? </a>
+						</div>
 					</div>
-				</article>
-			} @empty {
-				<div class="border-n2/20 bg-n0 group relative flex flex-col items-center justify-center overflow-hidden border px-8 py-24 text-center shadow-sm md:col-span-3">
-					<div class="bg-n1/10 absolute inset-0 translate-y-full transition-transform duration-1000 ease-in-out group-hover:translate-y-0"></div>
-
-					<div class="relative z-10 flex flex-col items-center">
-						<span class="text-n4/40 mb-6 block text-[10px] font-bold tracking-[0.4em] uppercase"> Em Preparação </span>
-
-						<h3 class="font-antic-didone text-n4 mb-6 text-3xl md:text-4xl">Conteúdo <span class="text-n3 italic">Exclusivo</span></h3>
-
-						<div class="bg-n4/30 mb-8 h-px w-16"></div>
-
-						<p class="text-n3 mx-auto mb-10 max-w-lg text-sm leading-relaxed">
-							A Dra. Maria Fernanda está elaborando novas análises e orientações jurídicas. O nosso compromisso é entregar informações com o máximo rigor técnico, relevância e clareza para si.
-						</p>
-
-						<a [routerLink]="['/']" fragment="contato" class="text-n4 hover:text-n3 border-n4/30 hover:border-n3 border-b pb-1 text-[10px] font-bold tracking-widest uppercase transition-all"> Deseja falar sobre o seu caso? </a>
-					</div>
-				</div>
+				}
 			}
 		</div>
 	</div>
