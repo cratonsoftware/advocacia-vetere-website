@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { MatIcon, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
@@ -11,6 +11,7 @@ import { ICON_NAMES } from './generated/icon-list';
 @Component({
 	selector: 'app-root',
 	templateUrl: './app.component.html',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [HeaderComponent, FooterComponent, RouterOutlet, MatIcon],
 })
 export class AppComponent implements OnInit {

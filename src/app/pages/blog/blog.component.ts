@@ -1,35 +1,58 @@
-import { isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { NgOptimizedImage, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Artigo, CategoriaArtigo } from 'src/app/core/models/artigo.model';
 import { SeoService } from 'src/app/core/services/seo.service';
 import { BlogService } from '../../core/services/blog.service';
 
 @Component({
 	selector: 'app-blog',
 	templateUrl: './blog.component.html',
-	imports: [RouterLink, FormsModule],
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	imports: [RouterLink, FormsModule, NgOptimizedImage],
 })
-export class BlogComponent implements OnInit {
+export class BlogComponent {
 	private blogService = inject(BlogService);
 	private seoService = inject(SeoService);
 	private platformId = inject(PLATFORM_ID);
 
-	allArticles: Artigo[] = [];
-	filteredArticles: Artigo[] = [];
-	paginatedArticles: Artigo[] = [];
+	private readonly itemsPerPage = 6;
 
-	categories: CategoriaArtigo[] = [];
-	selectedCategory: string = 'Todos';
-	searchTerm: string = '';
+	// --- dados assíncronos via toSignal() ---
+	allArticles = toSignal(this.blogService.getAllArticles(), { initialValue: [] });
+	categories = toSignal(this.blogService.getCategories(), { initialValue: [] });
 
-	currentPage: number = 1;
-	itemsPerPage: number = 6;
-	totalPages: number = 1;
-	isLoading: boolean = true;
+	// --- estado de filtro/paginação ---
+	selectedCategory = signal('Todos');
+	searchTerm = signal('');
+	currentPage = signal(1);
 
-	ngOnInit(): void {
+	// --- estado derivado via computed() ---
+	filteredArticles = computed(() => {
+		let temp = this.allArticles();
+		const cat = this.selectedCategory();
+		const term = this.searchTerm().toLowerCase().trim();
+
+		if (cat !== 'Todos') temp = temp.filter((a) => a.category === cat);
+		if (term) temp = temp.filter((a) => a.title.toLowerCase().includes(term) || a.excerpt.toLowerCase().includes(term));
+		return temp;
+	});
+
+	totalPages = computed(() => Math.ceil(this.filteredArticles().length / this.itemsPerPage) || 1);
+
+	paginatedArticles = computed(() => {
+		const start = (this.currentPage() - 1) * this.itemsPerPage;
+		return this.filteredArticles().slice(start, start + this.itemsPerPage);
+	});
+
+	pagesArray = computed(() =>
+		Array(this.totalPages())
+			.fill(0)
+			.map((_, i) => i + 1),
+	);
+
+	constructor() {
 		this.seoService.updateMetaTags({
 			title: 'Blog Vetere | Análises e Orientações Jurídicas',
 			description: 'Mantenha-se atualizado com o nosso blog jurídico. Aqui você encontrará artigos especializados, análises sobre a legislação vigente e orientações fundamentais para a proteção e o exercício dos seus direitos.',
@@ -38,46 +61,29 @@ export class BlogComponent implements OnInit {
 			slug: 'blog',
 			type: 'website',
 		});
-
-		this.blogService.getCategories().subscribe((cats) => (this.categories = cats));
-		this.blogService.getAllArticles().subscribe((articles) => {
-			this.allArticles = articles;
-			this.isLoading = false;
-			this.applyFilters();
-		});
 	}
 
-	applyFilters(): void {
-		let temp = this.allArticles;
-
-		if (this.selectedCategory !== 'Todos') temp = temp.filter((article) => article.category === this.selectedCategory);
-		if (this.searchTerm.trim() !== '') {
-			const term = this.searchTerm.toLowerCase();
-			temp = temp.filter((article) => article.title.toLowerCase().includes(term) || article.excerpt.toLowerCase().includes(term));
-		}
-
-		this.filteredArticles = temp;
-		this.totalPages = Math.ceil(this.filteredArticles.length / this.itemsPerPage) || 1;
-		this.changePage(1);
+	onSearchChange(value: string): void {
+		this.searchTerm.set(value);
+		this.currentPage.set(1);
 	}
 
 	setCategory(categoryName: string): void {
-		this.selectedCategory = categoryName;
-		this.applyFilters();
+		this.selectedCategory.set(categoryName);
+		this.currentPage.set(1);
 	}
 
 	changePage(page: number): void {
-		if (page >= 1 && page <= this.totalPages) {
-			this.currentPage = page;
-			const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-			this.paginatedArticles = this.filteredArticles.slice(startIndex, startIndex + this.itemsPerPage);
+		const total = this.totalPages();
+		if (page >= 1 && page <= total) {
+			this.currentPage.set(page);
 			if (isPlatformBrowser(this.platformId)) window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
 
-	get pagesArray(): number[] {
-		return Array(this.totalPages)
-			.fill(0)
-			.map((x, i) => i + 1);
+	clearFilters(): void {
+		this.searchTerm.set('');
+		this.selectedCategory.set('Todos');
+		this.currentPage.set(1);
 	}
 }

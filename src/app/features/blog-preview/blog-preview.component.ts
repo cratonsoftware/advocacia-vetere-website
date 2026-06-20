@@ -1,22 +1,18 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Artigo } from 'src/app/core/models/artigo.model';
 import { BlogService } from 'src/app/core/services/blog.service';
 
 @Component({
 	selector: 'app-blog-preview',
 	templateUrl: './blog-preview.component.html',
-	imports: [RouterLink],
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	imports: [RouterLink, NgOptimizedImage],
 })
-export class BlogPreviewComponent implements OnInit {
+export class BlogPreviewComponent {
 	private blogService = inject(BlogService);
-	latestArticles: Artigo[] = [];
-	isLoading = true;
 
-	ngOnInit(): void {
-		this.blogService.getLatestArticles(3).subscribe((articles) => {
-			this.latestArticles = articles;
-			this.isLoading = false;
-		});
-	}
+	/** Signal com os 3 artigos mais recentes. Atualiza automaticamente; `@empty` no template cobre o estado inicial vazio. */
+	latestArticles = toSignal(this.blogService.getLatestArticles(3), { initialValue: [] });
 }

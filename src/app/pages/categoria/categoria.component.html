@@ -27,7 +27,7 @@
 					@for (article of articles; track article.id) {
 						<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
 							<div class="relative h-56 w-full overflow-hidden">
-								<img [src]="article.coverImage" [alt]="article.coverImageAlt || article.title" loading="lazy" class="h-full w-full object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
+								<img [ngSrc]="article.coverImage" fill [alt]="article.coverImageAlt || article.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
 								<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">{{ article.category }}</div>
 							</div>
 							<div class="flex flex-1 flex-col p-8">
@@ -36,7 +36,9 @@
 								<p class="text-n3 mb-8 line-clamp-3 flex-1 text-sm leading-relaxed">{{ article.excerpt }}</p>
 								<a [routerLink]="['/blog', article.slug]" class="text-n4 hover:text-n3 mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-colors">
 									Ler Artigo Completo
-									<svg class="h-4 w-4 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+									<svg class="h-4 w-4 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+									</svg>
 								</a>
 							</div>
 						</article>

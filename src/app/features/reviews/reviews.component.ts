@@ -1,4 +1,4 @@
-import { afterNextRender, Component, ElementRef, inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { GoogleReview } from 'src/app/core/models/review.model';
 import { ReviewsService } from 'src/app/core/services/review.service';
@@ -10,11 +10,13 @@ export interface InfiniteReview extends GoogleReview {
 @Component({
 	selector: 'app-reviews',
 	templateUrl: './reviews.component.html',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [MatIcon],
 })
 export class ReviewsComponent implements OnInit, OnDestroy {
 	private reviewsService = inject(ReviewsService);
 	private ngZone = inject(NgZone);
+	private cdr = inject(ChangeDetectorRef);
 
 	@ViewChild('slider') slider!: ElementRef<HTMLDivElement>;
 
@@ -97,6 +99,8 @@ export class ReviewsComponent implements OnInit, OnDestroy {
 
 		this.infiniteReviews = [...set1, ...set2, ...set3];
 		this.isLoading = false;
+		// markForCheck necessário com OnPush pois a atualização vem de subscribe externo
+		this.cdr.markForCheck();
 	}
 
 	ngOnDestroy() {

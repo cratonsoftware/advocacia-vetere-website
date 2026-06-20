@@ -96,8 +96,8 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S2 — Quick wins | ✅ | 2026-06-19 | f499d40 | 7 de 8 itens aplicados; §3.6 (redirect) N/A — configurado na plataforma Web3Forms |
 | S3 — Banco E-E-A-T | ✅ | 2026-06-19 | 5c8de94 · 9e74ae4 | Migração aditiva aplicada via MCP Supabase; view retrocompatível com ISO+author; `get_advisors security` **limpo**; capa migrada ao Storage (`cover_image` → URL pública do bucket `article-covers`) |
 | S4 — Schema & SERP | ✅ | 2026-06-19 | 3f22e3e | Branch `feat/seo-schema-serp`; build verde + push. Meta dedicados, JSON-LD Article rico, BreadcrumbList, LegalService enriquecido, og:locale + lastmod no sitemap. **Pós-deploy:** validar no Rich Results Test (preview/produção). **Follow-up S5:** trocar `author.url` da home para `/autor/maria-fernanda-vetere` quando a rota existir (ver §6.2 S5) |
-| S5 — Topical & GEO | ✅ | 2026-06-20 | _(pendente do operador)_ | Branch `feat/topical-geo-aeo`. Código aplicado: tags + linkagem interna (G6), páginas de categoria `/blog/categoria/:slug` (G7), TL;DR + FAQ + `FAQPage` (G8), `/llms.txt` dinâmico (§4.5) + categorias no sitemap. Artigo de exemplo semeado (tags/tldr/faq) via Supabase; FAQ migrada do Markdown p/ o campo `faq`. **Pendentes do operador:** `npm run build`, commit (Conventional Commits), push e validação no preview (Rich Results/`/blog/categoria/familia`/`/llms.txt`). Follow-up: página `/autor/:slug` |
-| S6 — Performance | ⬜ | — | — |  |
+| S5 — Topical & GEO | ✅ | 2026-06-20 | f5e8b711 | **Build verde + commit na `main`.** Tags + linkagem interna (G6), páginas de categoria `/blog/categoria/:slug` (G7), TL;DR + FAQ + `FAQPage` (G8), `/llms.txt` dinâmico (§4.5) + categorias no sitemap. Artigo de exemplo semeado (tags/tldr/faq) via Supabase; FAQ migrada do Markdown p/ o campo `faq`. **Pós-deploy:** validar no preview/produção (Rich Results / `/blog/categoria/familia` / `/llms.txt`). Follow-up: página `/autor/:slug` |
+| S6 — Performance | 🔄 | 2026-06-20 | — | Código aplicado (OnPush, signals, WOFF2, preconnect, NgOptimizedImage, zoneless). Build + commit + push pendentes do operador. |
 | S7 — Acessibilidade | ⬜ | — | — |  |
 | S8 — Testes (opc.) | ⬜ | — | — |  |
 
@@ -146,14 +146,15 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 - ✅ Dados de validação semeados no artigo de exemplo (tags, TL;DR, 5 FAQs) via Supabase; a seção "Perguntas frequentes" foi migrada do Markdown `content` para o campo `faq` (fonte única, sem duplicação)
 - ⬜ **Follow-up (fora do escopo declarado da S5):** criar a rota/página `/autor/:slug` (perfil da autora — bio, OAB, `sameAs`) e **trocar `author.url`** no `ArtigoComponent` de `baseUrl` (home) para `${baseUrl}/autor/${data.author?.slug}`. Hoje o campo `url` do JSON-LD `Person` aponta para a home **propositadamente**, para não gerar 404 antes da página existir (decisão registrada na S4). Ao criar a página, incluir a rota no `api/sitemap.ts`.
 
-**S6 — Performance & modernização** _(detalhes: `MELHORIAS.md` §1.1, §4; `BLOG-SEO.md` §4.4)_
+**S6 — Performance & modernização** _(detalhes: `MELHORIAS.md` §1.1, §4; `BLOG-SEO.md` §4.4)_ — _código aplicado 2026-06-20 na branch `perf/cwv-modernization`; build/commit/push pendentes do operador_
 
-- ⬜ `OnPush` em todos os componentes (e avaliar zoneless) — §1.1
-- ⬜ Migrar estado para signals/`AsyncPipe` — §1.2
-- ⬜ Fontes WOFF2 + preload das críticas — §4.1
-- ⬜ `preconnect` (Supabase, Google Maps, Web3Forms) — §4.2
-- ⬜ `NgOptimizedImage` + alvo LCP < 2,0s / CLS < 0,1 — §3.8/§4.4
-- ⬜ Índices `category_id` e `published_at` — G13
+- ✅ `OnPush` em todos os componentes + `provideZonelessChangeDetection()` + zone.js removido de `angular.json` polyfills — §1.1 _(2026-06-20, pendente commit)_
+- ✅ Estado migrado para `toSignal()` + `computed()` + `signal()` nos componentes com lógica (`BlogComponent`, `BlogPreviewComponent`); `ChangeDetectorRef.markForCheck()` nos componentes com `subscribe` direto (`ReviewsComponent`, `ArtigoComponent`, `CategoriaComponent`) — §1.2 _(2026-06-20, pendente commit)_
+- ✅ 8 fontes convertidas para WOFF2 (~60% menores); `@font-face` atualizado para WOFF2 como formato primário + TTF/OTF como fallback — §4.1 _(2026-06-20, pendente commit)_
+- ✅ `<link rel="preload">` para AnticDidone e Inter VariableFont em `src/index.html` — §4.1 _(2026-06-20, pendente commit)_
+- ✅ `<link rel="preconnect">` para Supabase, Google Maps e Web3Forms em `src/index.html` — §4.2 _(2026-06-20, pendente commit)_
+- ✅ `NgOptimizedImage` + `IMAGE_LOADER` identity (para URLs externas Supabase); hero com `priority` + `fill`; sobre com `width`/`height` reais (1365×2048); cards com `fill` em containers `relative h-*` — §3.8/§4.4 _(2026-06-20, pendente commit)_
+- ✅ Índices `category_id` e `published_at desc` — G13 _(já aplicados em S3, migração `add_eeat_columns_to_articles`, 2026-06-19, 5c8de94)_
 
 **S7 — Acessibilidade & UX** _(detalhes: `MELHORIAS.md` §3)_
 

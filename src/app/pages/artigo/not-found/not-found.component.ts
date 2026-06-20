@@ -1,10 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SeoService } from 'src/app/core/services/seo.service';
 
 @Component({
 	selector: 'app-artigo-not-found',
 	templateUrl: './not-found.component.html',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [RouterLink],
 })
 export class ArtigoNotFoundComponent implements OnInit {

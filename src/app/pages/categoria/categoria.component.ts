@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Artigo, CategoriaArtigo } from 'src/app/core/models/artigo.model';
 import { SeoService } from 'src/app/core/services/seo.service';
@@ -8,12 +9,14 @@ import { BlogService } from '../../core/services/blog.service';
 	selector: 'app-categoria',
 	templateUrl: './categoria.component.html',
 	standalone: true,
-	imports: [RouterLink],
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	imports: [RouterLink, NgOptimizedImage],
 })
 export class CategoriaComponent implements OnInit {
 	private route = inject(ActivatedRoute);
 	private blogService = inject(BlogService);
 	private seoService = inject(SeoService);
+	private cdr = inject(ChangeDetectorRef);
 
 	private readonly baseUrl = 'https://www.mfernandavetere.adv.br';
 
@@ -25,16 +28,19 @@ export class CategoriaComponent implements OnInit {
 		const slug = this.route.snapshot.paramMap.get('slug');
 		if (!slug) {
 			this.isLoading = false;
+			this.cdr.markForCheck();
 			return;
 		}
 
 		this.blogService.getCategoryBySlug(slug).subscribe((category) => {
 			this.category = category;
+			this.cdr.markForCheck();
 
 			if (category) {
 				this.blogService.getArticlesByCategorySlug(slug).subscribe((articles) => {
 					this.articles = articles;
 					this.isLoading = false;
+					this.cdr.markForCheck();
 				});
 
 				this.seoService.updateMetaTags({
@@ -52,6 +58,7 @@ export class CategoriaComponent implements OnInit {
 				});
 			} else {
 				this.isLoading = false;
+				this.cdr.markForCheck();
 				this.seoService.updateMetaTags({
 					title: 'Categoria não encontrada',
 					description: 'A categoria que você procura não foi encontrada. Conheça os demais artigos do blog jurídico da Dra. Maria Fernanda Vetere.',

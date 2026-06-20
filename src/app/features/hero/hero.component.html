@@ -1,6 +1,7 @@
 <section id="home" class="bg-n1 relative flex min-h-dvh flex-col items-center justify-between overflow-hidden pt-20 lg:h-screen lg:pt-0">
 	<div class="absolute inset-0 z-0">
-		<img src="/assets/fotos/8742.jpg" alt="Dra. Maria Fernanda" fetchpriority="high" class="h-full w-full object-cover object-center" />
+		<!-- priority = preload automático + fetchpriority=high; fill = ocupa todo o container absolutamente posicionado — LCP hero (S6) -->
+		<img ngSrc="/assets/fotos/8742.jpg" fill priority alt="Dra. Maria Fernanda Vetere" class="object-cover object-center" />
 
 		<div class="from-n1 via-n1/75 to-n1/60 absolute inset-0 z-10 bg-linear-to-t lg:hidden"></div>
 

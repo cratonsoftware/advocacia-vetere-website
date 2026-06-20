@@ -37,7 +37,8 @@
 			@if (article.coverImage) {
 				<div class="mb-20">
 					<div class="border-n2/20 relative h-[40vh] w-full overflow-hidden border shadow-sm">
-						<img [src]="article.coverImage" [alt]="article.title" loading="lazy" class="aspect-square! h-auto w-full object-cover grayscale-15 transition-transform duration-1000 hover:scale-105 hover:grayscale-0" />
+						<!-- fill no container relative h-[40vh] — S6 -->
+						<img [ngSrc]="article.coverImage" fill [alt]="article.coverImageAlt || article.title" class="object-cover grayscale-15 transition-transform duration-1000 hover:scale-105 hover:grayscale-0" />
 					</div>
 				</div>
 			}
@@ -113,7 +114,7 @@
 						@for (related of relatedArticles; track related.id) {
 							<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
 								<div class="relative h-44 w-full overflow-hidden">
-									<img [src]="related.coverImage" [alt]="related.coverImageAlt || related.title" loading="lazy" class="h-full w-full object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
+									<img [ngSrc]="related.coverImage" fill [alt]="related.coverImageAlt || related.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
 									<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">{{ related.category }}</div>
 								</div>
 								<div class="flex flex-1 flex-col p-6">
@@ -121,7 +122,9 @@
 									<h3 class="font-antic-didone text-n4 mb-4 line-clamp-2 text-xl leading-tight">{{ related.title }}</h3>
 									<a [routerLink]="['/blog', related.slug]" class="text-n4 hover:text-n3 mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-colors">
 										Ler Artigo
-										<svg class="h-4 w-4 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+										<svg class="h-4 w-4 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+										</svg>
 									</a>
 								</div>
 							</article>

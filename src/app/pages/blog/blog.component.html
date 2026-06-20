@@ -10,8 +10,8 @@
 			<div class="relative w-full md:w-1/2">
 				<input
 					type="text"
-					[(ngModel)]="searchTerm"
-					(ngModelChange)="applyFilters()"
+					[ngModel]="searchTerm()"
+					(ngModelChange)="onSearchChange($event)"
 					placeholder="Buscar por assunto ou palavra-chave..."
 					class="text-n4 placeholder-n3/70 border-n2 focus:border-n4 w-full border-b bg-transparent py-3 pr-4 pl-12 text-sm transition-colors focus:outline-none" />
 				<svg class="text-n3 absolute top-3.5 left-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -20,21 +20,21 @@
 			<div class="flex flex-wrap gap-2">
 				<button
 					(click)="setCategory('Todos')"
-					[class.bg-n4]="selectedCategory === 'Todos'"
-					[class.text-n0]="selectedCategory === 'Todos'"
-					[class.border-n4]="selectedCategory !== 'Todos'"
-					[class.text-n4]="selectedCategory !== 'Todos'"
+					[class.bg-n4]="selectedCategory() === 'Todos'"
+					[class.text-n0]="selectedCategory() === 'Todos'"
+					[class.border-n4]="selectedCategory() !== 'Todos'"
+					[class.text-n4]="selectedCategory() !== 'Todos'"
 					class="hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300">
 					Todos
 				</button>
 
-				@for (cat of categories; track cat.id) {
+				@for (cat of categories(); track cat.id) {
 					<button
 						(click)="setCategory(cat.name)"
-						[class.bg-n4]="selectedCategory === cat.name"
-						[class.text-n0]="selectedCategory === cat.name"
-						[class.border-n4]="selectedCategory !== cat.name"
-						[class.text-n4]="selectedCategory !== cat.name"
+						[class.bg-n4]="selectedCategory() === cat.name"
+						[class.text-n0]="selectedCategory() === cat.name"
+						[class.border-n4]="selectedCategory() !== cat.name"
+						[class.text-n4]="selectedCategory() !== cat.name"
 						class="hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300">
 						{{ cat.name }}
 					</button>
@@ -43,12 +43,14 @@
 		</div>
 
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-			@for (article of paginatedArticles; track article.id) {
+			@for (article of paginatedArticles(); track article.id) {
 				<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
 					<div class="relative h-56 w-full overflow-hidden">
-						<img [src]="article.coverImage" [alt]="article.coverImageAlt || article.title" loading="lazy" class="h-full w-full object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
+						<img [ngSrc]="article.coverImage" fill [alt]="article.coverImageAlt || article.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
 						@if (article.categorySlug) {
-							<a [routerLink]="['/blog/categoria', article.categorySlug]" class="bg-n0 text-n4 hover:bg-n4 hover:text-n0 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase transition-colors">{{ article.category }}</a>
+							<a [routerLink]="['/blog/categoria', article.categorySlug]" class="bg-n0 text-n4 hover:bg-n4 hover:text-n0 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase transition-colors">{{
+								article.category
+							}}</a>
 						} @else {
 							<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">{{ article.category }}</div>
 						}
@@ -74,37 +76,37 @@
 			}
 		</div>
 
-		@if (paginatedArticles.length === 0) {
+		@if (paginatedArticles().length === 0) {
 			<div class="py-20 text-center">
 				<p class="font-antic-didone text-n4 mb-4 text-3xl">Nenhum artigo encontrado.</p>
 				<p class="text-n3">Tente ajustar a sua pesquisa ou os filtros de categoria.</p>
-				<button (click)="searchTerm = ''; setCategory('Todos')" class="border-n4/30 text-n4 mt-6 border-b pb-1 text-xs font-bold tracking-widest uppercase">Limpar Filtros</button>
+				<button (click)="clearFilters()" class="border-n4/30 text-n4 mt-6 border-b pb-1 text-xs font-bold tracking-widest uppercase">Limpar Filtros</button>
 			</div>
 		}
 
-		@if (totalPages > 1) {
+		@if (totalPages() > 1) {
 			<div class="mt-20 flex justify-center gap-2">
 				<button
-					(click)="changePage(currentPage - 1)"
-					[disabled]="currentPage === 1"
+					(click)="changePage(currentPage() - 1)"
+					[disabled]="currentPage() === 1"
 					class="border-n2/50 text-n3 hover:border-n4 hover:text-n4 disabled:hover:border-n2/50 flex size-10 items-center justify-center border transition-colors disabled:opacity-30">
 					&larr;
 				</button>
 
-				@for (page of pagesArray; track page) {
+				@for (page of pagesArray(); track page) {
 					<button
 						(click)="changePage(page)"
-						[class.bg-n4]="currentPage === page"
-						[class.text-n0]="currentPage === page"
-						[class.text-n4]="currentPage !== page"
+						[class.bg-n4]="currentPage() === page"
+						[class.text-n0]="currentPage() === page"
+						[class.text-n4]="currentPage() !== page"
 						class="border-n2/50 hover:border-n4 hover:bg-n4/5 flex size-10 items-center justify-center border font-bold transition-colors">
 						{{ page }}
 					</button>
 				}
 
 				<button
-					(click)="changePage(currentPage + 1)"
-					[disabled]="currentPage === totalPages"
+					(click)="changePage(currentPage() + 1)"
+					[disabled]="currentPage() === totalPages()"
 					class="border-n2/50 text-n3 hover:border-n4 hover:text-n4 disabled:hover:border-n2/50 flex size-10 items-center justify-center border transition-colors disabled:opacity-30">
 					&rarr;
 				</button>

@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MarkdownModule } from 'ngx-markdown';
 import { SeoService } from 'src/app/core/services/seo.service';
@@ -10,12 +11,14 @@ import { ArtigoNotFoundComponent } from './not-found/not-found.component';
 	selector: 'app-artigo',
 	templateUrl: './artigo.component.html',
 	standalone: true,
-	imports: [RouterLink, MarkdownModule, ArtigoNotFoundComponent],
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	imports: [RouterLink, MarkdownModule, ArtigoNotFoundComponent, NgOptimizedImage],
 })
 export class ArtigoComponent implements OnInit {
 	private route = inject(ActivatedRoute);
 	private blogService = inject(BlogService);
 	private seoService = inject(SeoService);
+	private cdr = inject(ChangeDetectorRef);
 
 	article: Artigo | null = null;
 	relatedArticles: Artigo[] = [];
@@ -28,13 +31,17 @@ export class ArtigoComponent implements OnInit {
 			this.blogService.getArticleBySlug(slug).subscribe((data) => {
 				this.article = data;
 				this.isLoading = false;
+				this.cdr.markForCheck();
 
 				if (data) {
 					const baseUrl = 'https://www.mfernandavetere.adv.br';
 
 					// Linkagem interna (G6): artigos da mesma categoria, exceto o atual.
 					if (data.categorySlug) {
-						this.blogService.getRelatedArticles(data.categorySlug, data.slug).subscribe((related) => (this.relatedArticles = related));
+						this.blogService.getRelatedArticles(data.categorySlug, data.slug).subscribe((related) => {
+							this.relatedArticles = related;
+							this.cdr.markForCheck();
+						});
 					}
 
 					this.seoService.updateMetaTags({
@@ -67,6 +74,9 @@ export class ArtigoComponent implements OnInit {
 					});
 				}
 			});
-		} else this.isLoading = false;
+		} else {
+			this.isLoading = false;
+			this.cdr.markForCheck();
+		}
 	}
 }

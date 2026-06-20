@@ -4,7 +4,8 @@
 			<div class="w-full lg:sticky lg:top-32 lg:w-5/12">
 				<div class="relative">
 					<div class="border-n4/10 absolute -inset-4 border lg:-inset-6"></div>
-					<img src="/assets/fotos/8882.jpg" alt="Dra. Maria Fernanda Vetere" loading="lazy" class="relative z-10 w-full grayscale-20 transition-all duration-700 hover:grayscale-0" />
+					<!-- width/height reais reservam espaço e evitam CLS; CSS w-full controla tamanho visual — S6 -->
+					<img ngSrc="/assets/fotos/8882.jpg" width="1365" height="2048" alt="Dra. Maria Fernanda Vetere" class="relative z-10 w-full grayscale-20 transition-all duration-700 hover:grayscale-0" />
 					<div class="bg-n4/5 absolute -right-4 -bottom-4 z-0 size-full lg:-right-8 lg:-bottom-8"></div>
 				</div>
 			</div>

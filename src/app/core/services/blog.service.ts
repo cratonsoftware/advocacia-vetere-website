@@ -48,28 +48,24 @@ export class BlogService {
 
 	/** Artigos de uma categoria (via `categorySlug` da view) — base das páginas `/blog/categoria/:slug` (S5). */
 	getArticlesByCategorySlug(categorySlug: string): Observable<Artigo[]> {
-		return this.http
-			.get<Artigo[]>(`${this.apiUrl}/published_articles?categorySlug=eq.${encodeURIComponent(categorySlug)}&select=*`, { headers: this.headers })
-			.pipe(
-				map((articles) => articles.map((a) => this.formatDate(a))),
-				catchError((err) => {
-					console.error('Erro ao buscar artigos da categoria:', err);
-					return of([]);
-				}),
-			);
+		return this.http.get<Artigo[]>(`${this.apiUrl}/published_articles?categorySlug=eq.${encodeURIComponent(categorySlug)}&select=*`, { headers: this.headers }).pipe(
+			map((articles) => articles.map((a) => this.formatDate(a))),
+			catchError((err) => {
+				console.error('Erro ao buscar artigos da categoria:', err);
+				return of([]);
+			}),
+		);
 	}
 
 	/** Artigos relacionados (mesma categoria, exceto o atual) — linkagem interna no fim do artigo (S5, G6). */
 	getRelatedArticles(categorySlug: string, excludeSlug: string, limit: number = 3): Observable<Artigo[]> {
-		return this.http
-			.get<Artigo[]>(`${this.apiUrl}/published_articles?categorySlug=eq.${encodeURIComponent(categorySlug)}&slug=neq.${encodeURIComponent(excludeSlug)}&select=*&limit=${limit}`, { headers: this.headers })
-			.pipe(
-				map((articles) => articles.map((a) => this.formatDate(a))),
-				catchError((err) => {
-					console.error('Erro ao buscar artigos relacionados:', err);
-					return of([]);
-				}),
-			);
+		return this.http.get<Artigo[]>(`${this.apiUrl}/published_articles?categorySlug=eq.${encodeURIComponent(categorySlug)}&slug=neq.${encodeURIComponent(excludeSlug)}&select=*&limit=${limit}`, { headers: this.headers }).pipe(
+			map((articles) => articles.map((a) => this.formatDate(a))),
+			catchError((err) => {
+				console.error('Erro ao buscar artigos relacionados:', err);
+				return of([]);
+			}),
+		);
 	}
 
 	getCategoryBySlug(slug: string): Observable<CategoriaArtigo | null> {

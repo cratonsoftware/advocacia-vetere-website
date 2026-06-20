@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { SeoService } from 'src/app/core/services/seo.service';
 import { MapaComponent } from 'src/app/features/mapa/mapa.component';
 import { ReviewsComponent } from 'src/app/features/reviews/reviews.component';
@@ -11,6 +11,7 @@ import { SobreComponent } from '../../features/sobre/sobre.component';
 @Component({
 	selector: 'app-home',
 	templateUrl: './home.component.html',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [HeroComponent, SobreComponent, AreasComponent, BlogPreviewComponent, ContatoComponent, ReviewsComponent, MapaComponent],
 })
 export class HomeComponent implements OnInit {

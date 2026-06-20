@@ -15,6 +15,16 @@
 		<link rel="icon" href="assets/favicon-dark.ico" type="image/x-icon" media="(prefers-color-scheme: light)" />
 		<link rel="icon" href="assets/favicon.ico" type="image/x-icon" media="(prefers-color-scheme: dark)" />
 		<link rel="mask-icon" href="assets/favicon-dark.ico" color="#572c1c" />
+
+		<!-- preconnect para origens externas (S6) -->
+		<link rel="preconnect" href="https://ckcfiqluyoiaqjdjgfbl.supabase.co" />
+		<link rel="preconnect" href="https://maps.googleapis.com" />
+		<link rel="preconnect" href="https://maps.gstatic.com" crossorigin />
+		<link rel="preconnect" href="https://api.web3forms.com" />
+
+		<!-- preload das fontes críticas (above-the-fold) — S6 -->
+		<link rel="preload" href="assets/fonts/AnticDidone-Regular.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="assets/fonts/Inter-VariableFont_opsz,wght.woff2" as="font" type="font/woff2" crossorigin />
 	</head>
 	<body>
 		<app-root></app-root>

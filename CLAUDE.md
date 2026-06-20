@@ -49,6 +49,9 @@ Este é um dos projetos mais representativos do portfólio da CRATON — qualque
 | Analytics             | @vercel/analytics + @vercel/speed-insights              | ^2.0.x           |
 | Formatação            | Prettier + plugins (organize-imports, tailwindcss)      | ^3.7.4           |
 | Tipagem               | TypeScript                                              | ~5.9.3           |
+| Change Detection      | Zoneless (`provideZonelessChangeDetection`) + `OnPush`  | Angular 21 (S6)  |
+| Imagens               | `NgOptimizedImage` (identity loader para URLs externas) | Angular 21 (S6)  |
+| Fontes                | WOFF2 (primário) + TTF/OTF fallback; preload críticas   | S6               |
 
 ---
 
@@ -65,15 +68,15 @@ O servidor Express (`src/server.ts`) é responsável exclusivamente por:
 
 ### Render Modes por Rota (`app.routes.server.ts`)
 
-| Rota          | Modo        | Motivo                                                                                                                                        |
-| ------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`           | `Prerender` | Conteúdo estático — máxima performance e SEO                                                                                                  |
-| `/blog`       | `Prerender` | Listagem de artigos pré-renderizada com conteúdo real                                                                                         |
-| `/blog/:slug` | `Prerender` | Pré-renderizado por slug via `getPrerenderParams()` (lê os slugs publicados no Supabase no build) — HTML estático com SEO próprio e indexável |
+| Rota                    | Modo        | Motivo                                                                                                                                                                      |
+| ----------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                     | `Prerender` | Conteúdo estático — máxima performance e SEO                                                                                                                                |
+| `/blog`                 | `Prerender` | Listagem de artigos pré-renderizada com conteúdo real                                                                                                                       |
+| `/blog/:slug`           | `Prerender` | Pré-renderizado por slug via `getPrerenderParams()` (lê os slugs publicados no Supabase no build) — HTML estático com SEO próprio e indexável                               |
 | `/blog/categoria/:slug` | `Prerender` | Página de categoria (hub) pré-renderizada por slug via `getPrerenderParams()` (lê os slugs de `categories` no build) — SEO próprio `CollectionPage` + `BreadcrumbList` (S5) |
-| `/sucesso`    | `Prerender` | Página simples sem dados dinâmicos                                                                                                            |
-| `/404`        | `Prerender` | Página de erro estática                                                                                                                       |
-| `/**`         | `Server`    | Fallback para rotas não mapeadas                                                                                                              |
+| `/sucesso`              | `Prerender` | Página simples sem dados dinâmicos                                                                                                                                          |
+| `/404`                  | `Prerender` | Página de erro estática                                                                                                                                                     |
+| `/**`                   | `Server`    | Fallback para rotas não mapeadas                                                                                                                                            |
 
 ### Pré-renderização de artigos (`/blog/:slug`)
 
@@ -134,8 +137,9 @@ Quando novas rotas forem adicionadas, atualizar `api/sitemap.ts` (e, se fizer se
 - Componentes criados com estilo `scss` (definido nos schematics do angular.json)
 - Nomenclatura de arquivos com sufixo por tipo: `.component.ts`, `.service.ts`, `.directive.ts`, `.pipe.ts`, `.resolver.ts`, `.guard.ts`
 - Separadores de tipo com ponto (`.`) para guards, interceptors, modules, pipes e resolvers — conforme schematics
-- Usar `OnPush` change detection sempre que possível para performance
-- Signals e o novo modelo reativo do Angular 17+ são preferidos sobre Subject/BehaviorSubject para estado local
+- **Todos os componentes usam `ChangeDetectionStrategy.OnPush`** (aplicado na S6 — não omitir em novos componentes)
+- O projeto usa **zoneless** (`provideZonelessChangeDetection()` em `app.config.ts`; `zone.js` removido dos polyfills em `angular.json`). Com zoneless + OnPush, mudanças de estado em callbacks `subscribe` **exigem** `ChangeDetectorRef.markForCheck()` — sem isso, o template não atualiza
+- Signals e o novo modelo reativo do Angular 17+ são preferidos sobre Subject/BehaviorSubject para estado local; usar `toSignal()` para observables e `computed()` para estado derivado
 - Evitar `any` — tipar tudo explicitamente
 
 ### SSR e SEO
