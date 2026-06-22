@@ -89,6 +89,14 @@ O Karma está configurado, mas **não havia um único `.spec.ts`**. Sem precisar
 
 Não há `engines` no `package.json` nem `.nvmrc`. Para builds reproduzíveis (local e Vercel), fixar a major do Node usada. Evita "funciona na minha máquina".
 
+### 1.10 Falhar o build quando o pré-render de artigos vier vazio — Impacto Alto · Esforço P · _(robustez de SEO)_
+
+**Origem: auditoria da S8 (2026-06-21).** Hoje, em falha de rede/Supabase durante o build, `getPublishedArticleSlugs()` (e `getCategorySlugs`/`getAuthorSlugs`) em `app.routes.server.ts` engole o erro e retorna `[]` para **não quebrar o deploy**. O efeito colateral é perigoso: se a lista vier vazia, **nenhum artigo é pré-renderizado** e cada URL de artigo cai no fallback estático da Home (canonical → home, não indexável) — exatamente o P0 da S1, que **voltou a acontecer em produção** e só foi detectado pela auditoria manual, não pelo build.
+
+Proposta: transformar a falha silenciosa em **falha barulhenta** apenas em produção. No `getPrerenderParams` dos artigos, se o ambiente for de produção (ex.: `process.env['VERCEL_ENV'] === 'production'`) **e** a lista de slugs vier vazia enquanto se espera ≥1 artigo publicado, **lançar erro e abortar o build** — assim um deploy nunca sobe com os artigos quebrados sem ninguém perceber. Em preview/local, manter o fallback `[]` tolerante (não travar o fluxo de desenvolvimento). Complementos opcionais: logar a contagem de slugs pré-renderizados no build e/ou um *smoke check* pós-deploy (curl do canonical de um artigo) no pipeline.
+
+> Mantém a robustez (preview/local não quebram) e fecha o buraco que deixou o artigo não indexável em produção entre a S1 e a S8.
+
 ---
 
 ## 2. SEO (oportunidade local mais relevante)

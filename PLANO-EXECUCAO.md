@@ -99,7 +99,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S5 — Topical & GEO | ✅ | 2026-06-20 | f5e8b711 | **Build verde + commit na `main`.** Tags + linkagem interna (G6), páginas de categoria `/blog/categoria/:slug` (G7), TL;DR + FAQ + `FAQPage` (G8), `/llms.txt` dinâmico (§4.5) + categorias no sitemap. Artigo de exemplo semeado (tags/tldr/faq) via Supabase; FAQ migrada do Markdown p/ o campo `faq`. **Pós-deploy:** validar no preview/produção (Rich Results / `/blog/categoria/familia` / `/llms.txt`). Follow-up: página `/autor/:slug` |
 | S6 — Performance | ✅ | 2026-06-20 | 0a4243d6 | OnPush + zoneless (zone.js removido), signals/toSignal/computed, WOFF2 (~60% menor), preconnect, NgOptimizedImage (hero priority, fill nos cards, identity loader). Build verde. |
 | S7 — Acessibilidade | ✅ | 2026-06-20 | fbc4de2f | reduced-motion, skip link, focus-visible, contraste micro-textos, skeletons, manifest. Build verde + validado. |
-| S8 — Testes & verificação | 🔄 | 2026-06-21 | _(branch `test/final-verification`)_ | **Código aplicado 2026-06-21.** Follow-ups (página `/autor/:slug` + `author.url` + `canonicalUrl`/`noindex`) e smoke tests (`seo.service.spec.ts`, `blog.service.spec.ts`) prontos; hook `pretest` adicionado. **Pendente do operador:** `npm run build`, `npm run test`, commit/push/preview. **Auditoria achou P0:** o artigo em produção serve o HTML/SEO da Home (canonical→home) — não indexável. Ver §6.2 S8. |
+| S8 — Testes & verificação | ✅ | 2026-06-22 | cc4e8983 | **DoD completo.** Build verde + testes 100% (2026-06-21); merge + deploy validados em produção (2026-06-22): canonical self no artigo, todas as páginas indexadas, sitemap com `/autor/...` e página de autor no ar. Follow-ups (`/autor/:slug`, `author.url`, `canonicalUrl`/`noindex`), smoke tests e hook `pretest` entregues. P0 da auditoria **resolvido** (era falha de pré-render por env de Build; rebuild corrigiu). |
 
 ### 6.2 Status por item (granular)
 
@@ -165,7 +165,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 - ✅ Skeletons de carregamento — §3.11 _(2026-06-20, fbc4de2f): `blog-preview` distingue `undefined` (skeleton 3 cards) de `[]` (estado vazio) via remoção do `initialValue`; `artigo` e `categoria` com skeleton que imita layout real com `aria-busy`_
 - ✅ `manifest.webmanifest` + apple-touch-icon — §2.5 _(2026-06-20, fbc4de2f): `src/manifest.webmanifest` criado; adicionado ao `angular.json` assets; `<link rel="manifest">` e `<link rel="apple-touch-icon">` no `index.html`_
 
-**S8 — Testes & verificação final** _(código aplicado 2026-06-21, branch `test/final-verification`; build/test/commit pendentes do operador)_
+**S8 — Testes & verificação final** _(concluída 2026-06-22, commit `cc4e8983` na branch `test/final-verification`; build verde + testes 100% + deploy validado)_
 
 _Follow-ups (executados primeiro, a pedido):_
 
@@ -177,9 +177,9 @@ _Follow-ups (executados primeiro, a pedido):_
 _Escopo S8:_
 
 - ✅ Smoke tests: `seo.service.spec.ts` (tags + JSON-LD por tipo, canonical override, breadcrumb/faq, ProfilePage) e `blog.service.spec.ts` (`formatDate`: ISO, fallback, rótulo pt-BR, `\n`, null). Hook `pretest` adicionado para gerar `environment.ts`/ícones. — `MELHORIAS.md` §1.8
-- 🔄 Validação (operador): `npm run build` sem erros; `npm run test -- --watch=false --browsers=ChromeHeadless` verde.
-- ⏸️ **Auditoria — achado P0 (regressão de produção, pré-existente):** ao buscar (sem JS) `https://www.mfernandavetere.adv.br/blog/traicao-da-direito-a-indenizacao`, o servidor responde com o **HTML e o SEO da Home** (canonical/`og:url`/title → home), ou seja, o artigo **não é indexável com SEO próprio** — exatamente o sintoma da S1. `/blog`, `/sitemap.xml` e `/llms.txt` respondem corretos e atualizados (têm marcadores S4/S7), então o build não é antigo no geral. Causa provável: durante o build na Vercel, `getPublishedArticleSlugs()` retornou `[]` (Supabase inacessível / `SUPABASE_URL`/`KEY` ausentes no ambiente de build), então o artigo nunca foi pré-renderizado e a URL cai no fallback estático da Home. **Ação do operador:** (1) conferir nas env vars do projeto Vercel que `SUPABASE_URL`/`SUPABASE_KEY` existem **no escopo de Build**; (2) no log de build, procurar `[prerender] Falha ao buscar slugs`; (3) após o deploy desta branch (rebuild completo), revalidar com `curl -s <url-do-artigo> | grep canonical` (deve ser self) + GSC "Inspeção de URL".
-- ⬜ Auditoria pós-deploy (operador): Lighthouse/CWV (LCP<2,0s, INP<200ms, CLS<0,1); Rich Results de `BlogPosting`/`LegalService`/`FAQPage`/`ProfilePage`; `curl /sitemap.xml` e `/llms.txt` (devem listar `/autor/maria-fernanda-vetere`); Inspeção de URL da nova `/autor/...` no GSC.
+- ✅ Validação (operador, 2026-06-21): `npm run build` sem erros e `npm run test` **100% aprovado**.
+- ✅ **Auditoria — achado P0 resolvido (2026-06-22):** antes do merge, a URL do artigo servia o HTML/SEO da Home (canonical→home), não indexável — sintoma da S1, causado por pré-render vazio no build (env de Build). Após conferir as env vars de Build na Vercel e mergear esta branch (rebuild completo), revalidado em produção: **canonical self** no artigo, todas as páginas indexadas, sem `[prerender] Falha` no log. `/blog`, `/sitemap.xml` (com `/autor/...`) e `/llms.txt` corretos.
+- ✅ Auditoria pós-deploy (operador, 2026-06-22): canonical/indexação do artigo OK; `sitemap.xml` e página `/autor/maria-fernanda-vetere` no ar. _Pendências opcionais (não bloqueiam o DoD):_ Lighthouse/CWV pontual e Rich Results. **Nota FAQ:** a marcação `FAQPage` valida no Rich Results Test, mas o Google restringe o rich result visual de FAQ a sites gov/saúde desde 2023 — a ausência do "sanfona" na SERP é política do Google, não erro (a marcação segue útil para validação e GEO/AEO).
 
 ---
 
