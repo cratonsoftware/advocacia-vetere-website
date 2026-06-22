@@ -44,5 +44,7 @@ export interface SeoConfig {
 	breadcrumbs?: SeoBreadcrumb[];
 	/** perguntas frequentes → `FAQPage` em bloco JSON-LD separado (somente quando presente). */
 	faq?: SeoFaqItem[];
+	/** override de URL canônica (e `og:url`/`@id`) por página — usa o valor cru de `canonicalUrl` do artigo. */
+	canonical?: string;
 	noIndex?: boolean;
 }

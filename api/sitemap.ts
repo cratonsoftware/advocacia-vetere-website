@@ -16,6 +16,9 @@ export default async function handler(req: any, res: any) {
 		const { data: articles, error } = await supabase.from('published_articles').select('slug, date, updatedAt, category, "categorySlug"').order('updatedAt', { ascending: false });
 		if (error) throw error;
 
+		// Páginas de autor (E-E-A-T) — uma por autor cadastrado. Falha não derruba o sitemap.
+		const { data: authors } = await supabase.from('authors').select('slug');
+
 		// Normaliza um timestamp para "YYYY-MM-DD" (formato aceito em <lastmod>).
 		const toDay = (value: string | null | undefined): string => new Date(value || Date.now()).toISOString().split('T')[0];
 
@@ -35,6 +38,13 @@ export default async function handler(req: any, res: any) {
 		});
 		categorySlugs.forEach((categorySlug) => {
 			doc.ele('url').ele('loc').txt(`${baseUrl}/blog/categoria/${categorySlug}`).up().ele('lastmod').txt(siteLastMod).up().ele('priority').txt('0.6').up().ele('changefreq').txt('weekly').up().up();
+		});
+
+		// Páginas de perfil de autor (E-E-A-T).
+		(authors || []).forEach((author: any) => {
+			if (author.slug) {
+				doc.ele('url').ele('loc').txt(`${baseUrl}/autor/${author.slug}`).up().ele('lastmod').txt(siteLastMod).up().ele('priority').txt('0.5').up().ele('changefreq').txt('monthly').up().up();
+			}
 		});
 
 		if (articles) {

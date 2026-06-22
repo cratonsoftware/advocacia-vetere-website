@@ -98,8 +98,8 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S4 — Schema & SERP | ✅ | 2026-06-19 | 3f22e3e | Branch `feat/seo-schema-serp`; build verde + push. Meta dedicados, JSON-LD Article rico, BreadcrumbList, LegalService enriquecido, og:locale + lastmod no sitemap. **Pós-deploy:** validar no Rich Results Test (preview/produção). **Follow-up S5:** trocar `author.url` da home para `/autor/maria-fernanda-vetere` quando a rota existir (ver §6.2 S5) |
 | S5 — Topical & GEO | ✅ | 2026-06-20 | f5e8b711 | **Build verde + commit na `main`.** Tags + linkagem interna (G6), páginas de categoria `/blog/categoria/:slug` (G7), TL;DR + FAQ + `FAQPage` (G8), `/llms.txt` dinâmico (§4.5) + categorias no sitemap. Artigo de exemplo semeado (tags/tldr/faq) via Supabase; FAQ migrada do Markdown p/ o campo `faq`. **Pós-deploy:** validar no preview/produção (Rich Results / `/blog/categoria/familia` / `/llms.txt`). Follow-up: página `/autor/:slug` |
 | S6 — Performance | ✅ | 2026-06-20 | 0a4243d6 | OnPush + zoneless (zone.js removido), signals/toSignal/computed, WOFF2 (~60% menor), preconnect, NgOptimizedImage (hero priority, fill nos cards, identity loader). Build verde. |
-| S7 — Acessibilidade | ✅ | 2026-06-20 | — | reduced-motion, skip link, focus-visible, contraste micro-textos, skeletons, manifest. Build pendente do operador. |
-| S8 — Testes (opc.) | ⬜ | — | — |  |
+| S7 — Acessibilidade | ✅ | 2026-06-20 | fbc4de2f | reduced-motion, skip link, focus-visible, contraste micro-textos, skeletons, manifest. Build verde + validado. |
+| S8 — Testes & verificação | 🔄 | 2026-06-21 | _(branch `test/final-verification`)_ | **Código aplicado 2026-06-21.** Follow-ups (página `/autor/:slug` + `author.url` + `canonicalUrl`/`noindex`) e smoke tests (`seo.service.spec.ts`, `blog.service.spec.ts`) prontos; hook `pretest` adicionado. **Pendente do operador:** `npm run build`, `npm run test`, commit/push/preview. **Auditoria achou P0:** o artigo em produção serve o HTML/SEO da Home (canonical→home) — não indexável. Ver §6.2 S8. |
 
 ### 6.2 Status por item (granular)
 
@@ -144,7 +144,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 - ✅ `tldr` + `faq` por artigo → `FAQPage` — G8 _(bloco TL;DR no topo; seção de FAQ a partir do campo `faq`; `SeoService` emite `FAQPage` em bloco `data-seo="faq"`; modelo `Artigo` ganhou `tldr`/`faq`)_
 - ✅ `/llms.txt` dinâmico a partir da view — §4.5 _(`api/llms.ts` + rewrite no `vercel.json`; páginas de categoria também adicionadas ao `api/sitemap.ts`)_
 - ✅ Dados de validação semeados no artigo de exemplo (tags, TL;DR, 5 FAQs) via Supabase; a seção "Perguntas frequentes" foi migrada do Markdown `content` para o campo `faq` (fonte única, sem duplicação)
-- ⬜ **Follow-up (fora do escopo declarado da S5):** criar a rota/página `/autor/:slug` (perfil da autora — bio, OAB, `sameAs`) e **trocar `author.url`** no `ArtigoComponent` de `baseUrl` (home) para `${baseUrl}/autor/${data.author?.slug}`. Hoje o campo `url` do JSON-LD `Person` aponta para a home **propositadamente**, para não gerar 404 antes da página existir (decisão registrada na S4). Ao criar a página, incluir a rota no `api/sitemap.ts`.
+- ✅ **Follow-up (executado na S8, 2026-06-21):** criada a rota/página `/autor/:slug` (`AutorComponent`, Prerender via `getAuthorSlugs`, `ProfilePage` + `Person` + `BreadcrumbList`, lista de artigos da autora via `getArticlesByAuthorSlug`); `author.url` do `ArtigoComponent` agora aponta para `${baseUrl}/autor/${data.author?.slug}` (fallback à home se sem slug); rota incluída em `api/sitemap.ts` e `api/llms.ts`.
 
 **S6 — Performance & modernização** _(detalhes: `MELHORIAS.md` §1.1, §4; `BLOG-SEO.md` §4.4)_ — _código aplicado 2026-06-20 na branch `perf/cwv-modernization`; build/commit/push pendentes do operador_
 
@@ -158,17 +158,28 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 
 **S7 — Acessibilidade & UX** _(detalhes: `MELHORIAS.md` §3)_
 
-- ✅ `prefers-reduced-motion` — §3.2 _(2026-06-20): `styles.scss` com bloco `@media` global; `motion-safe:animate-pulse/bounce` nos templates; autoplay do carrossel condicional via `window.matchMedia`_
-- ✅ Skip link para `<main>` — §3.3 _(2026-06-20): `<a href="#main-content" class="skip-link">` antes do header; `id="main-content" tabindex="-1"` no `<main>`; classe `.skip-link` em `styles.scss`_
-- ✅ Estados de foco visíveis (`focus-visible`) — §3.4 _(2026-06-20): regra global `*:focus-visible { outline: 2px solid var(--color-n4); outline-offset: 3px; }` em `styles.scss`; `*:focus { outline: none }` remove o outline padrão apenas onde o `focus-visible` assume_
-- ✅ Contraste e tamanho de micro-textos — §3.5 _(2026-06-20): `text-[8px]` → `text-[11px]` no badge "Especialista" do artigo; labels `text-[9px]` com opacidade (TL;DR, Temas, Compartilhar) → `text-[11px]` sem opacidade; supra-headings `/60` → `/80`; separadores decorativos com `aria-hidden="true"`; badges de categoria uniformizados para `text-[11px]`_
-- ✅ Skeletons de carregamento — §3.11 _(2026-06-20): `blog-preview` distingue `undefined` (skeleton 3 cards) de `[]` (estado vazio) via remoção do `initialValue`; `artigo` e `categoria` com skeleton que imita layout real com `aria-busy`_
-- ✅ `manifest.webmanifest` + apple-touch-icon — §2.5 _(2026-06-20): `src/manifest.webmanifest` criado; adicionado ao `angular.json` assets; `<link rel="manifest">` e `<link rel="apple-touch-icon">` no `index.html`_
+- ✅ `prefers-reduced-motion` — §3.2 _(2026-06-20, fbc4de2f): `styles.scss` com bloco `@media` global; `motion-safe:animate-pulse/bounce` nos templates; autoplay do carrossel condicional via `window.matchMedia`_
+- ✅ Skip link para `<main>` — §3.3 _(2026-06-20, fbc4de2f): `<a href="#main-content" class="skip-link">` antes do header; `id="main-content" tabindex="-1"` no `<main>`; classe `.skip-link` em `styles.scss`_
+- ✅ Estados de foco visíveis (`focus-visible`) — §3.4 _(2026-06-20, fbc4de2f): regra global `*:focus-visible { outline: 2px solid var(--color-n4); outline-offset: 3px; }` em `styles.scss`; `*:focus { outline: none }` remove o outline padrão apenas onde o `focus-visible` assume_
+- ✅ Contraste e tamanho de micro-textos — §3.5 _(2026-06-20, fbc4de2f): `text-[8px]` → `text-[11px]` no badge "Especialista" do artigo; labels `text-[9px]` com opacidade (TL;DR, Temas, Compartilhar) → `text-[11px]` sem opacidade; supra-headings `/60` → `/80`; separadores decorativos com `aria-hidden="true"`; badges de categoria uniformizados para `text-[11px]`_
+- ✅ Skeletons de carregamento — §3.11 _(2026-06-20, fbc4de2f): `blog-preview` distingue `undefined` (skeleton 3 cards) de `[]` (estado vazio) via remoção do `initialValue`; `artigo` e `categoria` com skeleton que imita layout real com `aria-busy`_
+- ✅ `manifest.webmanifest` + apple-touch-icon — §2.5 _(2026-06-20, fbc4de2f): `src/manifest.webmanifest` criado; adicionado ao `angular.json` assets; `<link rel="manifest">` e `<link rel="apple-touch-icon">` no `index.html`_
 
-**S8 — Testes & verificação final** _(opcional)_
+**S8 — Testes & verificação final** _(código aplicado 2026-06-21, branch `test/final-verification`; build/test/commit pendentes do operador)_
 
-- ⬜ Smoke tests: `SeoService`, `BlogService.formatDate` — `MELHORIAS.md` §1.8
-- ⬜ Auditoria final: Lighthouse/CWV, Rich Results, sitemap, indexação
+_Follow-ups (executados primeiro, a pedido):_
+
+- ✅ Página `/autor/:slug` (`AutorComponent` + rota + Prerender `getAuthorSlugs`); `BlogService.getAuthorBySlug`/`getArticlesByAuthorSlug`.
+- ✅ `SeoService`: ramo `ProfilePage`+`Person`; `SeoConfig.canonical` (override de canônica/`og:url`/`@id`).
+- ✅ `ArtigoComponent`: `author.url`→`/autor/:slug`; `canonical`=`canonicalUrl` e `noIndex`=`noindex` por artigo.
+- ✅ `api/sitemap.ts` e `api/llms.ts`: entradas de autor (`/autor/:slug`).
+
+_Escopo S8:_
+
+- ✅ Smoke tests: `seo.service.spec.ts` (tags + JSON-LD por tipo, canonical override, breadcrumb/faq, ProfilePage) e `blog.service.spec.ts` (`formatDate`: ISO, fallback, rótulo pt-BR, `\n`, null). Hook `pretest` adicionado para gerar `environment.ts`/ícones. — `MELHORIAS.md` §1.8
+- 🔄 Validação (operador): `npm run build` sem erros; `npm run test -- --watch=false --browsers=ChromeHeadless` verde.
+- ⏸️ **Auditoria — achado P0 (regressão de produção, pré-existente):** ao buscar (sem JS) `https://www.mfernandavetere.adv.br/blog/traicao-da-direito-a-indenizacao`, o servidor responde com o **HTML e o SEO da Home** (canonical/`og:url`/title → home), ou seja, o artigo **não é indexável com SEO próprio** — exatamente o sintoma da S1. `/blog`, `/sitemap.xml` e `/llms.txt` respondem corretos e atualizados (têm marcadores S4/S7), então o build não é antigo no geral. Causa provável: durante o build na Vercel, `getPublishedArticleSlugs()` retornou `[]` (Supabase inacessível / `SUPABASE_URL`/`KEY` ausentes no ambiente de build), então o artigo nunca foi pré-renderizado e a URL cai no fallback estático da Home. **Ação do operador:** (1) conferir nas env vars do projeto Vercel que `SUPABASE_URL`/`SUPABASE_KEY` existem **no escopo de Build**; (2) no log de build, procurar `[prerender] Falha ao buscar slugs`; (3) após o deploy desta branch (rebuild completo), revalidar com `curl -s <url-do-artigo> | grep canonical` (deve ser self) + GSC "Inspeção de URL".
+- ⬜ Auditoria pós-deploy (operador): Lighthouse/CWV (LCP<2,0s, INP<200ms, CLS<0,1); Rich Results de `BlogPosting`/`LegalService`/`FAQPage`/`ProfilePage`; `curl /sitemap.xml` e `/llms.txt` (devem listar `/autor/maria-fernanda-vetere`); Inspeção de URL da nova `/autor/...` no GSC.
 
 ---
 

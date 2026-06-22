@@ -47,6 +47,28 @@ async function getCategorySlugs(): Promise<Array<{ slug: string }>> {
 	}
 }
 
+// Busca, em tempo de build, os slugs dos autores para pre-renderizar cada
+// pagina de perfil (/autor/:slug) como HTML estatico com SEO proprio (E-E-A-T).
+// Mesma estrategia de robustez: em falha, retorna [] sem quebrar o build.
+async function getAuthorSlugs(): Promise<Array<{ slug: string }>> {
+	try {
+		const response = await fetch(`${environment.supabaseUrl}/rest/v1/authors?select=slug`, {
+			headers: {
+				apikey: environment.supabaseKey,
+				Authorization: `Bearer ${environment.supabaseKey}`,
+			},
+		});
+
+		if (!response.ok) throw new Error(`Supabase respondeu ${response.status} ao listar autores`);
+
+		const authors = (await response.json()) as Array<{ slug: string }>;
+		return authors.map((author) => ({ slug: author.slug }));
+	} catch (error) {
+		console.error('[prerender] Falha ao buscar slugs de autores no Supabase:', error);
+		return [];
+	}
+}
+
 export const serverRoutes: ServerRoute[] = [
 	{
 		path: '',
@@ -65,6 +87,11 @@ export const serverRoutes: ServerRoute[] = [
 		path: 'blog/:slug',
 		renderMode: RenderMode.Prerender,
 		getPrerenderParams: getPublishedArticleSlugs,
+	},
+	{
+		path: 'autor/:slug',
+		renderMode: RenderMode.Prerender,
+		getPrerenderParams: getAuthorSlugs,
 	},
 	{
 		path: 'sucesso',

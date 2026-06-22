@@ -75,6 +75,7 @@ O servidor Express (`src/server.ts`) é responsável exclusivamente por:
 | `/blog`                 | `Prerender` | Listagem de artigos pré-renderizada com conteúdo real                                                                                                                       |
 | `/blog/:slug`           | `Prerender` | Pré-renderizado por slug via `getPrerenderParams()` (lê os slugs publicados no Supabase no build) — HTML estático com SEO próprio e indexável                               |
 | `/blog/categoria/:slug` | `Prerender` | Página de categoria (hub) pré-renderizada por slug via `getPrerenderParams()` (lê os slugs de `categories` no build) — SEO próprio `CollectionPage` + `BreadcrumbList` (S5) |
+| `/autor/:slug`          | `Prerender` | Página de perfil de autor (E-E-A-T) pré-renderizada por slug via `getPrerenderParams()` (lê os slugs de `authors` no build) — SEO próprio `ProfilePage` + `Person` (S8 follow-up) |
 | `/sucesso`              | `Prerender` | Página simples sem dados dinâmicos                                                                                                                                          |
 | `/404`                  | `Prerender` | Página de erro estática                                                                                                                                                     |
 | `/**`                   | `Server`    | Fallback para rotas não mapeadas                                                                                                                                            |
@@ -95,12 +96,12 @@ Não adicionar hosts não autorizados sem revisar implicações de segurança.
 
 ### Scripts de pré-build
 
-Três scripts são executados antes de `serve`, `dev` e `build`:
+Dois scripts são executados antes de `serve`, `dev`, `build` e `test` (hooks `pre*`):
 
 - `scripts/generate-icons.cjs` — geração de ícones/assets
 - `scripts/set-env.cjs` — injeção de variáveis de ambiente no build
 
-**Nunca remover os hooks `pre*` do package.json.** Qualquer build sem esses scripts pode gerar assets inconsistentes ou variáveis ausentes em produção.
+**Nunca remover os hooks `pre*` do package.json.** Qualquer build sem esses scripts pode gerar assets inconsistentes ou variáveis ausentes em produção. O hook `pretest` (S8) garante que `npm run test` também encontre `environment.ts` e a lista de ícones (ambos gerados, não versionados) — sem ele os specs não compilam num checkout limpo.
 
 ### Sitemap dinâmico e `/llms.txt`
 
@@ -115,9 +116,9 @@ Nem o sitemap nem o `llms.txt` são gerados pelo Express. São **Vercel Serverle
 }
 ```
 
-O `api/sitemap.ts` busca os slugs de artigos no Supabase e gera o XML com xmlbuilder2, incluindo home, `/blog`, cada **página de categoria** (`/blog/categoria/:slug`, derivada dos `categorySlug` distintos) e cada artigo, todos com `lastmod`. O `robots.txt` aponta para `https://www.mfernandavetere.adv.br/sitemap.xml`.
+O `api/sitemap.ts` busca os slugs de artigos no Supabase e gera o XML com xmlbuilder2, incluindo home, `/blog`, cada **página de categoria** (`/blog/categoria/:slug`, derivada dos `categorySlug` distintos), cada **página de autor** (`/autor/:slug`, derivada de `authors`) e cada artigo, todos com `lastmod`. O `robots.txt` aponta para `https://www.mfernandavetere.adv.br/sitemap.xml`.
 
-O `api/llms.ts` (S5, §4.5 do `BLOG-SEO.md`) gera dinamicamente um Markdown curado para crawlers de IA (GEO/AEO) a partir da view `published_articles`: cabeçalho do escritório, páginas principais, áreas de atuação, categorias do blog e cada artigo com uma linha (`tldr` → fallback `excerpt`).
+O `api/llms.ts` (S5, §4.5 do `BLOG-SEO.md`) gera dinamicamente um Markdown curado para crawlers de IA (GEO/AEO) a partir da view `published_articles`: cabeçalho do escritório, páginas principais, áreas de atuação, **autores** (perfil com bio/OAB), categorias do blog e cada artigo com uma linha (`tldr` → fallback `excerpt`).
 
 Quando novas rotas forem adicionadas, atualizar `api/sitemap.ts` (e, se fizer sentido, `api/llms.ts`) para incluí-las.
 
@@ -150,6 +151,12 @@ Quando novas rotas forem adicionadas, atualizar `api/sitemap.ts` (e, se fizer se
 - Dados estruturados Schema.org devem ser injetados via script JSON-LD no `<head>` de cada página relevante
 - **Nunca usar `document`, `window` ou `localStorage` diretamente** — sempre verificar `isPlatformBrowser` antes ou usar `PLATFORM_ID`
 - Imagens devem ter `alt` descritivo e usar `loading="lazy"` exceto para imagens above-the-fold
+- **Tipos de JSON-LD do `SeoService`** (por `config.type`/`slug`): `article`→`BlogPosting`, `slug='blog'`→`Blog`, `blog/categoria/*`→`CollectionPage`, `type='profile'`→`ProfilePage`+`Person` (página de autor), default→`LegalService`. Blocos coexistem por `data-seo` (`main`/`breadcrumb`/`faq`).
+- **SEO fino por artigo (S8):** `SeoConfig.canonical` sobrescreve canonical/`og:url`/`@id` (consome `canonicalUrl` do artigo); `noIndex` consome `noindex`. O `author.url` do `Person` aponta para `/autor/:slug` (fallback à home se sem slug).
+
+### Testes (S8 — aplicado 2026-06-21)
+
+Karma + Jasmine (já configurados). Smoke tests cobrindo o núcleo de SEO: `seo.service.spec.ts` (montagem de tags + JSON-LD por tipo, canonical override, breadcrumb/faq) e `blog.service.spec.ts` (`formatDate`: ISO 8601, fallback, rótulo pt-BR, `\n`). Rodar com `npm run test -- --watch=false --browsers=ChromeHeadless`. Ao criar novos serviços/SEO, **adicionar specs**.
 
 ### TailwindCSS 4
 

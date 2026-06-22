@@ -22,6 +22,11 @@ export const routes: Routes = [
 	},
 
 	{
+		path: 'autor/:slug',
+		loadComponent: () => import('./pages/autor/autor.component').then((m) => m.AutorComponent),
+	},
+
+	{
 		path: 'sucesso',
 		loadComponent: () => import('./pages/sucesso/sucesso.component').then((m) => m.SucessoComponent),
 	},

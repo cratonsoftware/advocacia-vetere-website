@@ -37,6 +37,8 @@ export class SeoService {
 			const cleanSlug = config.slug.startsWith('/') ? config.slug.substring(1) : config.slug;
 			url = `${this.baseUrl}/${cleanSlug}`;
 		}
+		// Override de canônica por página (ex.: `canonicalUrl` do artigo) — reflete em canonical, og:url e @id do JSON-LD.
+		if (config.canonical) url = config.canonical;
 
 		const rawImageUrl = config.image || this.defaultImage;
 		const absoluteImageUrl = rawImageUrl.startsWith('http') ? rawImageUrl : `${this.baseUrl}${rawImageUrl.startsWith('/') ? '' : '/'}${rawImageUrl}`;
@@ -168,6 +170,27 @@ export class SeoService {
 				inLanguage: 'pt-BR',
 				isPartOf: { '@type': 'Blog', name: 'Blog Jurídico | Dra. Maria Fernanda Vetere', url: `${this.baseUrl}/blog` },
 				publisher: { '@type': 'LegalService', name: this.siteName },
+			};
+		} else if (config.type === 'profile') {
+			// Página de autor (E-E-A-T) — `ProfilePage` com `mainEntity` Person rico.
+			const person: Record<string, unknown> = {
+				'@type': 'Person',
+				name: config.authorPerson?.name || fullTitle,
+				jobTitle: config.authorPerson?.jobTitle || 'Advogada',
+				url: config.authorPerson?.url || url,
+				image: imageUrl,
+				worksFor: { '@type': 'LegalService', name: this.siteName, url: this.baseUrl },
+			};
+			if (config.authorPerson?.oab) person['identifier'] = config.authorPerson.oab;
+			if (config.authorPerson?.sameAs?.length) person['sameAs'] = config.authorPerson.sameAs;
+			if (config.description) person['description'] = config.description;
+
+			schema = {
+				'@context': 'https://schema.org',
+				'@type': 'ProfilePage',
+				url: url,
+				inLanguage: 'pt-BR',
+				mainEntity: person,
 			};
 		} else {
 			schema = {

@@ -56,8 +56,8 @@ export class ArtigoComponent implements OnInit {
 							name: data.author?.name || 'Dra. Maria Fernanda Vetere',
 							jobTitle: data.author?.role || 'Advogada',
 							oab: data.author?.oab || undefined,
-							// Página /autor/:slug ainda não existe (follow-up) — por ora aponta para a home (sem 404).
-							url: baseUrl,
+							// Página de autor (follow-up S5): aponta para /autor/:slug; fallback à home se não houver slug (sem 404).
+							url: data.author?.slug ? `${baseUrl}/autor/${data.author.slug}` : baseUrl,
 							sameAs: data.author?.sameAs || undefined,
 						},
 						publishedDate: data.dateIso,
@@ -65,6 +65,9 @@ export class ArtigoComponent implements OnInit {
 						articleSection: data.category,
 						inLanguage: data.locale || 'pt-BR',
 						keywords: data.tags?.length ? data.tags.join(', ') : undefined,
+						// Consumo fino de SEO por artigo (G10): override de canônica e flag noindex.
+						canonical: data.canonicalUrl || undefined,
+						noIndex: data.noindex || undefined,
 						breadcrumbs: [
 							{ name: 'Início', url: `${baseUrl}/` },
 							{ name: 'Blog', url: `${baseUrl}/blog` },

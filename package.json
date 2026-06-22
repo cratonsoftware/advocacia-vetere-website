@@ -9,6 +9,7 @@
 		"prebuild": "node ./scripts/generate-icons.cjs && node ./scripts/set-env.cjs",
 		"predev": "node ./scripts/generate-icons.cjs && node ./scripts/set-env.cjs",
 		"preserve": "node ./scripts/generate-icons.cjs && node ./scripts/set-env.cjs",
+		"pretest": "node ./scripts/generate-icons.cjs && node ./scripts/set-env.cjs",
 		"serve": "ng serve",
 		"dev": "ng serve --host=localhost --port=4200",
 		"build": "ng build",

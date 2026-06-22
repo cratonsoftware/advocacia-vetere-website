@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, map, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Artigo, CategoriaArtigo } from '../models/artigo.model';
+import { Artigo, AutorArtigo, CategoriaArtigo } from '../models/artigo.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -82,6 +82,29 @@ export class BlogService {
 		return this.http.get<CategoriaArtigo[]>(`${this.apiUrl}/categories?select=id,name,slug&order=name.asc`, { headers: this.headers }).pipe(
 			catchError((err) => {
 				console.error('Erro ao buscar categorias:', err);
+				return of([]);
+			}),
+		);
+	}
+
+	/** Perfil de autor (E-E-A-T) — base da página `/autor/:slug` (follow-up S5). Aliases mapeiam `avatar_url`→`avatar` e `same_as`→`sameAs`. */
+	getAuthorBySlug(slug: string): Observable<AutorArtigo | null> {
+		const select = 'name,slug,role,oab,bio,avatar:avatar_url,sameAs:same_as';
+		return this.http.get<AutorArtigo[]>(`${this.apiUrl}/authors?slug=eq.${encodeURIComponent(slug)}&select=${select}&limit=1`, { headers: this.headers }).pipe(
+			map((authors) => (authors.length > 0 ? authors[0] : null)),
+			catchError((err) => {
+				console.error('Erro ao buscar autor:', err);
+				return of(null);
+			}),
+		);
+	}
+
+	/** Artigos de um autor — filtra a view por `author->>slug` (coluna JSON da view). */
+	getArticlesByAuthorSlug(slug: string): Observable<Artigo[]> {
+		return this.http.get<Artigo[]>(`${this.apiUrl}/published_articles?author->>slug=eq.${encodeURIComponent(slug)}&select=*`, { headers: this.headers }).pipe(
+			map((articles) => articles.map((a) => this.formatDate(a))),
+			catchError((err) => {
+				console.error('Erro ao buscar artigos do autor:', err);
 				return of([]);
 			}),
 		);

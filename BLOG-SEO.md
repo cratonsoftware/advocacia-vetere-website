@@ -323,7 +323,7 @@ Estado atual (`BlogPosting`) vs. alvo. O `SeoService` passaria a montar:
 
 Acrescentar, em blocos separados, **`BreadcrumbList`** (toda página de artigo) e **`FAQPage`** (quando `faq` existir). Validar sempre no Rich Results Test.
 
-> **Pendência conhecida (follow-up S5):** o campo `author.url` do `Person` aponta hoje para a **home** (`baseUrl`), e **não** para `/autor/maria-fernanda-vetere` como na spec acima. Isso é proposital: a rota `/autor/:slug` só será criada na S5 e apontar para uma URL inexistente geraria 404 (sinal ruim ao Google). Quando a página de autor existir, trocar `author.url` em `ArtigoComponent` para `${baseUrl}/autor/${slug}`. Rastreado em `PLANO-EXECUCAO.md` §6.2 (S5).
+> **Resolvido (S8 follow-up, 2026-06-21):** a rota/página `/autor/:slug` foi criada (`AutorComponent`, Prerender, `ProfilePage` + `Person`) e o `author.url` do `Person` no `ArtigoComponent` passou a apontar para `${baseUrl}/autor/${data.author?.slug}` (fallback à home se sem slug). O override `canonical_url`/`noindex` por artigo (G10) também foi cabeado no front via `SeoConfig.canonical`/`noIndex`. Rastreado em `PLANO-EXECUCAO.md` §6.2 (S8).
 
 ---
 

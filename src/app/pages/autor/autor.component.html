@@ -1,0 +1,130 @@
+@if (isLoading) {
+	<!-- skeleton do autor — imita o layout real durante o fetch (S7 §3.11) -->
+	<main class="bg-n1 min-h-screen pt-32 pb-24" aria-busy="true" aria-label="Carregando perfil do autor">
+		<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+			<div class="mb-10 flex gap-2">
+				<div class="bg-n2/40 h-3 w-10 rounded-sm motion-safe:animate-pulse"></div>
+				<div class="bg-n2/30 h-3 w-3 rounded-sm motion-safe:animate-pulse"></div>
+				<div class="bg-n2/40 h-3 w-10 rounded-sm motion-safe:animate-pulse"></div>
+			</div>
+			<div class="mb-16 flex flex-col items-center gap-4 text-center">
+				<div class="bg-n2/40 h-28 w-28 rounded-full motion-safe:animate-pulse"></div>
+				<div class="bg-n2/40 h-12 w-72 rounded-sm motion-safe:animate-pulse"></div>
+				<div class="bg-n2/30 h-3 w-24 rounded-sm motion-safe:animate-pulse"></div>
+				<div class="bg-n2/30 h-4 w-full max-w-xl rounded-sm motion-safe:animate-pulse"></div>
+			</div>
+			<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+				@for (i of [1, 2, 3]; track i) {
+					<div class="border-n2/20 bg-n0 flex flex-col border" aria-hidden="true">
+						<div class="bg-n2/40 h-56 w-full motion-safe:animate-pulse"></div>
+						<div class="flex flex-1 flex-col p-8">
+							<div class="bg-n2/40 mb-3 h-3 w-24 rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/40 mb-2 h-6 w-full rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/40 mb-8 h-6 w-3/4 rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/30 mb-2 h-3 w-full rounded-sm motion-safe:animate-pulse"></div>
+							<div class="bg-n2/30 mb-8 h-3 w-2/3 rounded-sm motion-safe:animate-pulse"></div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	</main>
+} @else if (author) {
+	<main class="bg-n1 min-h-screen pt-32 pb-24">
+		<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+			<nav class="mb-10 flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase" aria-label="Trilha de navegação">
+				<a routerLink="/" class="text-n3 hover:text-n4 transition-colors">Início</a>
+				<span class="text-n3/50" aria-hidden="true">/</span>
+				<a routerLink="/blog" class="text-n3 hover:text-n4 transition-colors">Blog</a>
+				<span class="text-n3/50" aria-hidden="true">/</span>
+				<span class="text-n4">{{ author.name }}</span>
+			</nav>
+
+			<header class="border-n2/30 mb-16 flex flex-col items-center border-b pb-16 text-center">
+				@if (author.avatar) {
+					<div class="border-n2/30 relative mb-6 h-32 w-32 overflow-hidden rounded-full border">
+						<img [ngSrc]="author.avatar" fill [alt]="'Foto de ' + author.name" class="object-cover" />
+					</div>
+				} @else {
+					<div class="bg-n2/30 text-n4 font-antic-didone mb-6 flex h-32 w-32 items-center justify-center rounded-full text-4xl" aria-hidden="true">
+						{{ author.name.charAt(0) }}
+					</div>
+				}
+
+				<span class="text-n4/80 mb-3 block text-[11px] font-bold tracking-[0.4em] uppercase">Autora</span>
+				<h1 class="font-antic-didone text-n4 mb-3 text-4xl lg:text-6xl">{{ author.name }}</h1>
+
+				<div class="text-n3 mb-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm font-medium">
+					@if (author.role) {
+						<span>{{ author.role }}</span>
+					}
+					@if (author.role && author.oab) {
+						<span class="text-n3/50" aria-hidden="true">•</span>
+					}
+					@if (author.oab) {
+						<span>{{ author.oab }}</span>
+					}
+				</div>
+
+				@if (author.bio) {
+					<p class="text-n3 mx-auto max-w-2xl text-lg leading-relaxed">{{ author.bio }}</p>
+				}
+
+				@if (author.sameAs && author.sameAs.length > 0) {
+					<div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+						@for (link of author.sameAs; track link) {
+							<a [href]="link" target="_blank" rel="noopener noreferrer me" class="border-n2/40 text-n4 hover:border-n4 hover:text-n3 inline-flex items-center gap-2 border px-4 py-2 text-[11px] font-bold tracking-widest uppercase transition-colors">
+								{{ platformLabel(link) }}
+							</a>
+						}
+					</div>
+				}
+			</header>
+
+			<h2 class="font-antic-didone text-n4 mb-10 text-center text-3xl lg:text-4xl">Artigos de {{ author.name }}</h2>
+
+			@if (articles.length > 0) {
+				<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+					@for (article of articles; track article.id) {
+						<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
+							<div class="relative h-56 w-full overflow-hidden">
+								<img [ngSrc]="article.coverImage" fill [alt]="article.coverImageAlt || article.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
+								<a [routerLink]="['/blog/categoria', article.categorySlug]" class="bg-n0 text-n4 hover:text-n3 absolute top-4 left-4 px-3 py-1 text-[11px] font-bold tracking-widest uppercase transition-colors">{{ article.category }}</a>
+							</div>
+							<div class="flex flex-1 flex-col p-8">
+								<span class="text-n3 mb-3 text-xs font-medium">{{ article.date }} • {{ article.readTime }}</span>
+								<h3 class="font-antic-didone text-n4 mb-4 line-clamp-2 text-2xl leading-tight">{{ article.title }}</h3>
+								<p class="text-n3 mb-8 line-clamp-3 flex-1 text-sm leading-relaxed">{{ article.excerpt }}</p>
+								<a [routerLink]="['/blog', article.slug]" class="text-n4 hover:text-n3 mt-auto flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-colors">
+									Ler Artigo Completo
+									<svg class="h-4 w-4 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+									</svg>
+								</a>
+							</div>
+						</article>
+					}
+				</div>
+			} @else {
+				<div class="py-12 text-center">
+					<p class="text-n3">Ainda não há artigos publicados por esta autora.</p>
+				</div>
+			}
+
+			<div class="mt-20 text-center">
+				<a routerLink="/blog" class="text-n4/80 hover:text-n4 inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors">
+					<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+					Voltar para o Blog
+				</a>
+			</div>
+		</div>
+	</main>
+} @else {
+	<main class="bg-n1 flex min-h-screen items-center justify-center px-4 pt-28 pb-24">
+		<div class="text-center">
+			<p class="font-antic-didone text-n4 mb-4 text-4xl">Autor não encontrado</p>
+			<p class="text-n3 mb-8">O autor que você procura não existe ou foi removido.</p>
+			<a routerLink="/blog" class="border-n4/30 text-n4 inline-block border-b pb-1 text-xs font-bold tracking-widest uppercase">Ver todos os artigos</a>
+		</div>
+	</main>
+}

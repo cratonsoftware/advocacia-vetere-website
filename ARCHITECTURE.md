@@ -42,6 +42,7 @@ O servidor Express em `src/server.ts` tem responsabilidade mínima: servir os es
 | `/blog`                 | `Prerender` | Listagem pré-renderizada                                                                                                             |
 | `/blog/:slug`           | `Prerender` | Pré-renderizado por slug (`getPrerenderParams`) — HTML estático, SEO próprio, indexável                                              |
 | `/blog/categoria/:slug` | `Prerender` | Página de categoria (hub) pré-renderizada por slug (`getPrerenderParams` lê `categories`) — `CollectionPage` + `BreadcrumbList` (S5) |
+| `/autor/:slug`          | `Prerender` | Página de perfil de autor pré-renderizada por slug (`getPrerenderParams` lê `authors`) — `ProfilePage` + `Person` (S8 follow-up)     |
 | `/sucesso`              | `Prerender` | Página simples, `noIndex`                                                                                                            |
 | `/404`                  | `Prerender` | Erro estático, `noIndex`                                                                                                             |
 | `/**`                   | `Server`    | Fallback                                                                                                                             |
@@ -74,7 +75,7 @@ private readonly headers = new HttpHeaders({
 | `published_articles` | `BlogService` | retrocompat: `id, slug, title, excerpt, content, coverImage, readTime, category, date`; **novos (S3)**: `publishedAt`/`updatedAt` (ISO), `metaTitle`, `metaDescription`, `coverImageAlt`, `tags`, `tldr`, `faq`, `locale`, `canonicalUrl`, `noindex`, `categorySlug`, `author` (objeto) |
 | `categories` | `BlogService` | `id, name, slug` |
 | `google_reviews` | `ReviewsService` | `author_name, rating, text, profile_photo_url, relative_time_description` |
-| `authors` _(S3)_ | via view `author` | `name, slug, role, oab, bio, avatar_url, same_as` — entidade de autor (E-E-A-T) |
+| `authors` _(S3)_ | via view `author`; e direto pelo `BlogService` (`getAuthorBySlug`, S8) na página `/autor/:slug` | `name, slug, role, oab, bio, avatar_url, same_as` — entidade de autor (E-E-A-T) |
 
 > A view `published_articles` aplica `ORDER BY published_at DESC`, filtra `is_published AND published_at <= now()` e é `security_invoker` (respeita o RLS das tabelas base). O front consome a view com `select=*`, então os campos novos da S3 trafegam sem quebrar o modelo `Artigo`. **Schema completo das tabelas base (`articles`, `categories`, `authors`, `google_reviews`), RLS, índices e a evolução para SEO (aplicada na S3)** estão em [`BLOG-SEO.md`](./BLOG-SEO.md).
 
@@ -115,14 +116,15 @@ Camadas de SEO do projeto:
     - `article` → **`BlogPosting` rico**: `mainEntityOfPage`, `image` como `ImageObject` (1200×630 + `caption`), `datePublished`/`dateModified` (ISO), `inLanguage`, `articleSection`, `keywords` (quando há `tags`), `author` como `Person` (`jobTitle`, `identifier` OAB, `sameAs`) — sinais de E-E-A-T. Acompanha um bloco **`BreadcrumbList`** (Início › Blog › Artigo).
     - `slug === 'blog'` → `Blog`
     - `slug` iniciando com `blog/categoria` → **`CollectionPage`** (`isPartOf` o `Blog`) + `BreadcrumbList` _(S5)_
+    - `type='profile'` (página de autor) → **`ProfilePage`** com `mainEntity` **`Person`** (`jobTitle`, `identifier` OAB, `sameAs`, `worksFor` o `LegalService`) + `BreadcrumbList` _(S8 follow-up)_
     - default (home) → **`LegalService` enriquecido**: `telephone`, `email`, `address` completo, `geo`, `openingHoursSpecification`, `sameAs`, `priceRange`, `logo`, `areaServed`, `knowsAbout` (negócio local).
     - **`FAQPage`** _(S5)_ — bloco separado (`data-seo="faq"`) emitido quando o artigo tem `faq`; criado/removido conforme presença.
-- **Sitemap dinâmico**: `api/sitemap.ts` (Serverless) gera `/sitemap.xml` com `xmlbuilder2`, incluindo home, `/blog`, cada **página de categoria** (`/blog/categoria/:slug`, derivada dos `categorySlug` distintos — S5) e cada artigo, todos com **`lastmod`** (home/`blog`/categorias usam a data de modificação mais recente entre os artigos; artigos usam `updatedAt`). Reescrito via `vercel.json`.
-- **`/llms.txt` dinâmico** _(S5, §4.5)_: `api/llms.ts` (Serverless) gera um Markdown curado para crawlers de IA (GEO/AEO) a partir da view `published_articles` — cabeçalho do escritório, páginas principais, áreas de atuação, categorias e cada artigo com uma linha (`tldr`→fallback `excerpt`). Reescrito de `/llms.txt` via `vercel.json`.
+- **Sitemap dinâmico**: `api/sitemap.ts` (Serverless) gera `/sitemap.xml` com `xmlbuilder2`, incluindo home, `/blog`, cada **página de categoria** (`/blog/categoria/:slug`, derivada dos `categorySlug` distintos — S5), cada **página de autor** (`/autor/:slug`, derivada de `authors` — S8) e cada artigo, todos com **`lastmod`** (home/`blog`/categorias/autores usam a data de modificação mais recente entre os artigos; artigos usam `updatedAt`). Reescrito via `vercel.json`.
+- **`/llms.txt` dinâmico** _(S5, §4.5)_: `api/llms.ts` (Serverless) gera um Markdown curado para crawlers de IA (GEO/AEO) a partir da view `published_articles` — cabeçalho do escritório, páginas principais, áreas de atuação, **autores** (perfil com bio/OAB — S8), categorias e cada artigo com uma linha (`tldr`→fallback `excerpt`). Reescrito de `/llms.txt` via `vercel.json`.
 - **`robots.txt`** (`src/robots.txt`): libera tudo e aponta para o sitemap.
 - **`index.html`**: `lang="pt-BR"`, `theme-color`, favicons por `prefers-color-scheme`, verificação Google.
 
-> Datas ISO para SEO: o `BlogService.formatDate` deriva `dateIso`/`updatedAtIso` de `publishedAt`/`updatedAt` (view S3, com `.toISOString()`), mantendo `date` apenas como rótulo pt-BR. Melhorias remanescentes em `MELHORIAS.md` §2.5 (manifest/PWA) e o follow-up de página `/autor/:slug` (S5 deixou `author.url` apontando para a home). O consumo fino de `canonicalUrl`/`noindex` por artigo (G10) segue como coluna disponível, ainda não cabeada no front.
+> Datas ISO para SEO: o `BlogService.formatDate` deriva `dateIso`/`updatedAtIso` de `publishedAt`/`updatedAt` (view S3, com `.toISOString()`), mantendo `date` apenas como rótulo pt-BR. **S8 (follow-up):** a página `/autor/:slug` passou a existir (`ProfilePage` + `Person`) e o `author.url` do JSON-LD do artigo agora aponta para ela; o consumo fino de `canonicalUrl`/`noindex` por artigo (G10) foi cabeado no front (`SeoConfig.canonical`/`noIndex`).
 
 ---
 
@@ -188,7 +190,8 @@ src/app/
   features/      → blocos da home: header, hero, sobre, areas,
                    blog-preview, reviews, contato, mapa, footer
   pages/         → rotas: home, blog (lista), artigo (detalhe + not-found),
-                   categoria (hub por categoria), sucesso, not-found
+                   categoria (hub por categoria), autor (perfil), sucesso, not-found
+  core/services/ → blog, review, seo (+ *.spec.ts: smoke tests de SEO — S8)
   generated/     → icon-list.ts (gerado, não versionado)
 api/
   sitemap.ts     → Serverless Function do sitemap
@@ -205,6 +208,7 @@ scripts/
 - **Blog (`/blog`)**: prerender com `getAllArticles()` + `getCategories()`; filtro, busca e paginação são **client-side**.
 - **Artigo (`/blog/:slug`)**: `Prerender` com `getPrerenderParams()` (lê os slugs publicados no Supabase no build); `getArticleBySlug()` define meta tags próprias (canonical self, OG, `BlogPosting`, `BreadcrumbList`, `FAQPage` quando há `faq`) e renderiza Markdown. Exibe TL;DR (`tldr`), chips de `tags`, FAQ (campo `faq`) e a seção "Leia também" (`getRelatedArticles`). Rebuild ao publicar via Vercel Deploy Hook + webhook do Supabase.
 - **Categoria (`/blog/categoria/:slug`)**: `Prerender` com `getPrerenderParams()` (lê os slugs de `categories` no build); `getCategoryBySlug()` + `getArticlesByCategorySlug()` listam os artigos do hub; SEO próprio (`CollectionPage` + `BreadcrumbList`). Categoria inexistente → `noIndex` + mensagem.
+- **Autor (`/autor/:slug`)** _(S8 follow-up)_: `Prerender` com `getPrerenderParams()` (lê os slugs de `authors` no build); `getAuthorBySlug()` (perfil) + `getArticlesByAuthorSlug()` (filtra a view por `author->>slug`) montam o perfil E-E-A-T (nome, OAB, bio, `sameAs`) e a lista de artigos da autora; SEO próprio (`ProfilePage` + `Person` + `BreadcrumbList`). Autor inexistente → `noIndex` + mensagem.
 - **Contato**: `<form>` envia direto ao Web3Forms (POST). Página `/sucesso` existe para o pós-envio (ver `MELHORIAS.md` §3.6 sobre o campo `redirect`).
 - **Sitemap**: requisição a `/sitemap.xml` → rewrite → `api/sitemap` → Supabase → XML com cache `s-maxage=86400`.
 - **`llms.txt`**: requisição a `/llms.txt` → rewrite → `api/llms` → Supabase → Markdown com cache `s-maxage=86400`.

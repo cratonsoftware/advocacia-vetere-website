@@ -19,6 +19,9 @@ export default async function handler(req: any, res: any) {
 		const { data: articles, error } = await supabase.from('published_articles').select('slug, title, excerpt, tldr, category, "categorySlug"').order('publishedAt', { ascending: false });
 		if (error) throw error;
 
+		// Autores (E-E-A-T) — perfis com bio/OAB para sinalizar autoria confiável aos crawlers de IA.
+		const { data: authors } = await supabase.from('authors').select('name, slug, role, oab, bio');
+
 		// Reduz qualquer texto a uma única linha limpa (sem quebras nem markdown de cabeçalho).
 		const oneLine = (value: string | null | undefined, max = 200): string => {
 			const text = (value || '')
@@ -52,6 +55,16 @@ export default async function handler(req: any, res: any) {
 		lines.push('- Direito Civil: responsabilidade civil, contratos, danos morais e materiais.');
 		lines.push('- Direito do Trabalho: orientação e atuação em relações e direitos trabalhistas.');
 		lines.push('');
+
+		if (authors && authors.length) {
+			lines.push('## Autores');
+			authors.forEach((a: any) => {
+				const credential = [a.role, a.oab].filter(Boolean).join(', ');
+				const detail = oneLine(a.bio) || credential || 'Perfil do autor.';
+				lines.push(`- [${oneLine(a.name, 80)}](${baseUrl}/autor/${a.slug})${credential ? ` (${credential})` : ''}: ${detail}`);
+			});
+			lines.push('');
+		}
 
 		if (categories.size > 0) {
 			lines.push('## Categorias do blog');
