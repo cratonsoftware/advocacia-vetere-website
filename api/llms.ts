@@ -6,6 +6,9 @@ import { createClient } from '@supabase/supabase-js';
 // Padrão emergente documentado em BLOG-SEO.md §4.5.
 export default async function handler(req: any, res: any) {
 	try {
+		// Duplicação consciente e documentada (S13): esta Serverless Function compila
+		// FORA do bundle Angular, então não importa `src/app/core/config/site.config.ts`.
+		// Fonte canônica do valor: SITE_URL em site.config.ts — manter em sincronia.
 		const baseUrl = 'https://www.mfernandavetere.adv.br';
 		const supabaseUrl = process.env['SUPABASE_URL'];
 		const supabaseKey = process.env['SUPABASE_KEY'];

@@ -23,26 +23,26 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 
 **S1–S10 concluídas** (fundação de SEO/E-E-A-T/performance/a11y + correções de conteúdo + diagnóstico GSC). **Novas sessões S11–S18** consolidam a **dívida técnica e as melhorias ainda em aberto** mapeadas no Apêndice A do `RELATORIO-TECNICO-S1-S8.md` e nos "Próximos passos" do `RELATORIO-MUDANCAS-S1-S8.md`. Ordem por dependência e risco:
 
-| #                   | Sessão                       | Foco                                                                 | Depende de | Modelo      | Risco      |
-| ------------------- | ---------------------------- | -------------------------------------------------------------------- | ---------- | ----------- | ---------- |
-| **S1**              | P0 — Indexação do artigo     | Pré-renderizar `/blog/:slug` + deploy hook                           | —          | **Opus**    | Médio      |
-| **S2**              | Quick wins de SEO/UX         | Correções pequenas e seguras                                         | —          | Sonnet      | Baixo      |
-| **S3**              | Banco — fundação E-E-A-T     | `authors`, view ISO/`updated_at`, capas no Storage                   | S1         | **Opus**    | Médio-Alto |
-| **S4**              | Schema & SERP                | meta dedicados, JSON-LD Article rico, Breadcrumb, LegalService       | S3         | **Opus**    | Médio      |
-| **S5**              | Topical authority & GEO/AEO  | tags, páginas de categoria, TL;DR/FAQ, `llms.txt`                    | S3         | Sonnet/Opus | Médio      |
-| **S6**              | Performance & modernização   | OnPush/zoneless, fontes WOFF2, preconnect, NgOptimizedImage, índices | —          | Sonnet      | Médio      |
-| **S7**              | Acessibilidade & UX          | reduced-motion, skip link, foco, contraste, skeletons, manifest      | —          | Sonnet      | Baixo      |
-| **S8** _(opcional)_ | Testes & verificação final   | smoke tests + auditoria de fechamento                                | todas      | Opus/Sonnet | Baixo      |
-| **S9**              | Correções de conteúdo        | "Advogada Familiarista" (≠ Especialista), título e FAQ do artigo     | —          | Sonnet      | Baixo      |
-| **S10**             | Diagnóstico GSC — indexação  | `robots.txt` no GSC + relatórios de indexação que não atualizam      | —          | Sonnet      | Baixo      |
-| **S11**             | Robustez do build (guard P0) | Falhar o build se o pré-render de slugs vier vazio em produção       | —          | **Opus**    | Médio      |
-| **S12**             | Higiene de repo & build       | `.gitattributes`/EOL CRLF; `engines`/`.nvmrc` (Node fixo)            | —          | Sonnet      | Baixo      |
-| **S13**             | Centralização de constantes   | `site.config.ts` (URL base, WhatsApp, contato, horário, `'Todos'`)  | S12        | Sonnet/Opus | Médio      |
-| **S14**             | Testes SSR de rotas           | render tests das rotas pré-renderizadas (complementa os smoke tests) | —          | Sonnet/Opus | Baixo      |
-| **S15**             | Descoberta interna & rodapé   | expor categorias/autor no blog, seção ativa no menu, reforma do rodapé | —        | Sonnet      | Médio      |
-| **S16**             | Mapa personalizado            | Google Cloud API + sync Supabase, estilo da marca, pontos de referência | —       | **Opus**    | Médio-Alto |
-| **S17** _(opcional)_| Conteúdo & conversão          | selo OAB no hero, CTA WhatsApp contextual, "ver mais" nas avaliações | —          | Sonnet      | Baixo      |
-| **S18** _(opcional)_| Auditoria final pós-deploy    | Lighthouse/CWV, Rich Results, confirmação de RLS, smoke check        | todas      | Sonnet      | Baixo      |
+| #                    | Sessão                       | Foco                                                                    | Depende de | Modelo      | Risco      |
+| -------------------- | ---------------------------- | ----------------------------------------------------------------------- | ---------- | ----------- | ---------- |
+| **S1**               | P0 — Indexação do artigo     | Pré-renderizar `/blog/:slug` + deploy hook                              | —          | **Opus**    | Médio      |
+| **S2**               | Quick wins de SEO/UX         | Correções pequenas e seguras                                            | —          | Sonnet      | Baixo      |
+| **S3**               | Banco — fundação E-E-A-T     | `authors`, view ISO/`updated_at`, capas no Storage                      | S1         | **Opus**    | Médio-Alto |
+| **S4**               | Schema & SERP                | meta dedicados, JSON-LD Article rico, Breadcrumb, LegalService          | S3         | **Opus**    | Médio      |
+| **S5**               | Topical authority & GEO/AEO  | tags, páginas de categoria, TL;DR/FAQ, `llms.txt`                       | S3         | Sonnet/Opus | Médio      |
+| **S6**               | Performance & modernização   | OnPush/zoneless, fontes WOFF2, preconnect, NgOptimizedImage, índices    | —          | Sonnet      | Médio      |
+| **S7**               | Acessibilidade & UX          | reduced-motion, skip link, foco, contraste, skeletons, manifest         | —          | Sonnet      | Baixo      |
+| **S8** _(opcional)_  | Testes & verificação final   | smoke tests + auditoria de fechamento                                   | todas      | Opus/Sonnet | Baixo      |
+| **S9**               | Correções de conteúdo        | "Advogada Familiarista" (≠ Especialista), título e FAQ do artigo        | —          | Sonnet      | Baixo      |
+| **S10**              | Diagnóstico GSC — indexação  | `robots.txt` no GSC + relatórios de indexação que não atualizam         | —          | Sonnet      | Baixo      |
+| **S11**              | Robustez do build (guard P0) | Falhar o build se o pré-render de slugs vier vazio em produção          | —          | **Opus**    | Médio      |
+| **S12**              | Higiene de repo & build      | `.gitattributes`/EOL CRLF; `engines`/`.nvmrc` (Node fixo)               | —          | Sonnet      | Baixo      |
+| **S13**              | Centralização de constantes  | `site.config.ts` (URL base, WhatsApp, contato, horário, `'Todos'`)      | S12        | Sonnet/Opus | Médio      |
+| **S14**              | Testes SSR de rotas          | render tests das rotas pré-renderizadas (complementa os smoke tests)    | —          | Sonnet/Opus | Baixo      |
+| **S15**              | Descoberta interna & rodapé  | expor categorias/autor no blog, seção ativa no menu, reforma do rodapé  | —          | Sonnet      | Médio      |
+| **S16**              | Mapa personalizado           | Google Cloud API + sync Supabase, estilo da marca, pontos de referência | —          | **Opus**    | Médio-Alto |
+| **S17** _(opcional)_ | Conteúdo & conversão         | selo OAB no hero, CTA WhatsApp contextual, "ver mais" nas avaliações    | —          | Sonnet      | Baixo      |
+| **S18** _(opcional)_ | Auditoria final pós-deploy   | Lighthouse/CWV, Rich Results, confirmação de RLS, smoke check           | todas      | Sonnet      | Baixo      |
 
 > S1–S11 estão **✅ concluídas** (ver §6.1). Das pendentes:
 >
@@ -121,7 +121,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S10 — Diagnóstico GSC | ✅ | 2026-06-23 | e96de4cb | Causa: `s-maxage=86400` no sitemap (cache de CDN de 24 h) → Googlebot recebia sitemap stale; "erro desconhecido" do GSC = transiente (Serverless Function timeout no passado). Correção: `s-maxage=3600, stale-while-revalidate=86400` em `api/sitemap.ts` + `api/llms.ts`; comentário `src/robots.txt` corrigido. Ações do operador no GSC documentadas em `BLOG-SEO.md` §10.7. |
 | S11 — Robustez do build | ✅ | 2026-06-23 | 1d3a8a3a | Helper único `fetchPrerenderSlugs(resource, label)` em `app.routes.server.ts`: loga a contagem de slugs (artigos/categorias/autores) e, em produção (`VERCEL_ENV==='production'`), **aborta o build** se a lista vier vazia (guard aplicado aos três geradores). Preview/local mantêm `[]` tolerante. Smoke check pós-deploy documentado em `BLOG-SEO.md` §10.8. Lógica verificada por simulação (6/6 ramificações). Docs: §10.8 + ARCHITECTURE §2/§6 + CLAUDE.md + README. |
 | S12 — Higiene de repo & build | ✅ | 2026-06-23 | 72f10db6 | `.gitattributes` (`* text=auto eol=lf` + binários), `.nvmrc` (`22`), `engines` `>=22 <23` no `package.json`. `git add --renormalize .` normaliza os 69 arquivos de ruído EOL. README + CLAUDE atualizados. |
-| S13 — Centralização de constantes | ⬜ | — | — | `site.config.ts`: URL base (em `SeoService`, `api/sitemap.ts`, `robots.txt`), link WhatsApp (duplicado em `app.component.html` e `contato`), telefone/e-mail/endereço/horário e `'Todos'`. Origem: Apêndice A.2 / `MELHORIAS.md` §1.6. |
+| S13 — Centralização de constantes | ✅ | 2026-06-23 | refactor/site-config | `src/app/core/config/site.config.ts` (`SITE_URL`, `BUSINESS`, `WHATSAPP_*`, `ALL_CATEGORIES_LABEL`) consumido por `SeoService`, páginas (`artigo`/`categoria`/`autor`/`blog`), `AppComponent` e `ContatoComponent`. `api/*` e `robots.txt` mantêm a URL base com **duplicação documentada** (fora do bundle). Build/commit/preview pendentes do operador. |
 | S14 — Testes SSR de rotas | ⬜ | — | — | Smoke tests de serviço já entregues na S8; falta cobertura de **renderização das rotas pré-renderizadas** (`/`, `/blog`, `/blog/:slug`, `/blog/categoria/:slug`, `/autor/:slug`). Origem: Apêndice A.4 / `MELHORIAS.md` §1.8. |
 | S15 — Descoberta interna & rodapé | ⬜ | — | — | Expor páginas de categoria e autor a partir do blog; marcar a seção ativa no menu; reforma do rodapé (contatos + redes, mais funcional/elegante). Origem: "Próximos passos" #2 e #3. |
 | S16 — Mapa personalizado | ⬜ | — | — | Substituir o embed padrão por mapa via Google Cloud API (estilo da marca, pontos de referência, sem concorrentes), com chave server-side e cache em Supabase. Planejado no `CLAUDE.md` (Mapa — estado real). Origem: "Próximos passos" #4. |
@@ -248,11 +248,13 @@ _Escopo S8:_
 - ✅ Fixar a versão do Node: `engines` `>=22 <23` no `package.json` + `.nvmrc` com major `22` — builds reproduzíveis. _(2026-06-23, 72f10db6)_
 - ✅ `npm run build` verde após a normalização; `README.md` e `CLAUDE.md` atualizados com pré-requisito Node 22. _(2026-06-23, 72f10db6)_
 
-**S13 — Centralização de constantes** _(detalhes: Apêndice A.2; `MELHORIAS.md` §1.6)_ — _depende da S12 (EOL normalizado)_
+**S13 — Centralização de constantes** _(detalhes: Apêndice A.2; `MELHORIAS.md` §1.6)_ — _depende da S12 (EOL normalizado); branch `refactor/site-config`, 2026-06-23_
 
-- ⬜ Criar `site.config.ts` (ou `app.constants.ts`) com: **URL base** (`https://www.mfernandavetere.adv.br`, hoje em `SeoService`, `api/sitemap.ts` e `robots.txt`), **link/mensagem do WhatsApp** (duplicado em `app.component.html` e `contato.component.html`), **telefone/e-mail/endereço/horário** e a categoria mágica **`'Todos'`**.
-- ⬜ Substituir os usos hardcoded pelos da config (cuidado com `api/*` — Serverless, fora do bundle Angular: avaliar fonte compartilhada ou duplicação consciente e documentada).
-- ⬜ Build verde + revisão de que nenhum valor divergiu; atualizar docs.
+- ✅ Criado `src/app/core/config/site.config.ts` com: **`SITE_URL`** (`https://www.mfernandavetere.adv.br`), **`BUSINESS`** (telefone/e-mail/endereço/geo/horário/`sameAs`/`priceRange`), **`WHATSAPP_PHONE`/`WHATSAPP_MESSAGE`/`WHATSAPP_URL`** e **`ALL_CATEGORIES_LABEL`** (`'Todos'`). _(2026-06-23)_
+- ✅ Substituídos os usos hardcoded no bundle Angular: `SeoService` (`baseUrl` + objeto `business` + `openingHoursSpecification` derivado dos períodos), `artigo`/`categoria`/`autor`/`blog` `.component.ts` (+ template do `artigo` e do `blog`), `AppComponent` (botão flutuante de WhatsApp) e `ContatoComponent` (WhatsApp, e-mail, telefone, endereço, horário). _(2026-06-23)_
+- ✅ **`api/*` (Serverless) e `src/robots.txt`:** decisão = **duplicação consciente e documentada** (compilam/vivem fora do bundle Angular). Mantida a URL base local com comentário apontando `site.config.ts` como fonte canônica; valores inalterados. _(2026-06-23)_
+- ✅ Revisão de divergência: `grep` da URL base/telefone/e-mail/WhatsApp/`'Todos'` retorna **apenas** a config (fora de `api/*`/`robots.txt`, documentados). `WHATSAPP_URL` mantido **byte-a-byte idêntico** ao link já validado em produção (mensagem e telefone extraídos como partes reutilizáveis). _(2026-06-23)_
+- ⬜ Build verde + commit (`refactor:`) + push + preview — **pendente do operador** (regra 5 de governança).
 
 **S14 — Testes SSR de rotas** _(detalhes: Apêndice A.4; `MELHORIAS.md` §1.8 — parte pendente)_
 

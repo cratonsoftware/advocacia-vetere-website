@@ -10,11 +10,7 @@
 				<p class="text-n3 mb-12 text-lg leading-relaxed">Se você está passando por uma situação difícil na família, no trabalho ou em outra área da sua vida, estou aqui para ouvir e orientar. Entre em contato e dê o primeiro passo.</p>
 
 				<div class="mb-12 flex flex-wrap items-center gap-4">
-					<a
-						href="https://wa.me/+5519994113652?text=Ol%C3%A1!%20Encontrei%20seu%20site%20e%20me%20identifiquei%20com%20seu%20trabalho.%20Gostaria%20de%20agendar%20um%20hor%C3%A1rio%20para%20conversar%20sobre%20meu%20caso.%20Qual%20a%20disponibilidade?"
-						target="_blank"
-						aria-label="WhatsApp"
-						class="flex size-14 items-center justify-center rounded-sm bg-[#25D366] text-white transition-all hover:-translate-y-1 hover:bg-[#128C7E] hover:shadow-lg">
+					<a [href]="whatsappUrl" target="_blank" aria-label="WhatsApp" class="flex size-14 items-center justify-center rounded-sm bg-[#25D366] text-white transition-all hover:-translate-y-1 hover:bg-[#128C7E] hover:shadow-lg">
 						<mat-icon class="size-7!" svgIcon="whatsapp_logo"></mat-icon>
 					</a>
 
@@ -43,7 +39,7 @@
 					</a>
 
 					<a
-						href="mailto:mfernandavetereadv@gmail.com"
+						[href]="'mailto:' + business.email"
 						aria-label="Enviar E-mail"
 						class="border-n2/50 bg-n0 text-n4 hover:border-n4 hover:bg-n4 hover:text-n0 flex size-14 items-center justify-center rounded-sm border transition-all hover:-translate-y-1 hover:shadow-lg">
 						<mat-icon class="size-7!" svgIcon="mail_alt"></mat-icon>
@@ -55,14 +51,14 @@
 						<div class="text-n4">
 							<mat-icon class="size-5!" svgIcon="call"></mat-icon>
 						</div>
-						<p class="text-n3 text-sm">(19) 99411-3652</p>
+						<p class="text-n3 text-sm">{{ business.telephoneDisplay }}</p>
 					</div>
 
 					<div class="flex items-start gap-4">
 						<div class="text-n4">
 							<mat-icon class="size-5!" svgIcon="mail_alt"></mat-icon>
 						</div>
-						<p class="text-n3 text-sm">mfernandavetereadv@gmail.com</p>
+						<p class="text-n3 text-sm">{{ business.email }}</p>
 					</div>
 
 					<div class="flex items-start gap-4">
@@ -70,8 +66,8 @@
 							<mat-icon class="size-5!" svgIcon="location_on"></mat-icon>
 						</div>
 						<p class="text-n3 text-sm">
-							R. Francisco Cordeiro do Valle, 82 - Centro<br />
-							Tambaú - SP, 13710-073
+							{{ business.streetAddress }}<br />
+							{{ business.addressLocality }} - {{ business.addressRegion }}, {{ business.postalCode }}
 						</p>
 					</div>
 
@@ -81,8 +77,8 @@
 						</div>
 						<div class="text-n3 text-sm">
 							<p class="mb-1 text-[10px] font-bold tracking-widest uppercase">Horário de Atendimento</p>
-							<p>Segunda a Sexta</p>
-							<p>09:00 às 12:00 | 13:00 às 17:00</p>
+							<p>{{ business.openingHours.daysLabel }}</p>
+							<p>{{ scheduleLine }}</p>
 						</div>
 					</div>
 				</div>

@@ -470,12 +470,12 @@ Este item é **P0 e antecede** as demais melhorias de SEO de artigo: enriquecer 
 
 Fetches simultâneos realizados em 2026-06-23 para os quatro endpoints críticos:
 
-| Endpoint | Status | Content-Type | Observação |
-|---|---|---|---|
-| `www` robots.txt | 200 | `text/plain; charset=utf-8` | ✅ Conteúdo correto |
-| `apex` robots.txt | 200 (redirect → www) | `text/plain; charset=utf-8` | ✅ Apex redireciona corretamente |
-| `www` sitemap.xml | 200 | `text/xml; charset=utf-8` | ⚠️ Conteúdo **desatualizado** — `lastmod 2026-06-20`, sem `/autor/...` |
-| `apex` sitemap.xml | 200 (redirect → www) | `text/xml; charset=utf-8` | ✅ Conteúdo **fresco** — `lastmod 2026-06-23`, com `/autor/...` |
+| Endpoint           | Status               | Content-Type                | Observação                                                             |
+| ------------------ | -------------------- | --------------------------- | ---------------------------------------------------------------------- |
+| `www` robots.txt   | 200                  | `text/plain; charset=utf-8` | ✅ Conteúdo correto                                                    |
+| `apex` robots.txt  | 200 (redirect → www) | `text/plain; charset=utf-8` | ✅ Apex redireciona corretamente                                       |
+| `www` sitemap.xml  | 200                  | `text/xml; charset=utf-8`   | ⚠️ Conteúdo **desatualizado** — `lastmod 2026-06-20`, sem `/autor/...` |
+| `apex` sitemap.xml | 200 (redirect → www) | `text/xml; charset=utf-8`   | ✅ Conteúdo **fresco** — `lastmod 2026-06-23`, com `/autor/...`        |
 
 Os dois fetches ao `www` sitemap retornaram conteúdo diferente entre si — prova de que **diferentes edge nodes da Vercel tinham caches em momentos distintos**.
 
@@ -493,10 +493,12 @@ O "erro desconhecido" do GSC no robots.txt é **transiente** e não é defeito d
 #### Correções aplicadas
 
 1. **`api/sitemap.ts`** — cache reduzido de 24 h para 1 h, `stale-while-revalidate` com valor explícito:
-   ```
-   Cache-Control: s-maxage=3600, stale-while-revalidate=86400
-   ```
-   Semântica: resposta fresca por **1 hora** na edge; após isso, Vercel serve stale por até **24 h** enquanto revalida em background. Googlebot sempre recebe um sitemap no máximo 1 h desatualizado.
+
+    ```
+    Cache-Control: s-maxage=3600, stale-while-revalidate=86400
+    ```
+
+    Semântica: resposta fresca por **1 hora** na edge; após isso, Vercel serve stale por até **24 h** enquanto revalida em background. Googlebot sempre recebe um sitemap no máximo 1 h desatualizado.
 
 2. **`api/llms.ts`** — mesma correção por consistência.
 
@@ -531,11 +533,11 @@ Entre a S1 e a S8 o P0 de indexação **voltou silenciosamente** em produção. 
 Os três geradores de slugs (`getPublishedArticleSlugs`, `getCategorySlugs`, `getAuthorSlugs`) passam por um helper único `fetchPrerenderSlugs(resource, label)` que:
 
 1. **Loga sempre a contagem** de slugs por recurso — visível no log de build da Vercel:
-   ```
-   [prerender] artigos: 12 slug(s) para pre-renderizar.
-   [prerender] categorias: 4 slug(s) para pre-renderizar.
-   [prerender] autores: 1 slug(s) para pre-renderizar.
-   ```
+    ```
+    [prerender] artigos: 12 slug(s) para pre-renderizar.
+    [prerender] categorias: 4 slug(s) para pre-renderizar.
+    [prerender] autores: 1 slug(s) para pre-renderizar.
+    ```
 2. **Aborta o build em produção** (`process.env['VERCEL_ENV'] === 'production'`) se a lista vier vazia (`length === 0`), lançando erro com mensagem clara. Vale para os **três** recursos — sempre existe ≥1 artigo, ≥1 categoria e ≥1 autor publicados, então lista vazia em qualquer um indica falha de build, não estado legítimo.
 3. **Permanece tolerante (`[]`) em preview/local** (`VERCEL_ENV` ≠ `'production'`), para não travar desenvolvimento nem previews legitimamente vazios.
 

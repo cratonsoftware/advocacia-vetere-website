@@ -1,5 +1,6 @@
 import { DOCUMENT, Injectable, inject } from '@angular/core';
 import { Meta, MetaDefinition, Title } from '@angular/platform-browser';
+import { BUSINESS, SITE_URL } from '../config/site.config';
 import { SeoConfig } from '../models/seo.model';
 
 @Injectable({ providedIn: 'root' })
@@ -10,23 +11,11 @@ export class SeoService {
 
 	private readonly siteName = 'Dra. Maria Fernanda Vetere | Advocacia & Consultoria';
 	private readonly defaultImage = '/assets/cards/card-home.png';
-	private readonly baseUrl = 'https://www.mfernandavetere.adv.br';
+	private readonly baseUrl = SITE_URL;
 	private readonly locale = 'pt_BR';
 
-	/** Dados do negócio local — fonte única para o schema `LegalService`. */
-	private readonly business = {
-		telephone: '+5519994113652',
-		email: 'mfernandavetereadv@gmail.com',
-		streetAddress: 'R. Francisco Cordeiro do Valle, 82 - Centro',
-		addressLocality: 'Tambaú',
-		addressRegion: 'SP',
-		postalCode: '13710-073',
-		addressCountry: 'BR',
-		latitude: -21.7083882,
-		longitude: -47.2714927,
-		priceRange: '$$',
-		sameAs: ['https://instagram.com/mfernandavetere', 'https://facebook.com/profile.php?id=61587259521188', 'https://tiktok.com/@mfernandavetere'],
-	};
+	/** Dados do negócio local — vêm da config central (`site.config.ts`); fonte única do schema `LegalService`. */
+	private readonly business = BUSINESS;
 
 	updateMetaTags(config: SeoConfig) {
 		const fullTitle = config.title.includes('Dra. Maria Fernanda Vetere') ? config.title : `${config.title} | Dra. Maria Fernanda Vetere`;
@@ -217,20 +206,12 @@ export class SeoService {
 					latitude: this.business.latitude,
 					longitude: this.business.longitude,
 				},
-				openingHoursSpecification: [
-					{
-						'@type': 'OpeningHoursSpecification',
-						dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-						opens: '09:00',
-						closes: '12:00',
-					},
-					{
-						'@type': 'OpeningHoursSpecification',
-						dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-						opens: '13:00',
-						closes: '17:00',
-					},
-				],
+				openingHoursSpecification: this.business.openingHours.periods.map((period) => ({
+					'@type': 'OpeningHoursSpecification',
+					dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+					opens: period.opens,
+					closes: period.closes,
+				})),
 				sameAs: this.business.sameAs,
 				areaServed: [
 					{ '@type': 'City', name: 'Tambaú' },

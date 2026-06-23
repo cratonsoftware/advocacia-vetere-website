@@ -19,13 +19,13 @@
 
 			<div class="flex flex-wrap gap-2">
 				<button
-					(click)="setCategory('Todos')"
-					[class.bg-n4]="selectedCategory() === 'Todos'"
-					[class.text-n0]="selectedCategory() === 'Todos'"
-					[class.border-n4]="selectedCategory() !== 'Todos'"
-					[class.text-n4]="selectedCategory() !== 'Todos'"
+					(click)="setCategory(allCategoriesLabel)"
+					[class.bg-n4]="selectedCategory() === allCategoriesLabel"
+					[class.text-n0]="selectedCategory() === allCategoriesLabel"
+					[class.border-n4]="selectedCategory() !== allCategoriesLabel"
+					[class.text-n4]="selectedCategory() !== allCategoriesLabel"
 					class="hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300">
-					Todos
+					{{ allCategoriesLabel }}
 				</button>
 
 				@for (cat of categories(); track cat.id) {

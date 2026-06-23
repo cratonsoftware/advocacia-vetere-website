@@ -2,6 +2,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MarkdownModule } from 'ngx-markdown';
+import { SITE_URL } from 'src/app/core/config/site.config';
 import { SeoService } from 'src/app/core/services/seo.service';
 import { Artigo } from '../../core/models/artigo.model';
 import { BlogService } from '../../core/services/blog.service';
@@ -24,6 +25,9 @@ export class ArtigoComponent implements OnInit {
 	relatedArticles: Artigo[] = [];
 	isLoading = true;
 
+	/** URL base canônica — usada no link de compartilhamento do template. */
+	protected readonly siteUrl = SITE_URL;
+
 	ngOnInit(): void {
 		const slug = this.route.snapshot.paramMap.get('slug');
 
@@ -34,7 +38,7 @@ export class ArtigoComponent implements OnInit {
 				this.cdr.markForCheck();
 
 				if (data) {
-					const baseUrl = 'https://www.mfernandavetere.adv.br';
+					const baseUrl = this.siteUrl;
 
 					// Linkagem interna (G6): artigos da mesma categoria, exceto o atual.
 					if (data.categorySlug) {

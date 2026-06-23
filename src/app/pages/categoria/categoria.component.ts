@@ -1,6 +1,7 @@
 import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { SITE_URL } from 'src/app/core/config/site.config';
 import { Artigo, CategoriaArtigo } from 'src/app/core/models/artigo.model';
 import { SeoService } from 'src/app/core/services/seo.service';
 import { BlogService } from '../../core/services/blog.service';
@@ -18,7 +19,7 @@ export class CategoriaComponent implements OnInit {
 	private seoService = inject(SeoService);
 	private cdr = inject(ChangeDetectorRef);
 
-	private readonly baseUrl = 'https://www.mfernandavetere.adv.br';
+	private readonly baseUrl = SITE_URL;
 
 	category: CategoriaArtigo | null = null;
 	articles: Artigo[] = [];

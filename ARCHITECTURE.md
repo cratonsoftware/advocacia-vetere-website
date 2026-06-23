@@ -124,6 +124,7 @@ Camadas de SEO do projeto:
 - **Sitemap dinâmico**: `api/sitemap.ts` (Serverless) gera `/sitemap.xml` com `xmlbuilder2`, incluindo home, `/blog`, cada **página de categoria** (`/blog/categoria/:slug`, derivada dos `categorySlug` distintos — S5), cada **página de autor** (`/autor/:slug`, derivada de `authors` — S8) e cada artigo, todos com **`lastmod`** (home/`blog`/categorias/autores usam a data de modificação mais recente entre os artigos; artigos usam `updatedAt`). Reescrito via `vercel.json`.
 - **`/llms.txt` dinâmico** _(S5, §4.5)_: `api/llms.ts` (Serverless) gera um Markdown curado para crawlers de IA (GEO/AEO) a partir da view `published_articles` — cabeçalho do escritório, páginas principais, áreas de atuação, **autores** (perfil com bio/OAB — S8), categorias e cada artigo com uma linha (`tldr`→fallback `excerpt`). Reescrito de `/llms.txt` via `vercel.json`.
 - **`robots.txt`** (`src/robots.txt`): libera tudo e aponta para o sitemap.
+- **Constantes centrais** _(S13)_: `src/app/core/config/site.config.ts` é a **fonte única** de `SITE_URL`, dados de contato (`BUSINESS`), link/mensagem do WhatsApp e o rótulo `'Todos'`. O `SeoService` (URL base + schema `LegalService`) e os componentes consomem dela. As Serverless `api/*` e o `src/robots.txt` — fora do bundle Angular — replicam a URL base com **duplicação consciente e documentada** (comentário apontando a fonte canônica).
 - **`index.html`**: `lang="pt-BR"`, `theme-color`, favicons por `prefers-color-scheme`, verificação Google.
 
 > Datas ISO para SEO: o `BlogService.formatDate` deriva `dateIso`/`updatedAtIso` de `publishedAt`/`updatedAt` (view S3, com `.toISOString()`), mantendo `date` apenas como rótulo pt-BR. **S8 (follow-up):** a página `/autor/:slug` passou a existir (`ProfilePage` + `Person`) e o `author.url` do JSON-LD do artigo agora aponta para ela; o consumo fino de `canonicalUrl`/`noindex` por artigo (G10) foi cabeado no front (`SeoConfig.canonical`/`noIndex`).
@@ -189,6 +190,7 @@ Apenas o **`MatIcon`** do Angular Material é usado, como registro de SVGs próp
 ```
 src/app/
   core/
+    config/      → site.config.ts (constantes centrais — S13)
     models/      → artigo, review, seo (interfaces)
     services/    → blog, review, seo
   features/      → blocos da home: header, hero, sobre, areas,

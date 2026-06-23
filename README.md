@@ -71,7 +71,7 @@ npm run format
 
 ```
 src/app/
-  core/        → models e services (blog, reviews, SEO) + smoke tests (*.spec.ts)
+  core/        → config (site.config.ts — constantes centrais), models e services (blog, reviews, SEO) + smoke tests (*.spec.ts)
   features/    → blocos da home (header, hero, sobre, areas, reviews, contato, mapa, footer…)
   pages/       → rotas (home, blog, artigo, categoria, autor, sucesso, not-found)
 api/sitemap.ts → Serverless Function do sitemap dinâmico
@@ -83,10 +83,10 @@ scripts/       → hooks de pré-build
 
 ## Render modes (SSR)
 
-| Rota                                                                                       | Modo      |
-| ------------------------------------------------------------------------------------------ | --------- |
+| Rota                                                                                     | Modo      |
+| ---------------------------------------------------------------------------------------- | --------- |
 | `/`, `/blog`, `/blog/:slug`, `/blog/categoria/:slug`, `/autor/:slug`, `/sucesso`, `/404` | Prerender |
-| `/**`                                                                                      | Server    |
+| `/**`                                                                                    | Server    |
 
 > Cada artigo (`/blog/:slug`) e cada página de categoria (`/blog/categoria/:slug`) é pré-renderizado como HTML estático: o `getPrerenderParams()` em `app.routes.server.ts` lê, em tempo de build, os slugs publicados (artigos) e os slugs de `categories` (categorias) no Supabase, garantindo SEO próprio (canonical self, title/H1, OG, JSON-LD) e indexabilidade. Ao publicar/editar um artigo, um **Vercel Deploy Hook** acionado por um **webhook do Supabase** dispara o rebuild (~1–2 min). Ver `BLOG-SEO.md` §10.
 >

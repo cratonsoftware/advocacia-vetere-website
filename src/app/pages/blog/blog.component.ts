@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, sign
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { ALL_CATEGORIES_LABEL } from 'src/app/core/config/site.config';
 import { SeoService } from 'src/app/core/services/seo.service';
 import { BlogService } from '../../core/services/blog.service';
 
@@ -19,12 +20,15 @@ export class BlogComponent {
 
 	private readonly itemsPerPage = 6;
 
+	/** Rótulo da pseudo-categoria "todas" (config central). */
+	protected readonly allCategoriesLabel = ALL_CATEGORIES_LABEL;
+
 	// --- dados assíncronos via toSignal() ---
 	allArticles = toSignal(this.blogService.getAllArticles(), { initialValue: [] });
 	categories = toSignal(this.blogService.getCategories(), { initialValue: [] });
 
 	// --- estado de filtro/paginação ---
-	selectedCategory = signal('Todos');
+	selectedCategory = signal(ALL_CATEGORIES_LABEL);
 	searchTerm = signal('');
 	currentPage = signal(1);
 
@@ -34,7 +38,7 @@ export class BlogComponent {
 		const cat = this.selectedCategory();
 		const term = this.searchTerm().toLowerCase().trim();
 
-		if (cat !== 'Todos') temp = temp.filter((a) => a.category === cat);
+		if (cat !== ALL_CATEGORIES_LABEL) temp = temp.filter((a) => a.category === cat);
 		if (term) temp = temp.filter((a) => a.title.toLowerCase().includes(term) || a.excerpt.toLowerCase().includes(term));
 		return temp;
 	});
@@ -83,7 +87,7 @@ export class BlogComponent {
 
 	clearFilters(): void {
 		this.searchTerm.set('');
-		this.selectedCategory.set('Todos');
+		this.selectedCategory.set(ALL_CATEGORIES_LABEL);
 		this.currentPage.set(1);
 	}
 }

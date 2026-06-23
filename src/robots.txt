@@ -2,4 +2,6 @@ User-agent: *
 Allow: /
 
 # Sitemap dinâmico servido via Vercel Serverless Function (api/sitemap.ts)
+# URL base: duplicação consciente (S13) — arquivo estático fora do bundle Angular.
+# Fonte canônica: SITE_URL em src/app/core/config/site.config.ts — manter em sincronia.
 Sitemap: https://www.mfernandavetere.adv.br/sitemap.xml

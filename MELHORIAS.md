@@ -65,13 +65,15 @@ Benefício colateral: combina perfeitamente com `OnPush`.
 
 `ContatoComponent` tem `formatarTelefone()` e `enviarMensagem()` que **não são chamados** — o formulário envia direto para o Web3Forms via `action`/`method="POST"` e a máscara é feita pelo `ngx-mask`. Remover os dois métodos elimina confusão e a dependência implícita de `alert()`/`console.log`.
 
-### 1.6 Centralizar constantes e configuração — Impacto Médio · Esforço M
+### 1.6 Centralizar constantes e configuração — Impacto Médio · Esforço M — ✅ S13 (2026-06-23)
 
-Há valores espalhados que deveriam viver em um único `app.constants.ts` / `site.config.ts`:
+> **Aplicado na S13:** criado `src/app/core/config/site.config.ts` como fonte única — `SITE_URL`, `BUSINESS` (telefone/e-mail/endereço/geo/horário/`sameAs`/`priceRange`), `WHATSAPP_PHONE`/`WHATSAPP_MESSAGE`/`WHATSAPP_URL` e `ALL_CATEGORIES_LABEL` (`'Todos'`). Consumido por `SeoService`, páginas (`artigo`/`categoria`/`autor`/`blog`), `AppComponent` e `ContatoComponent`. As Serverless Functions (`api/sitemap.ts`, `api/llms.ts`) e o `src/robots.txt` — fora do bundle Angular — mantêm a URL base com **duplicação consciente e documentada** (comentário apontando a fonte canônica).
 
-- A **URL base** `https://www.mfernandavetere.adv.br` aparece em `SeoService`, em `api/sitemap.ts` e no `robots.txt`.
-- O **link de WhatsApp** (com a mesma mensagem pré-preenchida) está duplicado em `app.component.html` e `contato.component.html`.
-- A categoria mágica `'Todos'`, telefone, e-mail, endereço e horário aparecem hardcoded em vários templates.
+Havia valores espalhados que deveriam viver em um único `app.constants.ts` / `site.config.ts`:
+
+- A **URL base** `https://www.mfernandavetere.adv.br` aparecia em `SeoService`, em `api/sitemap.ts` e no `robots.txt`.
+- O **link de WhatsApp** (com a mesma mensagem pré-preenchida) estava duplicado em `app.component.html` e `contato.component.html`.
+- A categoria mágica `'Todos'`, telefone, e-mail, endereço e horário apareciam hardcoded em vários templates.
 
 Centralizar reduz risco de divergência (ex.: mudar o telefone em um lugar e esquecer outro).
 
@@ -93,7 +95,7 @@ Não há `engines` no `package.json` nem `.nvmrc`. Para builds reproduzíveis (l
 
 **Origem: auditoria da S8 (2026-06-21).** Hoje, em falha de rede/Supabase durante o build, `getPublishedArticleSlugs()` (e `getCategorySlugs`/`getAuthorSlugs`) em `app.routes.server.ts` engole o erro e retorna `[]` para **não quebrar o deploy**. O efeito colateral é perigoso: se a lista vier vazia, **nenhum artigo é pré-renderizado** e cada URL de artigo cai no fallback estático da Home (canonical → home, não indexável) — exatamente o P0 da S1, que **voltou a acontecer em produção** e só foi detectado pela auditoria manual, não pelo build.
 
-Proposta: transformar a falha silenciosa em **falha barulhenta** apenas em produção. No `getPrerenderParams` dos artigos, se o ambiente for de produção (ex.: `process.env['VERCEL_ENV'] === 'production'`) **e** a lista de slugs vier vazia enquanto se espera ≥1 artigo publicado, **lançar erro e abortar o build** — assim um deploy nunca sobe com os artigos quebrados sem ninguém perceber. Em preview/local, manter o fallback `[]` tolerante (não travar o fluxo de desenvolvimento). Complementos opcionais: logar a contagem de slugs pré-renderizados no build e/ou um *smoke check* pós-deploy (curl do canonical de um artigo) no pipeline.
+Proposta: transformar a falha silenciosa em **falha barulhenta** apenas em produção. No `getPrerenderParams` dos artigos, se o ambiente for de produção (ex.: `process.env['VERCEL_ENV'] === 'production'`) **e** a lista de slugs vier vazia enquanto se espera ≥1 artigo publicado, **lançar erro e abortar o build** — assim um deploy nunca sobe com os artigos quebrados sem ninguém perceber. Em preview/local, manter o fallback `[]` tolerante (não travar o fluxo de desenvolvimento). Complementos opcionais: logar a contagem de slugs pré-renderizados no build e/ou um _smoke check_ pós-deploy (curl do canonical de um artigo) no pipeline.
 
 > Mantém a robustez (preview/local não quebram) e fecha o buraco que deixou o artigo não indexável em produção entre a S1 e a S8.
 

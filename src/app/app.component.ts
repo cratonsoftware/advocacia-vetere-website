@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { inject as injectAnalytics } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
+import { WHATSAPP_URL } from './core/config/site.config';
 import { FooterComponent } from './features/footer/footer.component';
 import { HeaderComponent } from './features/header/header.component';
 import { ICON_NAMES } from './generated/icon-list';
@@ -17,6 +18,9 @@ import { ICON_NAMES } from './generated/icon-list';
 export class AppComponent implements OnInit {
 	private iconRegistry = inject(MatIconRegistry);
 	private sanitizer = inject(DomSanitizer);
+
+	/** Link do botão flutuante de WhatsApp (config central). */
+	protected readonly whatsappUrl = WHATSAPP_URL;
 
 	constructor() {
 		this.registrarIcones();

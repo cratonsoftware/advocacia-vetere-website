@@ -69,16 +69,16 @@ O servidor Express (`src/server.ts`) é responsável exclusivamente por:
 
 ### Render Modes por Rota (`app.routes.server.ts`)
 
-| Rota                    | Modo        | Motivo                                                                                                                                                                      |
-| ----------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/`                     | `Prerender` | Conteúdo estático — máxima performance e SEO                                                                                                                                |
-| `/blog`                 | `Prerender` | Listagem de artigos pré-renderizada com conteúdo real                                                                                                                       |
-| `/blog/:slug`           | `Prerender` | Pré-renderizado por slug via `getPrerenderParams()` (lê os slugs publicados no Supabase no build) — HTML estático com SEO próprio e indexável                               |
-| `/blog/categoria/:slug` | `Prerender` | Página de categoria (hub) pré-renderizada por slug via `getPrerenderParams()` (lê os slugs de `categories` no build) — SEO próprio `CollectionPage` + `BreadcrumbList` (S5) |
+| Rota                    | Modo        | Motivo                                                                                                                                                                            |
+| ----------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                     | `Prerender` | Conteúdo estático — máxima performance e SEO                                                                                                                                      |
+| `/blog`                 | `Prerender` | Listagem de artigos pré-renderizada com conteúdo real                                                                                                                             |
+| `/blog/:slug`           | `Prerender` | Pré-renderizado por slug via `getPrerenderParams()` (lê os slugs publicados no Supabase no build) — HTML estático com SEO próprio e indexável                                     |
+| `/blog/categoria/:slug` | `Prerender` | Página de categoria (hub) pré-renderizada por slug via `getPrerenderParams()` (lê os slugs de `categories` no build) — SEO próprio `CollectionPage` + `BreadcrumbList` (S5)       |
 | `/autor/:slug`          | `Prerender` | Página de perfil de autor (E-E-A-T) pré-renderizada por slug via `getPrerenderParams()` (lê os slugs de `authors` no build) — SEO próprio `ProfilePage` + `Person` (S8 follow-up) |
-| `/sucesso`              | `Prerender` | Página simples sem dados dinâmicos                                                                                                                                          |
-| `/404`                  | `Prerender` | Página de erro estática                                                                                                                                                     |
-| `/**`                   | `Server`    | Fallback para rotas não mapeadas                                                                                                                                            |
+| `/sucesso`              | `Prerender` | Página simples sem dados dinâmicos                                                                                                                                                |
+| `/404`                  | `Prerender` | Página de erro estática                                                                                                                                                           |
+| `/**`                   | `Server`    | Fallback para rotas não mapeadas                                                                                                                                                  |
 
 ### Pré-renderização de artigos (`/blog/:slug`)
 
@@ -186,6 +186,13 @@ Karma + Jasmine (já configurados). Smoke tests cobrindo o núcleo de SEO: `seo.
 - **Rodapé de autoria do artigo:** o badge abaixo do nome da autora exibe **"Advogada Familiarista"** (texto fixo em `artigo.component.html`). **Não usar** `article.category` nem qualquer derivação de categoria — a Dra. não é especialista certificada; anunciar "Especialista" configura publicidade irregular perante a OAB.
 - **Varredura confirmada:** `jobTitle` no `SeoService` e componentes usa fallback `'Advogada'`; `authors.role = 'Advogada'`; `authors.bio` sem referência a "especialista". A menção a "especialistas renomados" em `areas.component.html` refere-se a parceiros do escritório — manter.
 - **Artigo "Traição":** `title` e `meta_title` atualizados para "Traição dá direito a indenização? Veja o que a lei diz sobre isso." no Supabase; `faq = NULL` (seção FAQ e JSON-LD `FAQPage` ocultados automaticamente pelo template). Slug `traicao-da-direito-a-indenizacao` **preservado** — nenhum redirect necessário.
+
+### Configuração central — `site.config.ts` (S13 — aplicado 2026-06-23)
+
+- **Fonte única de constantes:** `src/app/core/config/site.config.ts` exporta `SITE_URL`, `BUSINESS` (telefone, `telephoneDisplay`, e-mail, endereço, geo, `priceRange`, `sameAs`, `openingHours`), `WHATSAPP_PHONE`/`WHATSAPP_MESSAGE`/`WHATSAPP_URL` e `ALL_CATEGORIES_LABEL` (`'Todos'`). **Não** voltar a hardcodar esses valores em componentes/serviços/templates — importar da config.
+- **Consumidores:** `SeoService` (`baseUrl` + `business`; `openingHoursSpecification` é derivado de `BUSINESS.openingHours.periods`), `ArtigoComponent`/`CategoriaComponent`/`AutorComponent` (`SITE_URL`), `BlogComponent` (`ALL_CATEGORIES_LABEL`), `AppComponent` e `ContatoComponent` (`WHATSAPP_URL` + campos de `BUSINESS`).
+- **`api/*` e `robots.txt` (fora do bundle Angular):** por decisão arquitetural, mantêm a URL base **localmente** com **duplicação consciente e documentada** (comentário apontando `site.config.ts`). Ao alterar `SITE_URL`, atualizar também `api/sitemap.ts`, `api/llms.ts` e `src/robots.txt`.
+- **`WHATSAPP_URL`** é mantido como string pré-codificada (byte-a-byte idêntica ao link validado em produção); `WHATSAPP_MESSAGE`/`WHATSAPP_PHONE` ficam disponíveis como partes reutilizáveis (ex.: CTAs contextuais previstos na S17).
 
 ---
 
