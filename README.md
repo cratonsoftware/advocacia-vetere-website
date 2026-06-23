@@ -29,7 +29,7 @@ A arquitetura completa está documentada em **[`ARCHITECTURE.md`](./ARCHITECTURE
 
 ## Pré-requisitos
 
-- Node.js (LTS) e npm
+- Node.js **22** e npm (`nvm use` na raiz do projeto usa o `.nvmrc` automaticamente)
 - Um arquivo `.env` na raiz (ver `.env.example`):
 
 ```

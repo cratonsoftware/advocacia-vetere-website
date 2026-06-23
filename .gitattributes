@@ -1,0 +1,16 @@
+# Normalizar todos os arquivos de texto para LF no repositório
+* text=auto eol=lf
+
+# Binários — sem conversão de EOL, sem diff de texto
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary
+*.pdf   binary
+*.zip   binary

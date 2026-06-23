@@ -19,6 +19,9 @@
 		"serve:ssr:advocacia-vetere-website": "node dist/advocacia-vetere-website/server/server.mjs"
 	},
 	"private": true,
+	"engines": {
+		"node": ">=22 <23"
+	},
 	"dependencies": {
 		"@angular/animations": "^21.0.0",
 		"@angular/common": "^21.0.0",

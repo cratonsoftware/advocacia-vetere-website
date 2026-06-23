@@ -322,6 +322,8 @@ Testar em pelo menos: 375px (iPhone SE), 390px (iPhone 14), 768px (iPad), 1280px
 
 ## Comandos Úteis
 
+> **Pré-requisito:** Node.js **22** (`.nvmrc` na raiz — `nvm use` seleciona automaticamente). O `package.json` declara `"engines": { "node": ">=22 <23" }`.
+
 ```bash
 # Desenvolvimento local
 npm run dev
