@@ -1,72 +1,67 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 import { environment } from 'src/environments/environment';
 
-// Busca, em tempo de build, os slugs publicados no Supabase para pre-renderizar
-// cada artigo como HTML estatico com SEO proprio. Em caso de falha (Supabase
-// indisponivel ou rede bloqueada no build), loga o erro e retorna [] para nao
-// quebrar o deploy; novos artigos sao cobertos pelo rebuild automatico
-// (Vercel Deploy Hook + webhook do Supabase) descrito em BLOG-SEO.md secao 10.
-async function getPublishedArticleSlugs(): Promise<Array<{ slug: string }>> {
+// Em producao (Vercel), um pre-render vazio NUNCA pode passar silenciosamente:
+// se a lista de slugs vier vazia, nenhuma pagina e gerada e cada URL cai no
+// fallback estatico da Home (canonical -> home, nao indexavel) — exatamente o
+// P0 de indexacao que reabriu entre a S1 e a S8 com build verde. O guard da S11
+// transforma essa falha silenciosa em falha barulhenta: aborta o build.
+// Em preview/local (VERCEL_ENV != 'production') o fluxo segue tolerante ([]),
+// para nao travar desenvolvimento nem previews legitimamente vazios.
+const isProductionBuild = process.env['VERCEL_ENV'] === 'production';
+
+// Busca, em tempo de build, os slugs de um recurso do Supabase (artigos,
+// categorias ou autores) para pre-renderizar cada rota como HTML estatico com
+// SEO proprio. Loga sempre a contagem (inspecao rapida no log da Vercel) e, em
+// producao, aborta o build se a lista vier vazia. Em falha de rede/Supabase a
+// lista resultante e vazia: o guard de producao trata os dois casos (erro de
+// rede ou zero linhas) de forma identica — ambos sao fatais em producao.
+async function fetchPrerenderSlugs(resource: string, label: string): Promise<Array<{ slug: string }>> {
+	let slugs: Array<{ slug: string }> = [];
+
 	try {
-		const response = await fetch(`${environment.supabaseUrl}/rest/v1/published_articles?select=slug`, {
+		const response = await fetch(`${environment.supabaseUrl}/rest/v1/${resource}?select=slug`, {
 			headers: {
 				apikey: environment.supabaseKey,
 				Authorization: `Bearer ${environment.supabaseKey}`,
 			},
 		});
 
-		if (!response.ok) throw new Error(`Supabase respondeu ${response.status} ao listar slugs`);
+		if (!response.ok) throw new Error(`Supabase respondeu ${response.status} ao listar ${label}`);
 
-		const articles = (await response.json()) as Array<{ slug: string }>;
-		return articles.map((article) => ({ slug: article.slug }));
+		const rows = (await response.json()) as Array<{ slug: string }>;
+		slugs = rows.map((row) => ({ slug: row.slug }));
 	} catch (error) {
-		console.error('[prerender] Falha ao buscar slugs de artigos no Supabase:', error);
-		return [];
+		console.error(`[prerender] Falha ao buscar slugs de ${label} no Supabase:`, error);
 	}
+
+	console.log(`[prerender] ${label}: ${slugs.length} slug(s) para pre-renderizar.`);
+
+	if (isProductionBuild && slugs.length === 0) {
+		throw new Error(
+			`[prerender] ABORTANDO O BUILD: nenhum slug de ${label} encontrado em producao ` +
+				`(VERCEL_ENV=production). Pre-renderizar com a lista vazia faria cada pagina cair no ` +
+				`fallback de SEO da Home (P0 de indexacao). Verifique a conectividade com o Supabase e ` +
+				`as variaveis de Build (SUPABASE_URL/SUPABASE_KEY) no projeto da Vercel.`,
+		);
+	}
+
+	return slugs;
 }
 
-// Busca, em tempo de build, os slugs das categorias para pre-renderizar cada
-// pagina de arquivo (/blog/categoria/:slug) como HTML estatico com SEO proprio.
-// Mesma estrategia de robustez dos artigos: em falha, retorna [] sem quebrar o build.
-async function getCategorySlugs(): Promise<Array<{ slug: string }>> {
-	try {
-		const response = await fetch(`${environment.supabaseUrl}/rest/v1/categories?select=slug`, {
-			headers: {
-				apikey: environment.supabaseKey,
-				Authorization: `Bearer ${environment.supabaseKey}`,
-			},
-		});
-
-		if (!response.ok) throw new Error(`Supabase respondeu ${response.status} ao listar categorias`);
-
-		const categories = (await response.json()) as Array<{ slug: string }>;
-		return categories.map((category) => ({ slug: category.slug }));
-	} catch (error) {
-		console.error('[prerender] Falha ao buscar slugs de categorias no Supabase:', error);
-		return [];
-	}
+// Pre-renderiza cada artigo (/blog/:slug) como HTML estatico com SEO proprio.
+function getPublishedArticleSlugs(): Promise<Array<{ slug: string }>> {
+	return fetchPrerenderSlugs('published_articles', 'artigos');
 }
 
-// Busca, em tempo de build, os slugs dos autores para pre-renderizar cada
-// pagina de perfil (/autor/:slug) como HTML estatico com SEO proprio (E-E-A-T).
-// Mesma estrategia de robustez: em falha, retorna [] sem quebrar o build.
-async function getAuthorSlugs(): Promise<Array<{ slug: string }>> {
-	try {
-		const response = await fetch(`${environment.supabaseUrl}/rest/v1/authors?select=slug`, {
-			headers: {
-				apikey: environment.supabaseKey,
-				Authorization: `Bearer ${environment.supabaseKey}`,
-			},
-		});
+// Pre-renderiza cada pagina de arquivo de categoria (/blog/categoria/:slug).
+function getCategorySlugs(): Promise<Array<{ slug: string }>> {
+	return fetchPrerenderSlugs('categories', 'categorias');
+}
 
-		if (!response.ok) throw new Error(`Supabase respondeu ${response.status} ao listar autores`);
-
-		const authors = (await response.json()) as Array<{ slug: string }>;
-		return authors.map((author) => ({ slug: author.slug }));
-	} catch (error) {
-		console.error('[prerender] Falha ao buscar slugs de autores no Supabase:', error);
-		return [];
-	}
+// Pre-renderiza cada pagina de perfil de autor (/autor/:slug) — E-E-A-T.
+function getAuthorSlugs(): Promise<Array<{ slug: string }>> {
+	return fetchPrerenderSlugs('authors', 'autores');
 }
 
 export const serverRoutes: ServerRoute[] = [

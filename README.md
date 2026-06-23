@@ -95,6 +95,8 @@ scripts/       → hooks de pré-build
 > **Topical authority & GEO/AEO (S5):** tags por artigo + linkagem interna (categoria clicável, seção "Leia também"); páginas de categoria (`/blog/categoria/:slug`) com `CollectionPage` + `BreadcrumbList`; bloco TL;DR e seção de FAQ por artigo, com `FAQPage` JSON-LD; e `/llms.txt` dinâmico (`api/llms.ts`, rewrite em `vercel.json`) gerado a partir da view. Ver `BLOG-SEO.md` §4.3/§4.5/§7.
 >
 > **Página de autor & SEO fino (S8 — follow-up):** página de perfil `/autor/:slug` (E-E-A-T) pré-renderizada, com `ProfilePage` + `Person` (OAB/`sameAs`), listando os artigos da autora; o `author.url` do JSON-LD do artigo passou a apontar para `/autor/:slug`. Override de canônica (`canonicalUrl`) e `noindex` por artigo agora são consumidos no front. Autores entram no `sitemap.xml` e no `/llms.txt`.
+>
+> **Robustez do build (S11):** o `getPrerenderParams()` loga a contagem de slugs por recurso e, em produção (`VERCEL_ENV=production`), **aborta o build** se o pré-render de artigos/categorias/autores vier vazio — evitando um deploy verde mas quebrado (artigos herdando o SEO da Home, não indexáveis). Em preview/local mantém-se tolerante. Ver `BLOG-SEO.md` §10.8.
 
 ---
 

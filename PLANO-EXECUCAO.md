@@ -44,14 +44,14 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 | **S17** _(opcional)_| Conteúdo & conversão          | selo OAB no hero, CTA WhatsApp contextual, "ver mais" nas avaliações | —          | Sonnet      | Baixo      |
 | **S18** _(opcional)_| Auditoria final pós-deploy    | Lighthouse/CWV, Rich Results, confirmação de RLS, smoke check        | todas      | Sonnet      | Baixo      |
 
-> S1–S10 estão **✅ concluídas** (ver §6.1). Das pendentes:
+> S1–S11 estão **✅ concluídas** (ver §6.1). Das pendentes:
 >
-> - **S11 é a maior prioridade técnica** — fecha o buraco que reabriu o P0 de indexação (artigo herdando o SEO da Home) entre a S1 e a S8, de forma silenciosa.
+> - **S11 (maior prioridade técnica) ✅ concluída** — fechou o buraco que reabriu o P0 de indexação (artigo herdando o SEO da Home) entre a S1 e a S8, de forma silenciosa, com guard de build em produção.
 > - **S12 deveria vir cedo:** há 47 arquivos "modificados" que são só conversão LF→CRLF (`git diff -w` = 0). Normalizar EOL **antes** de abrir branches de feature evita ruído em diffs/PRs.
 > - **S13 depende da S12** (mexe em muitos arquivos — melhor sobre uma árvore com EOL já normalizado).
-> - **S11, S14, S15, S16** são independentes entre si. **S16** (mapa via Google Cloud) é a de maior risco/escopo.
+> - **S14, S15, S16** são independentes entre si. **S16** (mapa via Google Cloud) é a de maior risco/escopo.
 > - **S17 e S18 são opcionais** e não bloqueiam nenhum DoD.
-> - **Ordem recomendada:** S12 → S11 → S13/S14 → S15/S16 → S17/S18.
+> - **Ordem recomendada (restante):** S12 → S13/S14 → S15/S16 → S17/S18.
 
 ---
 
@@ -119,7 +119,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S8 — Testes & verificação | ✅ | 2026-06-22 | cc4e8983 | **DoD completo.** Build verde + testes 100% (2026-06-21); merge + deploy validados em produção (2026-06-22): canonical self no artigo, todas as páginas indexadas, sitemap com `/autor/...` e página de autor no ar. Follow-ups (`/autor/:slug`, `author.url`, `canonicalUrl`/`noindex`), smoke tests e hook `pretest` entregues. P0 da auditoria **resolvido** (era falha de pré-render por env de Build; rebuild corrigiu). |
 | S9 — Correções de conteúdo | ✅ | 2026-06-23 | fix/content-corrections | Badge de autoria do artigo: "Especialista em categoria" → texto fixo "Advogada Familiarista". Supabase: `title`/`meta_title` do artigo atualizados; `faq = NULL`. Slug preservado. |
 | S10 — Diagnóstico GSC | ✅ | 2026-06-23 | fix/gsc-robots-indexing | Causa: `s-maxage=86400` no sitemap (cache de CDN de 24 h) → Googlebot recebia sitemap stale; "erro desconhecido" do GSC = transiente (Serverless Function timeout no passado). Correção: `s-maxage=3600, stale-while-revalidate=86400` em `api/sitemap.ts` + `api/llms.ts`; comentário `src/robots.txt` corrigido. Ações do operador no GSC documentadas em `BLOG-SEO.md` §10.7. |
-| S11 — Robustez do build | ⬜ | — | — | **Prioridade.** `app.routes.server.ts`: `getPublishedArticleSlugs`/`getCategorySlugs`/`getAuthorSlugs` ainda fazem `catch → []`, reabrindo o P0 silenciosamente. Falhar o build em produção (`VERCEL_ENV==='production'`) se a lista vier vazia esperando ≥1. Origem: Apêndice A.1 / `MELHORIAS.md` §1.10. |
+| S11 — Robustez do build | ✅ | 2026-06-23 | fix/prerender-build-guard | Helper único `fetchPrerenderSlugs(resource, label)` em `app.routes.server.ts`: loga a contagem de slugs (artigos/categorias/autores) e, em produção (`VERCEL_ENV==='production'`), **aborta o build** se a lista vier vazia (guard aplicado aos três geradores). Preview/local mantêm `[]` tolerante. Smoke check pós-deploy documentado em `BLOG-SEO.md` §10.8. Lógica verificada por simulação (6/6 ramificações). Docs: §10.8 + ARCHITECTURE §2/§6 + CLAUDE.md + README. |
 | S12 — Higiene de repo & build | ⬜ | — | — | 47 arquivos só com LF→CRLF (`git diff -w`=0); sem `.gitattributes`. Adicionar `.gitattributes` + normalizar EOL; `engines`/`.nvmrc` (Node fixo). **Fazer antes de novas features.** Origem: Apêndice A.3/A.5 / `MELHORIAS.md` §1.9. |
 | S13 — Centralização de constantes | ⬜ | — | — | `site.config.ts`: URL base (em `SeoService`, `api/sitemap.ts`, `robots.txt`), link WhatsApp (duplicado em `app.component.html` e `contato`), telefone/e-mail/endereço/horário e `'Todos'`. Origem: Apêndice A.2 / `MELHORIAS.md` §1.6. |
 | S14 — Testes SSR de rotas | ⬜ | — | — | Smoke tests de serviço já entregues na S8; falta cobertura de **renderização das rotas pré-renderizadas** (`/`, `/blog`, `/blog/:slug`, `/blog/categoria/:slug`, `/autor/:slug`). Origem: Apêndice A.4 / `MELHORIAS.md` §1.8. |
@@ -216,7 +216,7 @@ _Escopo S8:_
 - ✅ **Varredura completa:** `grep -ri "especialista" src/` — único resultado relevante é `areas.component.html:49` ("especialistas renomados", parceiros, mantido). `jobTitle` no `SeoService`/componentes usa fallback `'Advogada'`. `authors.role='Advogada'`, `authors.bio` sem referência a "especialista". Nenhuma outra correção necessária. _(2026-06-23, fix/content-corrections)_
 - ✅ **Remover FAQ do artigo** — `faq = NULL` via UPDATE no Supabase (MCP). O template já oculta automaticamente. _(2026-06-23, via MCP Supabase)_
 - ✅ **Alterar título do artigo** — `title` e `meta_title` atualizados para "Traição dá direito a indenização? Veja o que a lei diz sobre isso." via UPDATE no Supabase. Slug `traicao-da-direito-a-indenizacao` **preservado**. _(2026-06-23, via MCP Supabase)_
-- ⬜ **Rebuild/redeploy:** como `/blog/:slug` é **pré-renderizado**, as mudanças de título/FAQ no Supabase só aparecem em produção após novo build (Deploy Hook ou push com a branch `fix/content-corrections`). Validar o HTML cru pós-deploy.
+- ✅ **Rebuild/redeploy:** rebuild executado e HTML cru pós-deploy validado pelo operador — o artigo traz o **novo título** e **não** contém a seção "Perguntas frequentes" nem o JSON-LD `FAQPage`; slug preservado. _(2026-06-23)_
 
 **S10 — Diagnóstico GSC: `robots.txt` e relatórios de indexação** _(concluída 2026-06-23, branch `fix/gsc-robots-indexing`)_
 
@@ -226,16 +226,19 @@ _Escopo S8:_
 - ✅ **Cache agressivo no sitemap corrigido:** `api/sitemap.ts` e `api/llms.ts` — `s-maxage=86400` → `s-maxage=3600, stale-while-revalidate=86400`. Googlebot recebe sitemap no máximo 1 h desatualizado. _(2026-06-23, fix/gsc-robots-indexing)_
 - ✅ **Comentário errado em `src/robots.txt` corrigido:** "Express" → "Vercel Serverless Function (api/sitemap.ts)". _(2026-06-23, fix/gsc-robots-indexing)_
 - ✅ **Diagnóstico documentado** em `BLOG-SEO.md` §10.7 com causa, fix e ações do operador no GSC. _(2026-06-23)_
-- ⬜ **Ações do operador no GSC** (após deploy): (1) robots.txt → "Solicitar nova leitura"; (2) Sitemaps → "Reenviar `sitemap.xml`"; (3) Inspeção de URL → `/autor/maria-fernanda-vetere` → "Testar URL ativa" + "Solicitar indexação". Latência de 3–7 dias nos relatórios de Cobertura é normal — usar "Inspeção de URL ativa" para estado em tempo real.
+- ✅ **Ações do operador no GSC** (após deploy): (1) robots.txt → "Solicitar nova leitura"; (2) Sitemaps → "Reenviar `sitemap.xml`"; (3) Inspeção de URL → `/autor/maria-fernanda-vetere` → "Testar URL ativa" + "Solicitar indexação". Executadas com êxito pelo operador. _(2026-06-23)_ Latência de 3–7 dias nos relatórios de Cobertura é normal — usar "Inspeção de URL ativa" para estado em tempo real.
 
-**S11 — Robustez do build (guard do P0)** _(detalhes: `RELATORIO-TECNICO-S1-S8.md` Apêndice A.1; `MELHORIAS.md` §1.10)_
+**S11 — Robustez do build (guard do P0)** _(concluída 2026-06-23, branch `fix/prerender-build-guard`; detalhes: `MELHORIAS.md` §1.10; doc: `BLOG-SEO.md` §10.8)_
 
 > **Por quê:** entre a S1 e a S8 o P0 de indexação **voltou silenciosamente** em produção — o pré-render veio vazio (env de Build) e cada artigo caiu no fallback estático da Home (canonical → home). O build passou verde mesmo assim. Esta sessão impede que isso se repita sem ninguém perceber.
+>
+> _Nota: o `RELATORIO-TECNICO-S1-S8.md` (Apêndice A.1) não está versionado neste checkout; seu conteúdo está integralmente refletido em `MELHORIAS.md` §1.10, usado como fonte._
 
-- ⬜ Em `app.routes.server.ts`, nos `getPrerenderParams` de **artigos** (e avaliar categorias/autores): se `process.env['VERCEL_ENV'] === 'production'` **e** a lista de slugs vier vazia esperando ≥1, **lançar erro e abortar o build**. Manter o fallback `[]` tolerante em **preview/local**.
-- ⬜ Logar a **contagem de slugs** pré-renderizados no build (artigos/categorias/autores) para inspeção rápida no log da Vercel.
-- ⬜ _(Opcional)_ Smoke check pós-deploy no pipeline: `curl` do canonical de um artigo conferindo `canonical` self (não-home).
-- ⬜ Atualizar `BLOG-SEO.md` §10 e `ARCHITECTURE.md` com a nova garantia de build.
+- ✅ Em `app.routes.server.ts`, helper único `fetchPrerenderSlugs(resource, label)` aplicado aos **três** geradores (artigos/categorias/autores): se `process.env['VERCEL_ENV'] === 'production'` **e** a lista vier vazia, **lança erro e aborta o build**. Fallback `[]` tolerante em **preview/local**. Decisão: guard nos três (sempre há ≥1 de cada publicado). _(2026-06-23, fix/prerender-build-guard)_
+- ✅ Log da **contagem de slugs** por recurso no build (`[prerender] artigos: N slug(s)...`) para inspeção rápida no log da Vercel. _(2026-06-23)_
+- ✅ _(Opcional)_ Smoke check pós-deploy documentado em `BLOG-SEO.md` §10.8: `curl` do canonical de um artigo conferindo `canonical` self (não-home) — ação do operador (sem pipeline CI no repo). _(2026-06-23)_
+- ✅ `BLOG-SEO.md` §10.8 (novo), `ARCHITECTURE.md` §2/§6, `CLAUDE.md` e `README.md` atualizados com a garantia de build. _(2026-06-23)_
+- ✅ Verificação de lógica por simulação Node (6/6 ramificações: produção+vazio/rede→throw; preview/local+vazio→[]; com slugs→log+retorno). _(2026-06-23)_
 
 **S12 — Higiene de repositório & reprodutibilidade** _(detalhes: Apêndice A.3 e A.5; `MELHORIAS.md` §1.9)_
 

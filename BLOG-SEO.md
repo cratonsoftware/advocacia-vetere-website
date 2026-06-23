@@ -518,6 +518,44 @@ Após o deploy desta branch, executar no Google Search Console:
 
 ---
 
+### 10.8 Guard de build contra pré-render vazio (S11 — 2026-06-23)
+
+**Status: ✅ Implementado na S11** (branch `fix/prerender-build-guard`).
+
+#### Por que existe
+
+Entre a S1 e a S8 o P0 de indexação **voltou silenciosamente** em produção. A causa: `getPrerenderParams()` em `app.routes.server.ts` fazia `catch → []` em qualquer falha (rede/Supabase indisponível durante o build, ou env de Build ausente). Com a lista vazia, **nenhum artigo era pré-renderizado** e cada `/blog/:slug` caía no fallback estático da Home (canonical → home, não indexável). O build passava **verde** mesmo assim, então o problema só foi detectado por auditoria manual, não pelo pipeline.
+
+#### Comportamento atual (a garantia)
+
+Os três geradores de slugs (`getPublishedArticleSlugs`, `getCategorySlugs`, `getAuthorSlugs`) passam por um helper único `fetchPrerenderSlugs(resource, label)` que:
+
+1. **Loga sempre a contagem** de slugs por recurso — visível no log de build da Vercel:
+   ```
+   [prerender] artigos: 12 slug(s) para pre-renderizar.
+   [prerender] categorias: 4 slug(s) para pre-renderizar.
+   [prerender] autores: 1 slug(s) para pre-renderizar.
+   ```
+2. **Aborta o build em produção** (`process.env['VERCEL_ENV'] === 'production'`) se a lista vier vazia (`length === 0`), lançando erro com mensagem clara. Vale para os **três** recursos — sempre existe ≥1 artigo, ≥1 categoria e ≥1 autor publicados, então lista vazia em qualquer um indica falha de build, não estado legítimo.
+3. **Permanece tolerante (`[]`) em preview/local** (`VERCEL_ENV` ≠ `'production'`), para não travar desenvolvimento nem previews legitimamente vazios.
+
+Falha de rede e zero linhas convergem para o mesmo resultado (lista vazia) e, portanto, recebem o mesmo tratamento — ambos são fatais em produção. Isso troca uma falha **silenciosa e perigosa** por uma falha **barulhenta e segura**: um deploy de produção nunca mais sobe com os artigos quebrados sem ninguém perceber.
+
+#### Smoke check pós-deploy (opcional, ação do operador)
+
+Após o deploy em produção, confirmar que o canonical do artigo é **self** (não a Home):
+
+```bash
+curl -s https://www.mfernandavetere.adv.br/blog/traicao-da-direito-a-indenizacao \
+  | grep -i 'rel="canonical"'
+# Esperado: <link rel="canonical" href=".../blog/traicao-da-direito-a-indenizacao">
+# Sintoma do P0 (se reaparecer): href apontando para a Home (".../" ou ".../#...").
+```
+
+> Como o guard já aborta o build em produção quando o pré-render vem vazio, este smoke check é uma segunda camada de confirmação — não a primeira linha de defesa.
+
+---
+
 ## Fontes
 
 - [Learn About Article Schema Markup — Google Search Central](https://developers.google.com/search/docs/appearance/structured-data/article)

@@ -1,6 +1,6 @@
 # ARCHITECTURE.md — Advocacia Vetere
 
-> Documento técnico de arquitetura do site da Dra. Maria Fernanda Vetere. Mantido pela CRATON Software. Complementa o `CLAUDE.md` (contexto operacional) e o `README.md` (uso). Última revisão: 2026-06-19.
+> Documento técnico de arquitetura do site da Dra. Maria Fernanda Vetere. Mantido pela CRATON Software. Complementa o `CLAUDE.md` (contexto operacional) e o `README.md` (uso). Última revisão: 2026-06-23.
 
 ---
 
@@ -48,6 +48,8 @@ O servidor Express em `src/server.ts` tem responsabilidade mínima: servir os es
 | `/**`                   | `Server`    | Fallback                                                                                                                             |
 
 > O roteamento de aplicação (`app.routes.ts`) usa `loadComponent` (lazy) em todas as rotas. As páginas que dependem de dados (`/blog`, `/blog/:slug`) buscam via `HttpClient` para que o SSR aguarde a resposta antes de emitir o HTML.
+
+> **Guard de build contra pré-render vazio (S11).** Os três `getPrerenderParams` (`/blog/:slug`, `/blog/categoria/:slug`, `/autor/:slug`) passam pelo helper `fetchPrerenderSlugs(resource, label)` em `app.routes.server.ts`. Ele **loga a contagem** de slugs por recurso e, em **produção** (`process.env['VERCEL_ENV'] === 'production'`), **aborta o build** se a lista vier vazia — impedindo que um deploy suba com os artigos caindo no fallback de SEO da Home (o P0 que reabriu silenciosamente entre a S1 e a S8). Em **preview/local** o comportamento segue tolerante (`[]`), sem travar o desenvolvimento. Detalhes em [`BLOG-SEO.md`](./BLOG-SEO.md) §10.8.
 
 ---
 
@@ -151,6 +153,8 @@ SUPABASE_KEY=...
 ```
 
 Usadas em dois contextos: (1) injetadas no bundle do cliente via `set-env.cjs`; (2) lidas em runtime pela Serverless `api/sitemap.ts` via `process.env`.
+
+> **Robustez do build (S11).** Em produção (`VERCEL_ENV=production`), o `app.routes.server.ts` **falha o build** se o pré-render de artigos/categorias/autores vier vazio — sintoma de Supabase indisponível ou env de Build (`SUPABASE_URL`/`SUPABASE_KEY`) ausente. Isso evita um deploy verde mas quebrado (artigos herdando o SEO da Home). Em preview/local mantém-se tolerante. Ver §2 e `BLOG-SEO.md` §10.8.
 
 ### Ícones (Angular Material)
 
