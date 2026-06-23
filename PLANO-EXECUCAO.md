@@ -2,7 +2,7 @@
 
 > Guia operacional para executar, em sessões separadas e sem retrabalho, todas as correções e melhorias documentadas em [`MELHORIAS.md`](./MELHORIAS.md) e [`BLOG-SEO.md`](./BLOG-SEO.md). Este arquivo é a **fonte única de verdade do progresso** — sempre leia o §6 (Registro de progresso) antes de começar e atualize-o ao terminar.
 >
-> Mantido pela CRATON Software. Última revisão: 2026-06-20.
+> Mantido pela CRATON Software. Última revisão: 2026-06-23.
 
 ---
 
@@ -21,20 +21,22 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 
 ## 2. Quantas sessões — recomendação
 
-**7 sessões essenciais + 1 opcional (testes).** Ordem por dependência e risco:
+**S1–S8 concluídas** (fundação de SEO/E-E-A-T/performance/a11y). **Novas sessões S9–S10** cobrem correções de conteúdo e o diagnóstico de indexação no GSC. Ordem por dependência e risco:
 
-| #                   | Sessão                      | Foco                                                                 | Depende de | Modelo      | Risco      |
-| ------------------- | --------------------------- | -------------------------------------------------------------------- | ---------- | ----------- | ---------- |
-| **S1**              | P0 — Indexação do artigo    | Pré-renderizar `/blog/:slug` + deploy hook                           | —          | **Opus**    | Médio      |
-| **S2**              | Quick wins de SEO/UX        | Correções pequenas e seguras                                         | —          | Sonnet      | Baixo      |
-| **S3**              | Banco — fundação E-E-A-T    | `authors`, view ISO/`updated_at`, capas no Storage                   | S1         | **Opus**    | Médio-Alto |
-| **S4**              | Schema & SERP               | meta dedicados, JSON-LD Article rico, Breadcrumb, LegalService       | S3         | **Opus**    | Médio      |
-| **S5**              | Topical authority & GEO/AEO | tags, páginas de categoria, TL;DR/FAQ, `llms.txt`                    | S3         | Sonnet/Opus | Médio      |
-| **S6**              | Performance & modernização  | OnPush/zoneless, fontes WOFF2, preconnect, NgOptimizedImage, índices | —          | Sonnet      | Médio      |
-| **S7**              | Acessibilidade & UX         | reduced-motion, skip link, foco, contraste, skeletons, manifest      | —          | Sonnet      | Baixo      |
-| **S8** _(opcional)_ | Testes & verificação final  | smoke tests + auditoria de fechamento                                | todas      | Opus/Sonnet | Baixo      |
+| #                   | Sessão                       | Foco                                                                 | Depende de | Modelo      | Risco      |
+| ------------------- | ---------------------------- | -------------------------------------------------------------------- | ---------- | ----------- | ---------- |
+| **S1**              | P0 — Indexação do artigo     | Pré-renderizar `/blog/:slug` + deploy hook                           | —          | **Opus**    | Médio      |
+| **S2**              | Quick wins de SEO/UX         | Correções pequenas e seguras                                         | —          | Sonnet      | Baixo      |
+| **S3**              | Banco — fundação E-E-A-T     | `authors`, view ISO/`updated_at`, capas no Storage                   | S1         | **Opus**    | Médio-Alto |
+| **S4**              | Schema & SERP                | meta dedicados, JSON-LD Article rico, Breadcrumb, LegalService       | S3         | **Opus**    | Médio      |
+| **S5**              | Topical authority & GEO/AEO  | tags, páginas de categoria, TL;DR/FAQ, `llms.txt`                    | S3         | Sonnet/Opus | Médio      |
+| **S6**              | Performance & modernização   | OnPush/zoneless, fontes WOFF2, preconnect, NgOptimizedImage, índices | —          | Sonnet      | Médio      |
+| **S7**              | Acessibilidade & UX          | reduced-motion, skip link, foco, contraste, skeletons, manifest      | —          | Sonnet      | Baixo      |
+| **S8** _(opcional)_ | Testes & verificação final   | smoke tests + auditoria de fechamento                                | todas      | Opus/Sonnet | Baixo      |
+| **S9**              | Correções de conteúdo        | "Advogada Familiarista" (≠ Especialista), título e FAQ do artigo     | —          | Sonnet      | Baixo      |
+| **S10**             | Diagnóstico GSC — indexação  | `robots.txt` no GSC + relatórios de indexação que não atualizam      | —          | Sonnet      | Baixo      |
 
-> S2, S6 e S7 são independentes e podem ser feitas em qualquer ordem após a S1. S4 e S5 **dependem** da S3 (precisam dos campos novos do banco). **S1 deve ser a primeira e sozinha** — destrava todo o resto de SEO.
+> S1–S8 estão **✅ concluídas** (ver §6.1). **S9 e S10 são independentes** entre si e das anteriores; podem ser feitas em qualquer ordem. Atenção: alterações de dados no Supabase que afetam páginas **pré-renderizadas** (título/FAQ do artigo) só aparecem em produção após um **rebuild/deploy** (Deploy Hook), não bastando salvar no banco.
 
 ---
 
@@ -43,7 +45,7 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 **Modelos (Claude):**
 
 - **Opus 4.8** — sessões arquiteturais e críticas: **S1, S3, S4, S5** e a S8. Exigem raciocínio sobre SSR, migração de schema e arquitetura de SEO; vale o modelo mais capaz para não errar.
-- **Sonnet 4.6** — sessões mais mecânicas: **S2, S6, S7**. Boa relação custo/qualidade para edições pontuais e repetitivas.
+- **Sonnet 4.6** — sessões mais mecânicas: **S2, S6, S7, S9, S10**. Boa relação custo/qualidade para edições pontuais, correções de conteúdo e diagnóstico operacional.
 - **Haiku** — não recomendado para execução destas sessões (ok apenas para tarefas triviais isoladas).
 
 **Configuração de cada sessão:**
@@ -100,6 +102,8 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S6 — Performance | ✅ | 2026-06-20 | 0a4243d6 | OnPush + zoneless (zone.js removido), signals/toSignal/computed, WOFF2 (~60% menor), preconnect, NgOptimizedImage (hero priority, fill nos cards, identity loader). Build verde. |
 | S7 — Acessibilidade | ✅ | 2026-06-20 | fbc4de2f | reduced-motion, skip link, focus-visible, contraste micro-textos, skeletons, manifest. Build verde + validado. |
 | S8 — Testes & verificação | ✅ | 2026-06-22 | cc4e8983 | **DoD completo.** Build verde + testes 100% (2026-06-21); merge + deploy validados em produção (2026-06-22): canonical self no artigo, todas as páginas indexadas, sitemap com `/autor/...` e página de autor no ar. Follow-ups (`/autor/:slug`, `author.url`, `canonicalUrl`/`noindex`), smoke tests e hook `pretest` entregues. P0 da auditoria **resolvido** (era falha de pré-render por env de Build; rebuild corrigiu). |
+| S9 — Correções de conteúdo | ⬜ | — | — | "Especialista em Família" → "Advogada Familiarista" no código e em qualquer texto/dados (não é especialista certificada — risco ético/OAB); remover FAQ do último artigo; alterar título do último artigo. **Exige rebuild** para refletir mudanças de dados nas páginas pré-renderizadas. |
+| S10 — Diagnóstico GSC | ⬜ | — | — | GSC reporta "erro desconhecido" ao ler `robots.txt` e relatórios de indexação não atualizam. `robots.txt` em produção **responde 200 `text/plain`** (verificado 2026-06-23) — investigar propriedade/cache/www↔apex no GSC, não defeito do arquivo. |
 
 ### 6.2 Status por item (granular)
 
@@ -181,6 +185,27 @@ _Escopo S8:_
 - ✅ **Auditoria — achado P0 resolvido (2026-06-22):** antes do merge, a URL do artigo servia o HTML/SEO da Home (canonical→home), não indexável — sintoma da S1, causado por pré-render vazio no build (env de Build). Após conferir as env vars de Build na Vercel e mergear esta branch (rebuild completo), revalidado em produção: **canonical self** no artigo, todas as páginas indexadas, sem `[prerender] Falha` no log. `/blog`, `/sitemap.xml` (com `/autor/...`) e `/llms.txt` corretos.
 - ✅ Auditoria pós-deploy (operador, 2026-06-22): canonical/indexação do artigo OK; `sitemap.xml` e página `/autor/maria-fernanda-vetere` no ar. _Pendências opcionais (não bloqueiam o DoD):_ Lighthouse/CWV pontual e Rich Results. **Nota FAQ:** a marcação `FAQPage` valida no Rich Results Test, mas o Google restringe o rich result visual de FAQ a sites gov/saúde desde 2023 — a ausência do "sanfona" na SERP é política do Google, não erro (a marcação segue útil para validação e GEO/AEO).
 
+**S9 — Correções de conteúdo**
+
+> **Motivo (importante):** a Dra. Maria Fernanda Vetere **não** possui título de especialista; anunciar "Especialista em ..." é incorreto e pode configurar publicidade irregular perante a OAB. O termo correto e seguro é **"Advogada Familiarista"** (atuação, não titulação).
+
+- ⬜ **Trocar "Especialista em {{categoria}}" → "Advogada Familiarista"** no rodapé de autoria do artigo — `src/app/pages/artigo/artigo.component.html:104` (`<p>...Especialista em {{ article.category }}</p>`). Usar texto fixo "Advogada Familiarista" (não derivar da categoria).
+- ⬜ **Varredura "em qualquer outra coisa da Dra.":** procurar por `Especialista`/`especialista`/`specialty`/`jobTitle` em **todo o projeto** e nos **dados do Supabase** — incluir: `authors.bio`/`authors.same_as`, `articles.content` (Markdown), `articles.meta_title`/`meta_description`/`tldr`, e o `Person` do `SeoService` (campo `jobTitle`/descrição, se houver). Substituir por "Advogada Familiarista" onde se referir à titulação da Dra. _(Manter "especialistas renomados" em `areas.component.html:49`, que fala de parceiros, não da Dra. — confirmar contexto antes de tocar.)_
+- ⬜ **Remover a seção de FAQ do último artigo** — esvaziar o campo estruturado `faq` (`NULL`/`[]`) do artigo na tabela `articles` (Supabase). O `ArtigoComponent` já oculta a seção quando `faq` está vazio (`@if (article.faq && article.faq.length > 0)`) e o `SeoService` deixa de emitir o bloco `FAQPage` (`data-seo="faq"`). **Não** editar o template para esconder — a fonte é o dado.
+- ⬜ **Alterar o título do último artigo** para **"Traição dá direito a indenização? Veja o que a lei diz sobre isso."** — atualizar `articles.title` (e revisar `meta_title` se não for delegado ao `title`). Avaliar se o **slug** deve permanecer o atual (`traicao-da-direito-a-indenizacao`) para **não quebrar URL/indexação** — preferir manter o slug; se mudar, planejar redirect 301.
+- ⬜ **Rebuild/redeploy:** como `/blog/:slug` é **pré-renderizado**, as mudanças de título/FAQ no Supabase só aparecem em produção após novo build (Deploy Hook ou push). Validar o HTML cru pós-deploy.
+
+**S10 — Diagnóstico GSC: `robots.txt` e relatórios de indexação**
+
+> **Achado inicial (2026-06-23):** `GET https://www.mfernandavetere.adv.br/robots.txt` responde **200 `Content-Type: text/plain`** com conteúdo correto e `Sitemap:` apontando para `/sitemap.xml`. Logo, o "erro desconhecido" do GSC **provavelmente não é defeito do arquivo** — é mais comum ser propriedade/cache/host. Confirmar antes de mexer no código.
+
+- ⬜ **Reproduzir e classificar o erro** no GSC: Configurações → "robots.txt" (ver status/última leitura e mensagem exata). "Erro desconhecido" no GSC costuma ser transitório ou de **falha de busca pontual** do Googlebot — reenviar/solicitar nova leitura e observar.
+- ⬜ **Verificar consistência de host/protocolo:** garantir que **apex (`mfernandavetere.adv.br`) e `www`** se comportem igual (idealmente apex → 301 → `www`), e que `robots.txt` e `sitemap.xml` respondam 200 em **ambos**. Conferir se a **propriedade no GSC** é *Domínio* (DNS) ou *Prefixo de URL* e se corresponde ao host canônico (`https://www...`).
+- ⬜ **Validar a cadeia robots → sitemap:** `https://www.mfernandavetere.adv.br/sitemap.xml` responde 200 `application/xml` válido (rewrite do `vercel.json` → `api/sitemap.ts`), com todas as URLs (home, blog, categorias, autores, artigos) e `lastmod`. Reenviar o sitemap no GSC.
+- ⬜ **Cabeçalhos/cache/headers:** conferir se a Vercel não está servindo `robots.txt`/`sitemap.xml` com cache agressivo, status intermitente ou bloqueio a user-agents (não deve haver). Avaliar `headers` no `vercel.json` se necessário.
+- ⬜ **Relatórios de indexação "não atualizam":** documentar a expectativa correta — o relatório *Páginas* e *Resultados* do GSC tem **latência de dias** e atualização em lote; isso é comportamento normal, não necessariamente um defeito. Usar **Inspeção de URL → Testar URL ativa** para o estado em tempo real e **Solicitar indexação** das páginas-chave (home, `/blog`, artigo, `/autor/...`).
+- ⬜ **Entregável:** registrar o diagnóstico (causa provável + o que foi ajustado) e, se nenhuma mudança de código for necessária, deixar nota clara no `BLOG-SEO.md` §10 explicando o comportamento do GSC e os passos de verificação — para não reabrir o tema sem dados. _(Sessão pode encerrar sem alteração de código se a causa for de propriedade/latência do GSC.)_
+
 ---
 
 ## 7. Checklists de validação por sessão
@@ -192,6 +217,8 @@ _Escopo S8:_
 - **S5:** `/blog/categoria/familia` renderiza com SEO próprio; `FAQPage` válido; `/llms.txt` acessível e correto.
 - **S6:** Lighthouse — LCP < 2,0s, INP < 200ms, CLS < 0,1; bundle sem `zone.js` (se zoneless); fontes WOFF2 no network.
 - **S7:** navegação 100% por teclado; skip link visível ao focar; contraste AA; `prefers-reduced-motion` respeitado.
+- **S9:** `grep -ri "especialista"` no `src/` não retorna nada referente à Dra. (apenas o caso legítimo de "especialistas" parceiros, se mantido); rodapé do artigo mostra "Advogada Familiarista"; após rebuild, o HTML cru do artigo traz o **novo título** e **não** contém a seção "Perguntas frequentes" nem o JSON-LD `FAQPage`; slug preservado (ou redirect 301 ativo). Build verde.
+- **S10:** `curl -I` em `robots.txt` e `sitemap.xml` retorna 200 no host canônico (e apex redireciona p/ `www`); GSC relê o `robots.txt` sem erro; sitemap reenviado e aceito; diagnóstico documentado no `BLOG-SEO.md` §10.
 
 ---
 
@@ -328,4 +355,38 @@ Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6 (confirme tudo ✅
 Escopo (somente S8): smoke tests de SeoService e BlogService.formatDate; auditoria final (Lighthouse/CWV, Rich Results, sitemap, indexação no GSC).
 Entre em Plan Mode e aguarde aprovação. Branch test/final-verification.
 Validação: testes passando; auditoria sem regressões. DoD completo. Resuma o estado final do projeto e encerre.
+```
+
+**S9 — Correções de conteúdo (modelo: Sonnet + Plan Mode)**
+
+```
+Execute a S9 do projeto Advocacia Vetere.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6 (não refaça o que já estiver ✅).
+CONTEXTO CRÍTICO: a Dra. Maria Fernanda Vetere NÃO é especialista certificada — anunciar "Especialista" é incorreto e arriscado perante a OAB. O termo correto é "Advogada Familiarista".
+Escopo (somente S9):
+1) Trocar "Especialista em {{categoria}}" por "Advogada Familiarista" no rodapé de autoria (src/app/pages/artigo/artigo.component.html:104), usando texto fixo (não derivar da categoria).
+2) Varrer o projeto E os dados do Supabase (authors.bio, articles.content/meta_title/meta_description/tldr, Person do SeoService) por "especialista/specialty/jobTitle" e corrigir onde se referir à titulação da Dra. NÃO mexer em "especialistas renomados" de areas.component.html (são parceiros) sem confirmar o contexto.
+3) Remover a FAQ do último artigo: esvaziar o campo `faq` (NULL/[]) na tabela articles via MCP Supabase — NÃO esconder pelo template (a fonte é o dado; o componente já oculta quando vazio).
+4) Alterar o título do último artigo para: "Traição dá direito a indenização? Veja o que a lei diz sobre isso." (articles.title; revisar meta_title). PRESERVAR o slug atual para não quebrar indexação; se mudar, planejar redirect 301.
+Lembre: /blog/:slug é PRÉ-RENDERIZADO — mudanças de dados só aparecem após rebuild (Deploy Hook/push). Valide o HTML cru pós-deploy.
+Entre em Plan Mode e aguarde aprovação. Use o MCP do Supabase. Branch fix/content-corrections.
+Validação (§7 S9). DoD completo (build, docs, §6 ✅ com data/commit, push, preview/rebuild). Resuma e encerre.
+```
+
+**S10 — Diagnóstico GSC: robots.txt e indexação (modelo: Sonnet + Plan Mode)**
+
+```
+Execute a S10 do projeto Advocacia Vetere.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6 e BLOG-SEO.md §10.
+PROBLEMA: o Google Search Console reporta "erro desconhecido" ao acessar o robots.txt e os relatórios de indexação não atualizam, mesmo com muita coisa já indexada.
+ACHADO INICIAL (2026-06-23): GET https://www.mfernandavetere.adv.br/robots.txt responde 200 text/plain correto — então provavelmente NÃO é defeito do arquivo. Investigue antes de mudar código.
+Escopo (somente S10, diagnóstico-first):
+1) Reproduzir/classificar o erro no GSC (Configurações → robots.txt: status, última leitura, mensagem exata) e solicitar nova leitura.
+2) Verificar consistência de host: apex (mfernandavetere.adv.br) vs www — ambos devem responder 200 em robots.txt e sitemap.xml (idealmente apex→301→www). Conferir se a propriedade no GSC (Domínio vs Prefixo de URL) bate com o host canônico.
+3) Validar a cadeia robots→sitemap: sitemap.xml 200 application/xml válido (rewrite vercel.json → api/sitemap.ts) e reenviar no GSC.
+4) Conferir cache/headers da Vercel (sem cache agressivo, sem bloqueio de user-agent); avaliar `headers` no vercel.json só se necessário.
+5) Relatórios que "não atualizam": documentar que o relatório de Páginas do GSC tem latência de dias; usar Inspeção de URL (Testar URL ativa) e Solicitar indexação para estado em tempo real.
+Entregável: registrar causa provável + ajustes no BLOG-SEO.md §10. A sessão pode encerrar SEM alteração de código se a causa for de propriedade/latência do GSC.
+Entre em Plan Mode e aguarde aprovação. Branch fix/gsc-robots-indexing (só se houver mudança de código).
+Validação (§7 S10). DoD: se houver código, build verde + push + preview; sempre, docs atualizados e §6 marcado. Resuma e encerre.
 ```
