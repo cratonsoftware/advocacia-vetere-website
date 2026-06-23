@@ -87,7 +87,7 @@ export default async function handler(req: any, res: any) {
 		const body = lines.join('\n');
 
 		res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-		res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
+		res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
 		res.status(200).send(body);
 	} catch (error) {
 		console.error('Erro ao gerar llms.txt:', error);

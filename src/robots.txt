@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-# Aponta para o sitemap dinâmico que acabamos de criar no Express
+# Sitemap dinâmico servido via Vercel Serverless Function (api/sitemap.ts)
 Sitemap: https://www.mfernandavetere.adv.br/sitemap.xml

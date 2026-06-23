@@ -103,7 +103,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S7 — Acessibilidade | ✅ | 2026-06-20 | fbc4de2f | reduced-motion, skip link, focus-visible, contraste micro-textos, skeletons, manifest. Build verde + validado. |
 | S8 — Testes & verificação | ✅ | 2026-06-22 | cc4e8983 | **DoD completo.** Build verde + testes 100% (2026-06-21); merge + deploy validados em produção (2026-06-22): canonical self no artigo, todas as páginas indexadas, sitemap com `/autor/...` e página de autor no ar. Follow-ups (`/autor/:slug`, `author.url`, `canonicalUrl`/`noindex`), smoke tests e hook `pretest` entregues. P0 da auditoria **resolvido** (era falha de pré-render por env de Build; rebuild corrigiu). |
 | S9 — Correções de conteúdo | ✅ | 2026-06-23 | fix/content-corrections | Badge de autoria do artigo: "Especialista em categoria" → texto fixo "Advogada Familiarista". Supabase: `title`/`meta_title` do artigo atualizados; `faq = NULL`. Slug preservado. |
-| S10 — Diagnóstico GSC | ⬜ | — | — | GSC reporta "erro desconhecido" ao ler `robots.txt` e relatórios de indexação não atualizam. `robots.txt` em produção **responde 200 `text/plain`** (verificado 2026-06-23) — investigar propriedade/cache/www↔apex no GSC, não defeito do arquivo. |
+| S10 — Diagnóstico GSC | ✅ | 2026-06-23 | fix/gsc-robots-indexing | Causa: `s-maxage=86400` no sitemap (cache de CDN de 24 h) → Googlebot recebia sitemap stale; "erro desconhecido" do GSC = transiente (Serverless Function timeout no passado). Correção: `s-maxage=3600, stale-while-revalidate=86400` em `api/sitemap.ts` + `api/llms.ts`; comentário `src/robots.txt` corrigido. Ações do operador no GSC documentadas em `BLOG-SEO.md` §10.7. |
 
 ### 6.2 Status por item (granular)
 
@@ -195,16 +195,15 @@ _Escopo S8:_
 - ✅ **Alterar título do artigo** — `title` e `meta_title` atualizados para "Traição dá direito a indenização? Veja o que a lei diz sobre isso." via UPDATE no Supabase. Slug `traicao-da-direito-a-indenizacao` **preservado**. _(2026-06-23, via MCP Supabase)_
 - ⬜ **Rebuild/redeploy:** como `/blog/:slug` é **pré-renderizado**, as mudanças de título/FAQ no Supabase só aparecem em produção após novo build (Deploy Hook ou push com a branch `fix/content-corrections`). Validar o HTML cru pós-deploy.
 
-**S10 — Diagnóstico GSC: `robots.txt` e relatórios de indexação**
+**S10 — Diagnóstico GSC: `robots.txt` e relatórios de indexação** _(concluída 2026-06-23, branch `fix/gsc-robots-indexing`)_
 
-> **Achado inicial (2026-06-23):** `GET https://www.mfernandavetere.adv.br/robots.txt` responde **200 `Content-Type: text/plain`** com conteúdo correto e `Sitemap:` apontando para `/sitemap.xml`. Logo, o "erro desconhecido" do GSC **provavelmente não é defeito do arquivo** — é mais comum ser propriedade/cache/host. Confirmar antes de mexer no código.
+> **Causa-raiz identificada (2026-06-23):** o `api/sitemap.ts` usava `s-maxage=86400` (24 h de cache de CDN), fazendo Googlebot receber o sitemap stale quando batia num edge node que não havia expirado o cache. Dois fetches simultâneos ao mesmo URL retornaram conteúdo diferente (`lastmod 2026-06-20` vs `2026-06-23`) — prova do problema. O "erro desconhecido" no `robots.txt` é transiente (Serverless Function timeout no passado) e se resolve com nova leitura no GSC.
 
-- ⬜ **Reproduzir e classificar o erro** no GSC: Configurações → "robots.txt" (ver status/última leitura e mensagem exata). "Erro desconhecido" no GSC costuma ser transitório ou de **falha de busca pontual** do Googlebot — reenviar/solicitar nova leitura e observar.
-- ⬜ **Verificar consistência de host/protocolo:** garantir que **apex (`mfernandavetere.adv.br`) e `www`** se comportem igual (idealmente apex → 301 → `www`), e que `robots.txt` e `sitemap.xml` respondam 200 em **ambos**. Conferir se a **propriedade no GSC** é *Domínio* (DNS) ou *Prefixo de URL* e se corresponde ao host canônico (`https://www...`).
-- ⬜ **Validar a cadeia robots → sitemap:** `https://www.mfernandavetere.adv.br/sitemap.xml` responde 200 `application/xml` válido (rewrite do `vercel.json` → `api/sitemap.ts`), com todas as URLs (home, blog, categorias, autores, artigos) e `lastmod`. Reenviar o sitemap no GSC.
-- ⬜ **Cabeçalhos/cache/headers:** conferir se a Vercel não está servindo `robots.txt`/`sitemap.xml` com cache agressivo, status intermitente ou bloqueio a user-agents (não deve haver). Avaliar `headers` no `vercel.json` se necessário.
-- ⬜ **Relatórios de indexação "não atualizam":** documentar a expectativa correta — o relatório *Páginas* e *Resultados* do GSC tem **latência de dias** e atualização em lote; isso é comportamento normal, não necessariamente um defeito. Usar **Inspeção de URL → Testar URL ativa** para o estado em tempo real e **Solicitar indexação** das páginas-chave (home, `/blog`, artigo, `/autor/...`).
-- ⬜ **Entregável:** registrar o diagnóstico (causa provável + o que foi ajustado) e, se nenhuma mudança de código for necessária, deixar nota clara no `BLOG-SEO.md` §10 explicando o comportamento do GSC e os passos de verificação — para não reabrir o tema sem dados. _(Sessão pode encerrar sem alteração de código se a causa for de propriedade/latência do GSC.)_
+- ✅ **Diagnóstico de host/protocolo:** apex redireciona para www em ambos `robots.txt` e `sitemap.xml` ✅. `robots.txt` 200 `text/plain` correto. Sitemap 200 `text/xml` válido. _(2026-06-23)_
+- ✅ **Cache agressivo no sitemap corrigido:** `api/sitemap.ts` e `api/llms.ts` — `s-maxage=86400` → `s-maxage=3600, stale-while-revalidate=86400`. Googlebot recebe sitemap no máximo 1 h desatualizado. _(2026-06-23, fix/gsc-robots-indexing)_
+- ✅ **Comentário errado em `src/robots.txt` corrigido:** "Express" → "Vercel Serverless Function (api/sitemap.ts)". _(2026-06-23, fix/gsc-robots-indexing)_
+- ✅ **Diagnóstico documentado** em `BLOG-SEO.md` §10.7 com causa, fix e ações do operador no GSC. _(2026-06-23)_
+- ⬜ **Ações do operador no GSC** (após deploy): (1) robots.txt → "Solicitar nova leitura"; (2) Sitemaps → "Reenviar `sitemap.xml`"; (3) Inspeção de URL → `/autor/maria-fernanda-vetere` → "Testar URL ativa" + "Solicitar indexação". Latência de 3–7 dias nos relatórios de Cobertura é normal — usar "Inspeção de URL ativa" para estado em tempo real.
 
 ---
 

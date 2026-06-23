@@ -57,7 +57,7 @@ export default async function handler(req: any, res: any) {
 		const xml = doc.end({ prettyPrint: true });
 
 		res.setHeader('Content-Type', 'text/xml; charset=utf-8');
-		res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
+		res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
 		res.status(200).send(xml);
 	} catch (error) {
 		console.error('Erro ao gerar sitemap:', error);

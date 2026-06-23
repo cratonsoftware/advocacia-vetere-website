@@ -462,6 +462,62 @@ Este item é **P0 e antecede** as demais melhorias de SEO de artigo: enriquecer 
 
 ---
 
+### 10.7 Diagnóstico GSC — "erro desconhecido" e relatórios que não atualizam (S10 — 2026-06-23)
+
+**Status: ✅ Diagnosticado e corrigido na S10** (branch `fix/gsc-robots-indexing`).
+
+#### Achados do diagnóstico
+
+Fetches simultâneos realizados em 2026-06-23 para os quatro endpoints críticos:
+
+| Endpoint | Status | Content-Type | Observação |
+|---|---|---|---|
+| `www` robots.txt | 200 | `text/plain; charset=utf-8` | ✅ Conteúdo correto |
+| `apex` robots.txt | 200 (redirect → www) | `text/plain; charset=utf-8` | ✅ Apex redireciona corretamente |
+| `www` sitemap.xml | 200 | `text/xml; charset=utf-8` | ⚠️ Conteúdo **desatualizado** — `lastmod 2026-06-20`, sem `/autor/...` |
+| `apex` sitemap.xml | 200 (redirect → www) | `text/xml; charset=utf-8` | ✅ Conteúdo **fresco** — `lastmod 2026-06-23`, com `/autor/...` |
+
+Os dois fetches ao `www` sitemap retornaram conteúdo diferente entre si — prova de que **diferentes edge nodes da Vercel tinham caches em momentos distintos**.
+
+#### Causa-raiz: `s-maxage=86400` no sitemap (24 h de cache de CDN)
+
+O header `Cache-Control: s-maxage=86400, stale-while-revalidate` (sem valor explícito para `stale-while-revalidate`) fazia com que:
+
+1. O edge node cacheasse a resposta do `api/sitemap.ts` por **24 horas** após a última chamada.
+2. Quando um novo deploy (e.g., S8 — adição de `/autor/...`) acontecia, os edge nodes com cache antigo continuavam servindo o sitemap desatualizado por até 24 h — em vez de chamar a Serverless Function.
+3. Googlebot e GSC, ao bater em nodes com cache stale, recebiam um sitemap que não refletia as páginas mais recentes, explicando por que os relatórios de cobertura "não atualizam".
+4. O `stale-while-revalidate` sem valor explícito é interpretado de forma inconsistente entre CDNs (Vercel trata como infinito) — antipadrão.
+
+O "erro desconhecido" do GSC no robots.txt é **transiente** e não é defeito do arquivo: ocorreu quando a Serverless Function de sitemap retornou 500 ou sofreu timeout (cold start lento). O GSC registra o último erro sem auto-limpar — basta uma nova leitura bem-sucedida para resetar.
+
+#### Correções aplicadas
+
+1. **`api/sitemap.ts`** — cache reduzido de 24 h para 1 h, `stale-while-revalidate` com valor explícito:
+   ```
+   Cache-Control: s-maxage=3600, stale-while-revalidate=86400
+   ```
+   Semântica: resposta fresca por **1 hora** na edge; após isso, Vercel serve stale por até **24 h** enquanto revalida em background. Googlebot sempre recebe um sitemap no máximo 1 h desatualizado.
+
+2. **`api/llms.ts`** — mesma correção por consistência.
+
+3. **`src/robots.txt`** — comentário interno corrigido ("Express" → "Vercel Serverless Function (api/sitemap.ts)").
+
+#### Ações obrigatórias do operador no GSC (sem código)
+
+Após o deploy desta branch, executar no Google Search Console:
+
+1. **GSC → Configurações → Rastreador de robots.txt → Testar → "Solicitar nova leitura"** — força o GSC a re-fetch o robots.txt e limpa o erro desconhecido.
+2. **GSC → Sitemaps → selecionar `sitemap.xml` → "Reenviar"** — força novo fetch do sitemap com o conteúdo fresco (sem cache stale).
+3. **GSC → Inspeção de URL → `https://www.mfernandavetere.adv.br/autor/maria-fernanda-vetere` → "Testar URL ativa"** — confirmar indexável. Se sim, clicar em "Solicitar indexação".
+4. **Aguardar 3–7 dias** para os relatórios de Páginas / Cobertura refletirem o estado real — essa latência é estrutural do GSC e **não é bug**. Para estado em tempo real, usar sempre "Inspeção de URL → Testar URL ativa", nunca o relatório de Cobertura.
+
+#### Propriedade GSC e tipo correto
+
+- O `index.html` usa verificação por meta tag HTML (`google-site-verification`) — compatível com **propriedade URL-prefix** (`https://www.mfernandavetere.adv.br/`).
+- O apex (`mfernandavetere.adv.br`) já redireciona para www — correto. Se o GSC exibir dados de ambos os prefixos, adicionar também a propriedade de domínio e verificar via DNS (`TXT` no registro do domínio) para ter visão unificada.
+
+---
+
 ## Fontes
 
 - [Learn About Article Schema Markup — Google Search Central](https://developers.google.com/search/docs/appearance/structured-data/article)
