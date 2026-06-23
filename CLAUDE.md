@@ -181,6 +181,12 @@ Karma + Jasmine (já configurados). Smoke tests cobrindo o núcleo de SEO: `seo.
 - **Skeletons:** `blog-preview` usa `toSignal()` sem `initialValue` — `undefined` → skeleton 3 cards; `[]` → estado vazio; `[...]` → artigos. `artigo` e `categoria` têm skeleton com `aria-busy="true"` no estado `isLoading`.
 - **Elementos decorativos:** SVGs puramente decorativos (seta do hero) com `aria-hidden="true"`.
 
+### Correções de conteúdo (S9 — aplicado 2026-06-23)
+
+- **Rodapé de autoria do artigo:** o badge abaixo do nome da autora exibe **"Advogada Familiarista"** (texto fixo em `artigo.component.html`). **Não usar** `article.category` nem qualquer derivação de categoria — a Dra. não é especialista certificada; anunciar "Especialista" configura publicidade irregular perante a OAB.
+- **Varredura confirmada:** `jobTitle` no `SeoService` e componentes usa fallback `'Advogada'`; `authors.role = 'Advogada'`; `authors.bio` sem referência a "especialista". A menção a "especialistas renomados" em `areas.component.html` refere-se a parceiros do escritório — manter.
+- **Artigo "Traição":** `title` e `meta_title` atualizados para "Traição dá direito a indenização? Veja o que a lei diz sobre isso." no Supabase; `faq = NULL` (seção FAQ e JSON-LD `FAQPage` ocultados automaticamente pelo template). Slug `traicao-da-direito-a-indenizacao` **preservado** — nenhum redirect necessário.
+
 ---
 
 ## Identidade Visual da Marca (Advocacia Vetere)
