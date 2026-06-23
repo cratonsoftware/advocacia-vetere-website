@@ -21,7 +21,7 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 
 ## 2. Quantas sessões — recomendação
 
-**S1–S8 concluídas** (fundação de SEO/E-E-A-T/performance/a11y). **Novas sessões S9–S10** cobrem correções de conteúdo e o diagnóstico de indexação no GSC. Ordem por dependência e risco:
+**S1–S10 concluídas** (fundação de SEO/E-E-A-T/performance/a11y + correções de conteúdo + diagnóstico GSC). **Novas sessões S11–S18** consolidam a **dívida técnica e as melhorias ainda em aberto** mapeadas no Apêndice A do `RELATORIO-TECNICO-S1-S8.md` e nos "Próximos passos" do `RELATORIO-MUDANCAS-S1-S8.md`. Ordem por dependência e risco:
 
 | #                   | Sessão                       | Foco                                                                 | Depende de | Modelo      | Risco      |
 | ------------------- | ---------------------------- | -------------------------------------------------------------------- | ---------- | ----------- | ---------- |
@@ -35,8 +35,23 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 | **S8** _(opcional)_ | Testes & verificação final   | smoke tests + auditoria de fechamento                                | todas      | Opus/Sonnet | Baixo      |
 | **S9**              | Correções de conteúdo        | "Advogada Familiarista" (≠ Especialista), título e FAQ do artigo     | —          | Sonnet      | Baixo      |
 | **S10**             | Diagnóstico GSC — indexação  | `robots.txt` no GSC + relatórios de indexação que não atualizam      | —          | Sonnet      | Baixo      |
+| **S11**             | Robustez do build (guard P0) | Falhar o build se o pré-render de slugs vier vazio em produção       | —          | **Opus**    | Médio      |
+| **S12**             | Higiene de repo & build       | `.gitattributes`/EOL CRLF; `engines`/`.nvmrc` (Node fixo)            | —          | Sonnet      | Baixo      |
+| **S13**             | Centralização de constantes   | `site.config.ts` (URL base, WhatsApp, contato, horário, `'Todos'`)  | S12        | Sonnet/Opus | Médio      |
+| **S14**             | Testes SSR de rotas           | render tests das rotas pré-renderizadas (complementa os smoke tests) | —          | Sonnet/Opus | Baixo      |
+| **S15**             | Descoberta interna & rodapé   | expor categorias/autor no blog, seção ativa no menu, reforma do rodapé | —        | Sonnet      | Médio      |
+| **S16**             | Mapa personalizado            | Google Cloud API + sync Supabase, estilo da marca, pontos de referência | —       | **Opus**    | Médio-Alto |
+| **S17** _(opcional)_| Conteúdo & conversão          | selo OAB no hero, CTA WhatsApp contextual, "ver mais" nas avaliações | —          | Sonnet      | Baixo      |
+| **S18** _(opcional)_| Auditoria final pós-deploy    | Lighthouse/CWV, Rich Results, confirmação de RLS, smoke check        | todas      | Sonnet      | Baixo      |
 
-> S1–S8 estão **✅ concluídas** (ver §6.1). **S9 e S10 são independentes** entre si e das anteriores; podem ser feitas em qualquer ordem. Atenção: alterações de dados no Supabase que afetam páginas **pré-renderizadas** (título/FAQ do artigo) só aparecem em produção após um **rebuild/deploy** (Deploy Hook), não bastando salvar no banco.
+> S1–S10 estão **✅ concluídas** (ver §6.1). Das pendentes:
+>
+> - **S11 é a maior prioridade técnica** — fecha o buraco que reabriu o P0 de indexação (artigo herdando o SEO da Home) entre a S1 e a S8, de forma silenciosa.
+> - **S12 deveria vir cedo:** há 47 arquivos "modificados" que são só conversão LF→CRLF (`git diff -w` = 0). Normalizar EOL **antes** de abrir branches de feature evita ruído em diffs/PRs.
+> - **S13 depende da S12** (mexe em muitos arquivos — melhor sobre uma árvore com EOL já normalizado).
+> - **S11, S14, S15, S16** são independentes entre si. **S16** (mapa via Google Cloud) é a de maior risco/escopo.
+> - **S17 e S18 são opcionais** e não bloqueiam nenhum DoD.
+> - **Ordem recomendada:** S12 → S11 → S13/S14 → S15/S16 → S17/S18.
 
 ---
 
@@ -44,8 +59,8 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 
 **Modelos (Claude):**
 
-- **Opus 4.8** — sessões arquiteturais e críticas: **S1, S3, S4, S5** e a S8. Exigem raciocínio sobre SSR, migração de schema e arquitetura de SEO; vale o modelo mais capaz para não errar.
-- **Sonnet 4.6** — sessões mais mecânicas: **S2, S6, S7, S9, S10**. Boa relação custo/qualidade para edições pontuais, correções de conteúdo e diagnóstico operacional.
+- **Opus 4.8** — sessões arquiteturais e críticas: **S1, S3, S4, S5, S8, S11** e **S16**. Exigem raciocínio sobre SSR, robustez de build, migração de schema, arquitetura de SEO e integração com Google Cloud; vale o modelo mais capaz para não errar.
+- **Sonnet 4.6** — sessões mais mecânicas: **S2, S6, S7, S9, S10, S12, S14, S15, S17, S18**. Boa relação custo/qualidade para edições pontuais, correções de conteúdo, higiene de repo, testes, UX e diagnóstico operacional. **S13** (centralização de constantes) pode ser Sonnet ou Opus conforme o tamanho do refactor.
 - **Haiku** — não recomendado para execução destas sessões (ok apenas para tarefas triviais isoladas).
 
 **Configuração de cada sessão:**
@@ -104,6 +119,14 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S8 — Testes & verificação | ✅ | 2026-06-22 | cc4e8983 | **DoD completo.** Build verde + testes 100% (2026-06-21); merge + deploy validados em produção (2026-06-22): canonical self no artigo, todas as páginas indexadas, sitemap com `/autor/...` e página de autor no ar. Follow-ups (`/autor/:slug`, `author.url`, `canonicalUrl`/`noindex`), smoke tests e hook `pretest` entregues. P0 da auditoria **resolvido** (era falha de pré-render por env de Build; rebuild corrigiu). |
 | S9 — Correções de conteúdo | ✅ | 2026-06-23 | fix/content-corrections | Badge de autoria do artigo: "Especialista em categoria" → texto fixo "Advogada Familiarista". Supabase: `title`/`meta_title` do artigo atualizados; `faq = NULL`. Slug preservado. |
 | S10 — Diagnóstico GSC | ✅ | 2026-06-23 | fix/gsc-robots-indexing | Causa: `s-maxage=86400` no sitemap (cache de CDN de 24 h) → Googlebot recebia sitemap stale; "erro desconhecido" do GSC = transiente (Serverless Function timeout no passado). Correção: `s-maxage=3600, stale-while-revalidate=86400` em `api/sitemap.ts` + `api/llms.ts`; comentário `src/robots.txt` corrigido. Ações do operador no GSC documentadas em `BLOG-SEO.md` §10.7. |
+| S11 — Robustez do build | ⬜ | — | — | **Prioridade.** `app.routes.server.ts`: `getPublishedArticleSlugs`/`getCategorySlugs`/`getAuthorSlugs` ainda fazem `catch → []`, reabrindo o P0 silenciosamente. Falhar o build em produção (`VERCEL_ENV==='production'`) se a lista vier vazia esperando ≥1. Origem: Apêndice A.1 / `MELHORIAS.md` §1.10. |
+| S12 — Higiene de repo & build | ⬜ | — | — | 47 arquivos só com LF→CRLF (`git diff -w`=0); sem `.gitattributes`. Adicionar `.gitattributes` + normalizar EOL; `engines`/`.nvmrc` (Node fixo). **Fazer antes de novas features.** Origem: Apêndice A.3/A.5 / `MELHORIAS.md` §1.9. |
+| S13 — Centralização de constantes | ⬜ | — | — | `site.config.ts`: URL base (em `SeoService`, `api/sitemap.ts`, `robots.txt`), link WhatsApp (duplicado em `app.component.html` e `contato`), telefone/e-mail/endereço/horário e `'Todos'`. Origem: Apêndice A.2 / `MELHORIAS.md` §1.6. |
+| S14 — Testes SSR de rotas | ⬜ | — | — | Smoke tests de serviço já entregues na S8; falta cobertura de **renderização das rotas pré-renderizadas** (`/`, `/blog`, `/blog/:slug`, `/blog/categoria/:slug`, `/autor/:slug`). Origem: Apêndice A.4 / `MELHORIAS.md` §1.8. |
+| S15 — Descoberta interna & rodapé | ⬜ | — | — | Expor páginas de categoria e autor a partir do blog; marcar a seção ativa no menu; reforma do rodapé (contatos + redes, mais funcional/elegante). Origem: "Próximos passos" #2 e #3. |
+| S16 — Mapa personalizado | ⬜ | — | — | Substituir o embed padrão por mapa via Google Cloud API (estilo da marca, pontos de referência, sem concorrentes), com chave server-side e cache em Supabase. Planejado no `CLAUDE.md` (Mapa — estado real). Origem: "Próximos passos" #4. |
+| S17 — Conteúdo & conversão _(opcional)_ | ⬜ | — | — | Selo OAB próximo ao CTA do hero; CTA de WhatsApp contextual por seção; "ver mais" nas avaliações longas (`line-clamp-6`). Origem: `MELHORIAS.md` §5 e §3.12. |
+| S18 — Auditoria final pós-deploy _(opcional)_ | ⬜ | — | — | Lighthouse/CWV (LCP<2,0s, INP<200ms, CLS<0,1), Rich Results, confirmação de RLS/anon key (§1.7) e smoke check do canonical de um artigo. Não bloqueia DoD. Origem: Apêndice A.6 / `MELHORIAS.md` §1.7. |
 
 ### 6.2 Status por item (granular)
 
@@ -205,6 +228,63 @@ _Escopo S8:_
 - ✅ **Diagnóstico documentado** em `BLOG-SEO.md` §10.7 com causa, fix e ações do operador no GSC. _(2026-06-23)_
 - ⬜ **Ações do operador no GSC** (após deploy): (1) robots.txt → "Solicitar nova leitura"; (2) Sitemaps → "Reenviar `sitemap.xml`"; (3) Inspeção de URL → `/autor/maria-fernanda-vetere` → "Testar URL ativa" + "Solicitar indexação". Latência de 3–7 dias nos relatórios de Cobertura é normal — usar "Inspeção de URL ativa" para estado em tempo real.
 
+**S11 — Robustez do build (guard do P0)** _(detalhes: `RELATORIO-TECNICO-S1-S8.md` Apêndice A.1; `MELHORIAS.md` §1.10)_
+
+> **Por quê:** entre a S1 e a S8 o P0 de indexação **voltou silenciosamente** em produção — o pré-render veio vazio (env de Build) e cada artigo caiu no fallback estático da Home (canonical → home). O build passou verde mesmo assim. Esta sessão impede que isso se repita sem ninguém perceber.
+
+- ⬜ Em `app.routes.server.ts`, nos `getPrerenderParams` de **artigos** (e avaliar categorias/autores): se `process.env['VERCEL_ENV'] === 'production'` **e** a lista de slugs vier vazia esperando ≥1, **lançar erro e abortar o build**. Manter o fallback `[]` tolerante em **preview/local**.
+- ⬜ Logar a **contagem de slugs** pré-renderizados no build (artigos/categorias/autores) para inspeção rápida no log da Vercel.
+- ⬜ _(Opcional)_ Smoke check pós-deploy no pipeline: `curl` do canonical de um artigo conferindo `canonical` self (não-home).
+- ⬜ Atualizar `BLOG-SEO.md` §10 e `ARCHITECTURE.md` com a nova garantia de build.
+
+**S12 — Higiene de repositório & reprodutibilidade** _(detalhes: Apêndice A.3 e A.5; `MELHORIAS.md` §1.9)_
+
+> **Fazer cedo** — antes de abrir branches de feature (S13/S14/S15…), para não poluir diffs com ruído de EOL.
+
+- ⬜ Adicionar **`.gitattributes`** normalizando EOL (ex.: `* text=auto eol=lf`, com exceções binárias para fontes/imagens) e renormalizar a árvore (`git add --renormalize .`) — resolve os 47 arquivos "modificados" que são só LF→CRLF (`git diff -w` = 0).
+- ⬜ Fixar a versão do Node: `engines` no `package.json` + `.nvmrc` com a major usada em produção (Vercel) — builds reproduzíveis.
+- ⬜ Validar que `npm run build` segue verde após a normalização; atualizar `README.md`/`CLAUDE.md` (pré-requisitos de ambiente).
+
+**S13 — Centralização de constantes** _(detalhes: Apêndice A.2; `MELHORIAS.md` §1.6)_ — _depende da S12 (EOL normalizado)_
+
+- ⬜ Criar `site.config.ts` (ou `app.constants.ts`) com: **URL base** (`https://www.mfernandavetere.adv.br`, hoje em `SeoService`, `api/sitemap.ts` e `robots.txt`), **link/mensagem do WhatsApp** (duplicado em `app.component.html` e `contato.component.html`), **telefone/e-mail/endereço/horário** e a categoria mágica **`'Todos'`**.
+- ⬜ Substituir os usos hardcoded pelos da config (cuidado com `api/*` — Serverless, fora do bundle Angular: avaliar fonte compartilhada ou duplicação consciente e documentada).
+- ⬜ Build verde + revisão de que nenhum valor divergiu; atualizar docs.
+
+**S14 — Testes SSR de rotas** _(detalhes: Apêndice A.4; `MELHORIAS.md` §1.8 — parte pendente)_
+
+- ⬜ Cobertura de **renderização das rotas pré-renderizadas**: `/`, `/blog`, `/blog/:slug`, `/blog/categoria/:slug`, `/autor/:slug` — verificando presença de `<h1>`, canonical self e blocos JSON-LD esperados por tipo.
+- ⬜ Integrar ao `npm run test` (hook `pretest` já existe); manter os smoke tests de serviço da S8.
+- ⬜ Build/test verdes; atualizar `CLAUDE.md` (seção Testes).
+
+**S15 — Descoberta interna & rodapé** _(detalhes: "Próximos passos" #2 e #3 do `RELATORIO-MUDANCAS-S1-S8.md`)_
+
+- ⬜ **Expor as páginas de categoria** a partir do `/blog` (ex.: lista/nuvem de categorias) e o **perfil de autor** a partir do artigo/blog — aproveitar o que já existe (`/blog/categoria/:slug`, `/autor/:slug`).
+- ⬜ **Marcar a seção ativa** no menu (estado visual do item atual; `routerLinkActive` onde aplicável).
+- ⬜ **Reforma do rodapé:** mais funcional e elegante — contatos (telefone/e-mail/endereço), redes sociais, links úteis, OAB — mantendo a sobriedade da marca. _(Sinergia com S13: consumir os contatos da config.)_
+- ⬜ Acessibilidade preservada (foco, contraste, `aria` quando necessário). Build verde; atualizar docs.
+
+**S16 — Mapa personalizado** _(detalhes: `CLAUDE.md` "Mapa — estado real"; "Próximos passos" #4)_
+
+> Hoje a localização é um **embed padrão** do Google Maps (`mapa.component.html`). A integração via Google Cloud API foi **planejada, não executada**.
+
+- ⬜ Implementar mapa via **Google Cloud API** com estilo da marca, pontos de referência e sem destacar concorrentes.
+- ⬜ **Chave exclusiva** deste projeto, usada **server-side / em pipeline de sincronização** — nunca exposta no client (mesma disciplina das avaliações). Cache em Supabase para poupar quota.
+- ⬜ Não degradar CWV/CLS (reservar espaço; `loading="lazy"` quando fizer sentido). Build verde; atualizar `CLAUDE.md`/`ARCHITECTURE.md`.
+
+**S17 — Conteúdo & conversão (opcional)** _(detalhes: `MELHORIAS.md` §5 e §3.12)_
+
+- ⬜ **Selo OAB discreto** próximo ao CTA do hero (prova de credibilidade), mantendo a sobriedade.
+- ⬜ **CTA de WhatsApp contextual por seção** (mensagem pré-preenchida variando conforme a origem; hoje é genérica e duplicada — alinhar com S13).
+- ⬜ **"Ver mais" nas avaliações longas** (`line-clamp-6` corta o texto sem expandir) — expandir/colapsar preservando o layout.
+
+**S18 — Auditoria final pós-deploy (opcional)** _(detalhes: Apêndice A.6; `MELHORIAS.md` §1.7)_
+
+- ⬜ **Lighthouse/CWV** em produção (LCP < 2,0s, INP < 200ms, CLS < 0,1).
+- ⬜ **Rich Results Test** dos tipos (`BlogPosting`, `LegalService`, `CollectionPage`, `ProfilePage`, `FAQPage` onde houver).
+- ⬜ **Confirmar RLS/anon key (§1.7):** RLS ON e policies `SELECT` públicas (sem escrita anônima) em `published_articles`/`categories`/`google_reviews`/`authors`; documentar no `ARCHITECTURE.md`.
+- ⬜ **Smoke check** do canonical de um artigo (self, não-home) e do `/llms.txt`/`sitemap.xml`.
+
 ---
 
 ## 7. Checklists de validação por sessão
@@ -218,6 +298,14 @@ _Escopo S8:_
 - **S7:** navegação 100% por teclado; skip link visível ao focar; contraste AA; `prefers-reduced-motion` respeitado.
 - **S9:** `grep -ri "especialista"` no `src/` não retorna nada referente à Dra. (apenas o caso legítimo de "especialistas" parceiros, se mantido); rodapé do artigo mostra "Advogada Familiarista"; após rebuild, o HTML cru do artigo traz o **novo título** e **não** contém a seção "Perguntas frequentes" nem o JSON-LD `FAQPage`; slug preservado (ou redirect 301 ativo). Build verde.
 - **S10:** `curl -I` em `robots.txt` e `sitemap.xml` retorna 200 no host canônico (e apex redireciona p/ `www`); GSC relê o `robots.txt` sem erro; sitemap reenviado e aceito; diagnóstico documentado no `BLOG-SEO.md` §10.
+- **S11:** build local/preview com lista vazia simulada **não** quebra; build com `VERCEL_ENV=production` e lista vazia **falha** (erro claro no log); deploy normal loga a contagem de slugs (≥1); canonical de um artigo segue self pós-deploy.
+- **S12:** `git diff -w` continua limpo após renormalização; `.gitattributes` presente; `node -v` bate com `.nvmrc`/`engines`; `npm run build` verde; nenhum arquivo "fantasma" só de EOL nos PRs seguintes.
+- **S13:** `grep` pela URL base/telefone/WhatsApp retorna **apenas** a config (fora de `api/*`, se aplicável); build verde; valores idênticos aos anteriores (sem divergência).
+- **S14:** `npm run test` verde incluindo os testes de render das rotas pré-renderizadas (h1/canonical/JSON-LD presentes).
+- **S15:** categorias e perfil de autor alcançáveis por navegação a partir do blog; item de menu da seção atual destacado; rodapé novo com contatos/redes e navegação por teclado/contraste OK; build verde.
+- **S16:** mapa renderiza com estilo da marca; chave **não** aparece no bundle/cliente (inspecionar network/JS); cache em Supabase funcionando; sem regressão de CLS; build verde.
+- **S17:** selo OAB visível e sóbrio no hero; CTA de WhatsApp varia por seção; avaliações longas expandem/colapsam sem quebrar layout.
+- **S18:** relatórios Lighthouse/Rich Results anexados; RLS confirmado e documentado; smoke check do canonical/`sitemap.xml`/`llms.txt` OK.
 
 ---
 
@@ -388,4 +476,96 @@ Escopo (somente S10, diagnóstico-first):
 Entregável: registrar causa provável + ajustes no BLOG-SEO.md §10. A sessão pode encerrar SEM alteração de código se a causa for de propriedade/latência do GSC.
 Entre em Plan Mode e aguarde aprovação. Branch fix/gsc-robots-indexing (só se houver mudança de código).
 Validação (§7 S10). DoD: se houver código, build verde + push + preview; sempre, docs atualizados e §6 marcado. Resuma e encerre.
+```
+
+**S11 — Robustez do build / guard do P0 (modelo: Opus + Plan Mode)**
+
+```
+Execute a S11 do projeto Advocacia Vetere. PRIORIDADE MÁXIMA das pendentes.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6, RELATORIO-TECNICO-S1-S8.md (Apêndice A.1) e MELHORIAS.md §1.10. Não refaça o que já estiver ✅.
+CONTEXTO: entre a S1 e a S8 o P0 de indexação VOLTOU em produção porque o pré-render veio vazio (env de Build) e o build passou verde mesmo assim. Cada artigo caiu no fallback da Home (canonical→home).
+Escopo (somente S11):
+1) Em app.routes.server.ts, nos getPrerenderParams de artigos (avaliar categorias/autores): se VERCEL_ENV==='production' E a lista de slugs vier vazia esperando ≥1, LANÇAR erro e abortar o build. Manter [] tolerante em preview/local.
+2) Logar a contagem de slugs pré-renderizados no build.
+3) (Opcional) smoke check pós-deploy (curl do canonical de um artigo).
+4) Atualizar BLOG-SEO.md §10 e ARCHITECTURE.md.
+Entre em Plan Mode e aguarde aprovação. Branch fix/prerender-build-guard.
+Validação (§7 S11). DoD completo (build verde, docs, §6 ✅, push, preview). Resuma e encerre.
+```
+
+**S12 — Higiene de repositório & reprodutibilidade (modelo: Sonnet + Plan Mode)**
+
+```
+Execute a S12 do projeto Advocacia Vetere. Faça ANTES de abrir branches de feature (S13+).
+Leia antes: CLAUDE.md, PLANO-EXECUCAO.md §6, RELATORIO-TECNICO-S1-S8.md (Apêndice A.3 e A.5) e MELHORIAS.md §1.9.
+CONTEXTO: 47 arquivos aparecem "modificados" mas são só conversão LF→CRLF (git diff -w = 0). Não há .gitattributes nem versão de Node fixada.
+Escopo (somente S12):
+1) Adicionar .gitattributes (ex.: * text=auto eol=lf, com exceções binárias p/ fontes/imagens) e renormalizar (git add --renormalize .).
+2) Fixar Node: engines no package.json + .nvmrc com a major usada na Vercel.
+3) Garantir npm run build verde após a normalização; atualizar README.md/CLAUDE.md (pré-requisitos).
+ATENÇÃO: operações Git pesadas são do operador — monte os comandos exatos e peça execução.
+Entre em Plan Mode e aguarde aprovação. Branch chore/repo-hygiene.
+Validação (§7 S12). DoD completo. Resuma e encerre.
+```
+
+**S13 — Centralização de constantes (modelo: Sonnet/Opus + Plan Mode)**
+
+```
+Execute a S13 do projeto Advocacia Vetere. Pré-requisito: S12 (EOL normalizado).
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6, RELATORIO-TECNICO-S1-S8.md (Apêndice A.2) e MELHORIAS.md §1.6.
+Escopo (somente S13): criar site.config.ts com URL base (hoje em SeoService, api/sitemap.ts e robots.txt), link/mensagem do WhatsApp (duplicado em app.component.html e contato), telefone/e-mail/endereço/horário e a categoria 'Todos'. Substituir os usos hardcoded.
+ATENÇÃO: api/* são Serverless (fora do bundle Angular) — avaliar fonte compartilhada ou duplicação consciente e documentada.
+Entre em Plan Mode e aguarde aprovação. Branch refactor/site-config.
+Validação (§7 S13): nenhum valor divergiu; build verde. DoD completo. Resuma e encerre.
+```
+
+**S14 — Testes SSR de rotas (modelo: Sonnet/Opus + Plan Mode)**
+
+```
+Execute a S14 do projeto Advocacia Vetere.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6, RELATORIO-TECNICO-S1-S8.md (Apêndice A.4) e MELHORIAS.md §1.8.
+Escopo (somente S14): testes de renderização das rotas pré-renderizadas (/, /blog, /blog/:slug, /blog/categoria/:slug, /autor/:slug) verificando h1, canonical self e blocos JSON-LD por tipo. Integrar ao npm run test (hook pretest já existe). Manter os smoke tests de serviço da S8.
+Entre em Plan Mode e aguarde aprovação. Branch test/ssr-route-rendering.
+Validação (§7 S14): npm run test verde com os novos testes. DoD completo. Resuma e encerre.
+```
+
+**S15 — Descoberta interna & rodapé (modelo: Sonnet + Plan Mode)**
+
+```
+Execute a S15 do projeto Advocacia Vetere.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6 e RELATORIO-MUDANCAS-S1-S8.md ("Próximos passos" #2 e #3).
+Escopo (somente S15): expor as páginas de categoria (/blog/categoria/:slug) e o perfil de autor (/autor/:slug) a partir do blog; marcar a seção ativa no menu (routerLinkActive); reformar o rodapé (contatos, redes, OAB, links úteis) mantendo a sobriedade da marca. Preservar acessibilidade (foco/contraste/aria). Se a S13 já existir, consumir contatos da config.
+Entre em Plan Mode e aguarde aprovação. Branch feat/discovery-footer.
+Validação (§7 S15). DoD completo. Resuma e encerre.
+```
+
+**S16 — Mapa personalizado (modelo: Opus + Plan Mode)**
+
+```
+Execute a S16 do projeto Advocacia Vetere. Sessão de MAIOR risco/escopo.
+Leia antes: CLAUDE.md (seções "Mapa — estado real" e "Avaliações"), ARCHITECTURE.md, PLANO-EXECUCAO.md §6 e RELATORIO-MUDANCAS-S1-S8.md ("Próximos passos" #4).
+Escopo (somente S16): substituir o embed padrão (mapa.component.html) por um mapa via Google Cloud API com estilo da marca, pontos de referência e sem destacar concorrentes. Chave EXCLUSIVA do projeto, usada server-side / em pipeline, NUNCA no client; cache em Supabase para poupar quota (mesma disciplina das avaliações). Não degradar CWV/CLS.
+ATENÇÃO: chaves só via variáveis de ambiente — nunca hardcoded. Confirme com o operador o provisionamento da chave antes de codar.
+Entre em Plan Mode e aguarde aprovação. Branch feat/custom-map.
+Validação (§7 S16): chave ausente do bundle; cache funcionando; sem regressão de CLS; build verde. DoD completo. Resuma e encerre.
+```
+
+**S17 — Conteúdo & conversão (opcional; modelo: Sonnet + Plan Mode)**
+
+```
+Execute a S17 (opcional) do projeto Advocacia Vetere.
+Leia antes: CLAUDE.md, PLANO-EXECUCAO.md §6 e MELHORIAS.md §5 e §3.12.
+Escopo (somente S17): selo OAB discreto perto do CTA do hero; CTA de WhatsApp contextual por seção (alinhar com a config da S13 se existir); "ver mais" nas avaliações longas (line-clamp-6) com expandir/colapsar. Manter a sobriedade da marca.
+Entre em Plan Mode e aguarde aprovação. Branch feat/content-conversion.
+Validação (§7 S17). DoD completo. Resuma e encerre.
+```
+
+**S18 — Auditoria final pós-deploy (opcional; modelo: Sonnet + Plan Mode)**
+
+```
+Execute a S18 (auditoria, opcional) do projeto Advocacia Vetere. Pré-requisito: demais sessões desejadas concluídas.
+Leia antes: CLAUDE.md, ARCHITECTURE.md, PLANO-EXECUCAO.md §6, RELATORIO-TECNICO-S1-S8.md (Apêndice A.6) e MELHORIAS.md §1.7.
+Escopo (somente S18): Lighthouse/CWV em produção (LCP<2,0s, INP<200ms, CLS<0,1); Rich Results dos tipos (BlogPosting/LegalService/CollectionPage/ProfilePage/FAQPage); confirmar RLS ON + policies SELECT públicas (sem escrita anônima) em published_articles/categories/google_reviews/authors e documentar no ARCHITECTURE.md; smoke check do canonical de um artigo, sitemap.xml e llms.txt.
+Entre em Plan Mode e aguarde aprovação. Branch (só se houver código) chore/final-audit.
+Validação (§7 S18). DoD: relatórios anexados, RLS confirmado/documentado, §6 marcado. Resuma o estado final e encerre.
 ```
