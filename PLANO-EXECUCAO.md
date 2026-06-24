@@ -122,7 +122,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S11 — Robustez do build | ✅ | 2026-06-23 | 1d3a8a3a | Helper único `fetchPrerenderSlugs(resource, label)` em `app.routes.server.ts`: loga a contagem de slugs (artigos/categorias/autores) e, em produção (`VERCEL_ENV==='production'`), **aborta o build** se a lista vier vazia (guard aplicado aos três geradores). Preview/local mantêm `[]` tolerante. Smoke check pós-deploy documentado em `BLOG-SEO.md` §10.8. Lógica verificada por simulação (6/6 ramificações). Docs: §10.8 + ARCHITECTURE §2/§6 + CLAUDE.md + README. |
 | S12 — Higiene de repo & build | ✅ | 2026-06-23 | 72f10db6 | `.gitattributes` (`* text=auto eol=lf` + binários), `.nvmrc` (`22`), `engines` `>=22 <23` no `package.json`. `git add --renormalize .` normaliza os 69 arquivos de ruído EOL. README + CLAUDE atualizados. |
 | S13 — Centralização de constantes | ✅ | 2026-06-23 | refactor/site-config | `src/app/core/config/site.config.ts` (`SITE_URL`, `BUSINESS`, `WHATSAPP_*`, `ALL_CATEGORIES_LABEL`) consumido por `SeoService`, páginas (`artigo`/`categoria`/`autor`/`blog`), `AppComponent` e `ContatoComponent`. `api/*` e `robots.txt` mantêm a URL base com **duplicação documentada** (fora do bundle). Build/commit/preview pendentes do operador. |
-| S14 — Testes SSR de rotas | ⬜ | — | — | Smoke tests de serviço já entregues na S8; falta cobertura de **renderização das rotas pré-renderizadas** (`/`, `/blog`, `/blog/:slug`, `/blog/categoria/:slug`, `/autor/:slug`). Origem: Apêndice A.4 / `MELHORIAS.md` §1.8. |
+| S14 — Testes SSR de rotas | ✅ | 2026-06-24 | test/ssr-route-rendering | Render tests das 5 rotas pré-renderizadas (`home`/`blog`/`artigo`/`categoria`/`autor` `.component.spec.ts`) verificando `<h1>`, canonical self e JSON-LD por tipo; helper compartilhado `src/app/testing/seo-dom.helper.ts`. Smoke tests de serviço da S8 mantidos. Integração automática via glob do `tsconfig.spec.json` (sem mudar `package.json`/`angular.json`; `pretest` já existe). **Build/test/commit/push pendentes do operador** (regra 5). Origem: `MELHORIAS.md` §1.8. |
 | S15 — Descoberta interna & rodapé | ⬜ | — | — | Expor páginas de categoria e autor a partir do blog; marcar a seção ativa no menu; reforma do rodapé (contatos + redes, mais funcional/elegante). Origem: "Próximos passos" #2 e #3. |
 | S16 — Mapa personalizado | ⬜ | — | — | Substituir o embed padrão por mapa via Google Cloud API (estilo da marca, pontos de referência, sem concorrentes), com chave server-side e cache em Supabase. Planejado no `CLAUDE.md` (Mapa — estado real). Origem: "Próximos passos" #4. |
 | S17 — Conteúdo & conversão _(opcional)_ | ⬜ | — | — | Selo OAB próximo ao CTA do hero; CTA de WhatsApp contextual por seção; "ver mais" nas avaliações longas (`line-clamp-6`). Origem: `MELHORIAS.md` §5 e §3.12. |
@@ -256,11 +256,14 @@ _Escopo S8:_
 - ✅ Revisão de divergência: `grep` da URL base/telefone/e-mail/WhatsApp/`'Todos'` retorna **apenas** a config (fora de `api/*`/`robots.txt`, documentados). `WHATSAPP_URL` mantido **byte-a-byte idêntico** ao link já validado em produção (mensagem e telefone extraídos como partes reutilizáveis). _(2026-06-23)_
 - ⬜ Build verde + commit (`refactor:`) + push + preview — **pendente do operador** (regra 5 de governança).
 
-**S14 — Testes SSR de rotas** _(detalhes: Apêndice A.4; `MELHORIAS.md` §1.8 — parte pendente)_
+**S14 — Testes SSR de rotas** _(detalhes: `MELHORIAS.md` §1.8 — parte pendente; branch `test/ssr-route-rendering`, 2026-06-24)_
 
-- ⬜ Cobertura de **renderização das rotas pré-renderizadas**: `/`, `/blog`, `/blog/:slug`, `/blog/categoria/:slug`, `/autor/:slug` — verificando presença de `<h1>`, canonical self e blocos JSON-LD esperados por tipo.
-- ⬜ Integrar ao `npm run test` (hook `pretest` já existe); manter os smoke tests de serviço da S8.
-- ⬜ Build/test verdes; atualizar `CLAUDE.md` (seção Testes).
+> _Nota: o `RELATORIO-TECNICO-S1-S8.md` (Apêndice A.4) não está versionado neste checkout; a parte pendente da cobertura de testes está refletida em `MELHORIAS.md` §1.8, usada como fonte._
+
+- ✅ Cobertura de **renderização das rotas pré-renderizadas**: `/`, `/blog`, `/blog/:slug`, `/blog/categoria/:slug`, `/autor/:slug` — cada uma com um `*.component.spec.ts` verificando o `<h1>` renderizado, a canonical self e os blocos JSON-LD por tipo (`LegalService`/`Blog`/`BlogPosting`+breadcrumb/`CollectionPage`+breadcrumb/`ProfilePage`+`Person`+breadcrumb). Fetches do Supabase mockados via `HttpTestingController`; `slug` via `ActivatedRoute` stub; utilitários/mocks em `src/app/testing/seo-dom.helper.ts`. _(2026-06-24, test/ssr-route-rendering)_
+- ✅ Integração ao `npm run test` **sem mudar config**: o `tsconfig.spec.json` já inclui `src/**/*.spec.ts`, então os novos specs entram automaticamente; hook `pretest` (gera `environment.ts`/ícones) já existe. Smoke tests de serviço da S8 **mantidos intactos**. _(2026-06-24)_
+- ✅ `CLAUDE.md` (seção Testes) e `ARCHITECTURE.md` §9 atualizados. _(2026-06-24)_
+- ⬜ Build/test verdes + commit (`test:`) + push + preview — **pendente do operador** (regra 5 de governança).
 
 **S15 — Descoberta interna & rodapé** _(detalhes: "Próximos passos" #2 e #3 do `RELATORIO-MUDANCAS-S1-S8.md`)_
 

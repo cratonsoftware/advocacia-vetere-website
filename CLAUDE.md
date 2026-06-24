@@ -154,9 +154,15 @@ Quando novas rotas forem adicionadas, atualizar `api/sitemap.ts` (e, se fizer se
 - **Tipos de JSON-LD do `SeoService`** (por `config.type`/`slug`): `article`→`BlogPosting`, `slug='blog'`→`Blog`, `blog/categoria/*`→`CollectionPage`, `type='profile'`→`ProfilePage`+`Person` (página de autor), default→`LegalService`. Blocos coexistem por `data-seo` (`main`/`breadcrumb`/`faq`).
 - **SEO fino por artigo (S8):** `SeoConfig.canonical` sobrescreve canonical/`og:url`/`@id` (consome `canonicalUrl` do artigo); `noIndex` consome `noindex`. O `author.url` do `Person` aponta para `/autor/:slug` (fallback à home se sem slug).
 
-### Testes (S8 — aplicado 2026-06-21)
+### Testes (S8 — aplicado 2026-06-21; S14 — render tests 2026-06-24)
 
-Karma + Jasmine (já configurados). Smoke tests cobrindo o núcleo de SEO: `seo.service.spec.ts` (montagem de tags + JSON-LD por tipo, canonical override, breadcrumb/faq) e `blog.service.spec.ts` (`formatDate`: ISO 8601, fallback, rótulo pt-BR, `\n`). Rodar com `npm run test -- --watch=false --browsers=ChromeHeadless`. Ao criar novos serviços/SEO, **adicionar specs**.
+Karma + Jasmine (já configurados). Rodar com `npm run test -- --watch=false --browsers=ChromeHeadless` (o hook `pretest` gera `environment.ts`/ícones).
+
+**Smoke tests de serviço (S8):** `seo.service.spec.ts` (montagem de tags + JSON-LD por tipo, canonical override, breadcrumb/faq) e `blog.service.spec.ts` (`formatDate`: ISO 8601, fallback, rótulo pt-BR, `\n`).
+
+**Render tests das rotas pré-renderizadas (S14):** um spec por rota — `home`, `blog`, `artigo`, `categoria`, `autor` `.component.spec.ts` — exercendo o pipeline **componente → template → `<head>`**: verificam o `<h1>` renderizado, a `canonical` self e os blocos JSON-LD esperados por tipo (`LegalService` na home, `Blog` em `/blog`, `BlogPosting`+`BreadcrumbList` no artigo, `CollectionPage`+`BreadcrumbList` na categoria, `ProfilePage`+`Person`+`BreadcrumbList` no autor). Os fetches do Supabase são mockados via `HttpTestingController`; o `slug` vem de um `ActivatedRoute` stub. Utilitários, factories de mock e os stubs comuns ficam em `src/app/testing/seo-dom.helper.ts` — `provideRenderTestStubs()` injeta um `IMAGE_LOADER` que devolve um PNG transparente (NgOptimizedImage sem 404 de assets) e um `MatIconRegistry` falso que devolve `<svg>` vazio para qualquer nome (os SVGs próprios só são registrados em runtime pelo `AppComponent`, ausente nos specs). Os specs também usam `provideRouter`, `provideMarkdown` e, na home, `provideEnvironmentNgxMask` (formulário de contato).
+
+Ao criar novos serviços/SEO ou novas rotas, **adicionar specs** (smoke de serviço e/ou render test da rota).
 
 ### TailwindCSS 4
 

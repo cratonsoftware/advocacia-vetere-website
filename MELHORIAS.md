@@ -81,9 +81,11 @@ Centralizar reduz risco de divergência (ex.: mudar o telefone em um lugar e esq
 
 A `supabaseKey` é injetada no bundle do cliente (`set-env.cjs` → `environment.ts`) e enviada nos headers via `HttpClient`. Isso é aceitável **apenas se for a chave anon e o RLS estiver ativo** com políticas somente-leitura nas tabelas `published_articles`, `categories` e `google_reviews`. Ação: confirmar no painel Supabase que (a) RLS está ON nessas tabelas, (b) existem policies `SELECT` públicas e nenhuma policy de escrita anônima. Documentar isso no `ARCHITECTURE.md` (já incluído).
 
-### 1.8 Cobertura de testes — Impacto Médio · Esforço G — ✅ S8 (2026-06-21, parcial)
+### 1.8 Cobertura de testes — Impacto Médio · Esforço G — ✅ S8 (2026-06-21) + S14 (2026-06-24)
 
-> **Aplicado na S8:** criados os primeiros specs — `seo.service.spec.ts` (montagem de tags + JSON-LD por tipo: BlogPosting/LegalService/Blog/CollectionPage/ProfilePage, canonical override, breadcrumb/faq) e `blog.service.spec.ts` (`formatDate`: ISO 8601, fallback, rótulo pt-BR, normalização de `\n`, null). Hook `pretest` adicionado para gerar `environment.ts`/ícones antes de `ng test`. **Pendente:** testes de renderização SSR das rotas pré-renderizadas (fica como próximo incremento).
+> **Aplicado na S8:** criados os primeiros specs — `seo.service.spec.ts` (montagem de tags + JSON-LD por tipo: BlogPosting/LegalService/Blog/CollectionPage/ProfilePage, canonical override, breadcrumb/faq) e `blog.service.spec.ts` (`formatDate`: ISO 8601, fallback, rótulo pt-BR, normalização de `\n`, null). Hook `pretest` adicionado para gerar `environment.ts`/ícones antes de `ng test`.
+>
+> **Aplicado na S14 (2026-06-24, completa o item):** render tests das rotas pré-renderizadas — `home`/`blog`/`artigo`/`categoria`/`autor` `.component.spec.ts` — verificando o `<h1>` renderizado, a canonical self e os blocos JSON-LD por tipo, com fetches do Supabase mockados (`HttpTestingController`) e `slug` via `ActivatedRoute` stub. Utilitários/mocks compartilhados em `src/app/testing/seo-dom.helper.ts`.
 
 O Karma está configurado, mas **não havia um único `.spec.ts`**. Sem precisar buscar 100%, valeria um conjunto mínimo de testes de fumaça: `SeoService` (montagem de tags e JSON-LD por tipo), `BlogService.formatDate` (após corrigir 1.4) e renderização SSR das rotas pré-renderizadas. Protege exatamente as partes mais sensíveis (SEO).
 

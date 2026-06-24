@@ -73,7 +73,8 @@ npm run format
 src/app/
   core/        → config (site.config.ts — constantes centrais), models e services (blog, reviews, SEO) + smoke tests (*.spec.ts)
   features/    → blocos da home (header, hero, sobre, areas, reviews, contato, mapa, footer…)
-  pages/       → rotas (home, blog, artigo, categoria, autor, sucesso, not-found)
+  pages/       → rotas (home, blog, artigo, categoria, autor, sucesso, not-found) + render tests (*.component.spec.ts)
+  testing/     → seo-dom.helper.ts (utilitários/mocks dos render tests)
 api/sitemap.ts → Serverless Function do sitemap dinâmico
 api/llms.ts    → Serverless Function do /llms.txt dinâmico (GEO/AEO)
 scripts/       → hooks de pré-build

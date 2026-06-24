@@ -197,7 +197,9 @@ src/app/
                    blog-preview, reviews, contato, mapa, footer
   pages/         → rotas: home, blog (lista), artigo (detalhe + not-found),
                    categoria (hub por categoria), autor (perfil), sucesso, not-found
+                   (+ *.component.spec.ts: render tests das rotas pré-renderizadas — S14)
   core/services/ → blog, review, seo (+ *.spec.ts: smoke tests de SEO — S8)
+  testing/       → seo-dom.helper.ts (utilitários/mocks dos render tests — S14)
   generated/     → icon-list.ts (gerado, não versionado)
 api/
   sitemap.ts     → Serverless Function do sitemap
