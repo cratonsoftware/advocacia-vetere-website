@@ -44,7 +44,7 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 | **S17** _(opcional)_ | Conteúdo & conversão         | selo OAB no hero, CTA WhatsApp contextual, "ver mais" nas avaliações    | —          | Sonnet      | Baixo      |
 | **S18** _(opcional)_ | Auditoria final pós-deploy   | Lighthouse/CWV, Rich Results, confirmação de RLS, smoke check           | todas      | Sonnet      | Baixo      |
 
-> S1–S11 estão **✅ concluídas** (ver §6.1). Das pendentes:
+> S1–S11 e S12–S15 estão **✅ concluídas** (ver §6.1). Das pendentes:
 >
 > - **S11 (maior prioridade técnica) ✅ concluída** — fechou o buraco que reabriu o P0 de indexação (artigo herdando o SEO da Home) entre a S1 e a S8, de forma silenciosa, com guard de build em produção.
 > - **S12 deveria vir cedo:** há 47 arquivos "modificados" que são só conversão LF→CRLF (`git diff -w` = 0). Normalizar EOL **antes** de abrir branches de feature evita ruído em diffs/PRs.
@@ -123,7 +123,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S12 — Higiene de repo & build | ✅ | 2026-06-23 | 72f10db6 | `.gitattributes` (`* text=auto eol=lf` + binários), `.nvmrc` (`22`), `engines` `>=22 <23` no `package.json`. `git add --renormalize .` normaliza os 69 arquivos de ruído EOL. README + CLAUDE atualizados. |
 | S13 — Centralização de constantes | ✅ | 2026-06-23 | 17232002 | `src/app/core/config/site.config.ts` (`SITE_URL`, `BUSINESS`, `WHATSAPP_*`, `ALL_CATEGORIES_LABEL`) consumido por `SeoService`, páginas (`artigo`/`categoria`/`autor`/`blog`), `AppComponent` e `ContatoComponent`. `api/*` e `robots.txt` mantêm a URL base com **duplicação documentada** (fora do bundle). Build/commit/preview concluídos. |
 | S14 — Testes SSR de rotas | ✅ | 2026-06-24 | ca1844e0 | Render tests das 5 rotas pré-renderizadas (`home`/`blog`/`artigo`/`categoria`/`autor` `.component.spec.ts`) verificando `<h1>`, canonical self e JSON-LD por tipo; helper compartilhado `src/app/testing/seo-dom.helper.ts` (`provideRenderTestStubs`: loader de imagem transparente + `MatIconRegistry` falso + `PRECONNECT_CHECK_BLOCKLIST` → saída de teste limpa). Smoke tests de serviço da S8 mantidos. Integração via glob do `tsconfig.spec.json` (sem mudar `package.json`/`angular.json`). `npm run test` **34/34 verde, sem warnings**. Origem: `MELHORIAS.md` §1.8. |
-| S15 — Descoberta interna & rodapé | ⬜ | — | — | Expor páginas de categoria e autor a partir do blog; marcar a seção ativa no menu; reforma do rodapé (contatos + redes, mais funcional/elegante). Origem: "Próximos passos" #2 e #3. |
+| S15 — Descoberta interna & rodapé | ✅ | 2026-06-24 | — | Categorias do `/blog` → `RouterLink` para `/blog/categoria/:slug`; autora no artigo → link `/autor/:slug`; `routerLinkActive` no header (Blog ativo em `/blog/*`, home em `/`); rodapé 4 colunas (contato `BUSINESS` + redes sociais SVG inline + links blog/autor). Spec do blog atualizado (+2 testes). Commit/hash pendente do operador. |
 | S16 — Mapa personalizado | ⬜ | — | — | Substituir o embed padrão por mapa via Google Cloud API (estilo da marca, pontos de referência, sem concorrentes), com chave server-side e cache em Supabase. Planejado no `CLAUDE.md` (Mapa — estado real). Origem: "Próximos passos" #4. |
 | S17 — Conteúdo & conversão _(opcional)_ | ⬜ | — | — | Selo OAB próximo ao CTA do hero; CTA de WhatsApp contextual por seção; "ver mais" nas avaliações longas (`line-clamp-6`). Origem: `MELHORIAS.md` §5 e §3.12. |
 | S18 — Auditoria final pós-deploy _(opcional)_ | ⬜ | — | — | Lighthouse/CWV (LCP<2,0s, INP<200ms, CLS<0,1), Rich Results, confirmação de RLS/anon key (§1.7) e smoke check do canonical de um artigo. Não bloqueia DoD. Origem: Apêndice A.6 / `MELHORIAS.md` §1.7. |
@@ -266,12 +266,13 @@ _Escopo S8:_
 - ✅ Saída de teste limpa: `provideRenderTestStubs()` (helper) injeta loader de imagem transparente (sem 404 de assets), `MatIconRegistry` falso (sem "Unable to find icon") e `PRECONNECT_CHECK_BLOCKLIST` (silencia NG02956 da imagem `priority` do hero). _(2026-06-24)_
 - ✅ `npm run test` **34/34 verde, sem erros/warnings** + commit (`test:`) — **concluído pelo operador**. _(2026-06-24, ca1844e0)_
 
-**S15 — Descoberta interna & rodapé** _(detalhes: "Próximos passos" #2 e #3 do `RELATORIO-MUDANCAS-S1-S8.md`)_
+**S15 — Descoberta interna & rodapé** _(detalhes: "Próximos passos" #2 e #3 do `RELATORIO-MUDANCAS-S1-S8.md`; branch `feat/discovery-footer`, 2026-06-24)_
 
-- ⬜ **Expor as páginas de categoria** a partir do `/blog` (ex.: lista/nuvem de categorias) e o **perfil de autor** a partir do artigo/blog — aproveitar o que já existe (`/blog/categoria/:slug`, `/autor/:slug`).
-- ⬜ **Marcar a seção ativa** no menu (estado visual do item atual; `routerLinkActive` onde aplicável).
-- ⬜ **Reforma do rodapé:** mais funcional e elegante — contatos (telefone/e-mail/endereço), redes sociais, links úteis, OAB — mantendo a sobriedade da marca. _(Sinergia com S13: consumir os contatos da config.)_
-- ⬜ Acessibilidade preservada (foco, contraste, `aria` quando necessário). Build verde; atualizar docs.
+- ✅ **Expor as páginas de categoria a partir do `/blog`:** botões de filtro convertidos em `<a [routerLink]>` que navegam para `/blog/categoria/:slug`; "Todos" rota para `/blog`; busca textual mantida como filtro in-page; `RouterLinkActive` no `<nav>` de categorias. Filtro de categoria no TS removido. _(2026-06-24)_
+- ✅ **Expor o perfil de autor a partir do artigo:** nome "Dra. Maria Fernanda Vetere" no rodapé do artigo envolvido com `<a [routerLink]="['/autor', article.author!.slug]">` (fallback: texto puro quando slug nulo). _(2026-06-24)_
+- ✅ **Seção ativa no menu:** `RouterLinkActive` adicionado ao `header.component` — "Blog" ativo (sem `exact`) em `/blog/*`; itens de home com `exact:true` (ativos em `/`). Aplicado em desktop e mobile. _(2026-06-24)_
+- ✅ **Reforma do rodapé (4 colunas):** Col 1 logo/OAB; Col 2 navegação; Col 3 contato (tel clicável `tel:`, e-mail `mailto:`, endereço, horário) de `BUSINESS`; Col 4 blog/autor + redes sociais (Instagram/Facebook/TikTok) via SVG inline de `BUSINESS.sameAs` com `aria-label`. Grade 1→2→4 colunas (mobile→tablet→desktop). _(2026-06-24)_
+- ✅ **Spec do blog atualizado:** comentário S15 + 2 novos testes — verifica link "Todos" para `/blog` e que categorias são renderizadas como `<a>` em `<nav>` com `aria-label="Filtrar por categoria"`. _(2026-06-24)_
 
 **S16 — Mapa personalizado** _(detalhes: `CLAUDE.md` "Mapa — estado real"; "Próximos passos" #4)_
 

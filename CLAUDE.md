@@ -164,6 +164,13 @@ Karma + Jasmine (já configurados). Rodar com `npm run test -- --watch=false --b
 
 Ao criar novos serviços/SEO ou novas rotas, **adicionar specs** (smoke de serviço e/ou render test da rota).
 
+### Navegação e descoberta interna (S15 — aplicado 2026-06-24)
+
+- **Categorias do `/blog` como navegação:** os botões de filtro de categoria viraram `<a [routerLink]="['/blog/categoria', cat.slug]">` com `routerLinkActive` no `<nav aria-label="Filtrar por categoria">`. "Todos" rota para `/blog`. A busca textual permanece como filtro in-page (via `searchTerm` signal). O `setCategory()` foi removido — não adicionar de volta.
+- **Autora no artigo com link:** no rodapé de autoria do artigo (`artigo.component.html`), o nome da autora é `<a [routerLink]="['/autor', article.author!.slug]">` quando `author.slug` está disponível (fallback: `<p>` texto simples). Manter esse padrão em qualquer ajuste futuro no componente.
+- **`routerLinkActive` no header:** "Blog" ativo sem `exact` (cobre `/blog`, `/blog/:slug`, `/blog/categoria/:slug`); links de home com `[routerLinkActiveOptions]="{exact:true}"` (ativos só em `/`). O `header.component` importa `RouterLinkActive`. Manter esse padrão.
+- **Rodapé 4 colunas (S15):** Col 1 marca/OAB; Col 2 navegação; Col 3 contato (de `BUSINESS`); Col 4 blog/autor + redes sociais (SVG inline de `BUSINESS.sameAs`). O `FooterComponent` expõe `business` e `whatsappUrl` via `site.config.ts`. Ícones sociais são SVG inline (`@switch socialPlatform(url)`) — não usar bibliotecas externas de ícones.
+
 ### TailwindCSS 4
 
 - Este projeto usa **Tailwind v4** — a sintaxe e o sistema de configuração são diferentes do v3
@@ -196,7 +203,7 @@ Ao criar novos serviços/SEO ou novas rotas, **adicionar specs** (smoke de servi
 ### Configuração central — `site.config.ts` (S13 — aplicado 2026-06-23)
 
 - **Fonte única de constantes:** `src/app/core/config/site.config.ts` exporta `SITE_URL`, `BUSINESS` (telefone, `telephoneDisplay`, e-mail, endereço, geo, `priceRange`, `sameAs`, `openingHours`), `WHATSAPP_PHONE`/`WHATSAPP_MESSAGE`/`WHATSAPP_URL` e `ALL_CATEGORIES_LABEL` (`'Todos'`). **Não** voltar a hardcodar esses valores em componentes/serviços/templates — importar da config.
-- **Consumidores:** `SeoService` (`baseUrl` + `business`; `openingHoursSpecification` é derivado de `BUSINESS.openingHours.periods`), `ArtigoComponent`/`CategoriaComponent`/`AutorComponent` (`SITE_URL`), `BlogComponent` (`ALL_CATEGORIES_LABEL`), `AppComponent` e `ContatoComponent` (`WHATSAPP_URL` + campos de `BUSINESS`).
+- **Consumidores:** `SeoService` (`baseUrl` + `business`; `openingHoursSpecification` é derivado de `BUSINESS.openingHours.periods`), `ArtigoComponent`/`CategoriaComponent`/`AutorComponent` (`SITE_URL`), `BlogComponent` (sem `ALL_CATEGORIES_LABEL` desde S15 — filtro de categoria virou navegação), `AppComponent` e `ContatoComponent` (`WHATSAPP_URL` + campos de `BUSINESS`), `FooterComponent` (`BUSINESS` + `WHATSAPP_URL` — S15).
 - **`api/*` e `robots.txt` (fora do bundle Angular):** por decisão arquitetural, mantêm a URL base **localmente** com **duplicação consciente e documentada** (comentário apontando `site.config.ts`). Ao alterar `SITE_URL`, atualizar também `api/sitemap.ts`, `api/llms.ts` e `src/robots.txt`.
 - **`WHATSAPP_URL`** é mantido como string pré-codificada (byte-a-byte idêntica ao link validado em produção); `WHATSAPP_MESSAGE`/`WHATSAPP_PHONE` ficam disponíveis como partes reutilizáveis (ex.: CTAs contextuais previstos na S17).
 

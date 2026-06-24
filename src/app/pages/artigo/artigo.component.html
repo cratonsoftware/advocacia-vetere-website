@@ -100,7 +100,12 @@
 				<div class="border-n4/10 mt-20 flex flex-col items-center justify-between gap-8 border-t pt-12 md:flex-row">
 					<div class="flex items-center gap-4">
 						<div>
-							<p class="font-antic-didone text-n4 text-xl">Dra. Maria Fernanda Vetere</p>
+							<!-- S15: link para o perfil da autora quando slug disponível -->
+							@if (article.author?.slug) {
+								<a [routerLink]="['/autor', article.author!.slug]" class="font-antic-didone text-n4 hover:text-n3 text-xl transition-colors">Dra. Maria Fernanda Vetere</a>
+							} @else {
+								<p class="font-antic-didone text-n4 text-xl">Dra. Maria Fernanda Vetere</p>
+							}
 							<p class="text-n3 text-[11px] font-bold tracking-widest uppercase">Advogada Familiarista</p>
 						</div>
 					</div>

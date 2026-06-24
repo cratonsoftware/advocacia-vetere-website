@@ -2,8 +2,7 @@ import { NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { ALL_CATEGORIES_LABEL } from 'src/app/core/config/site.config';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SeoService } from 'src/app/core/services/seo.service';
 import { BlogService } from '../../core/services/blog.service';
 
@@ -11,7 +10,7 @@ import { BlogService } from '../../core/services/blog.service';
 	selector: 'app-blog',
 	templateUrl: './blog.component.html',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [RouterLink, FormsModule, NgOptimizedImage],
+	imports: [RouterLink, RouterLinkActive, FormsModule, NgOptimizedImage],
 })
 export class BlogComponent {
 	private blogService = inject(BlogService);
@@ -20,27 +19,20 @@ export class BlogComponent {
 
 	private readonly itemsPerPage = 6;
 
-	/** Rótulo da pseudo-categoria "todas" (config central). */
-	protected readonly allCategoriesLabel = ALL_CATEGORIES_LABEL;
-
 	// --- dados assíncronos via toSignal() ---
 	allArticles = toSignal(this.blogService.getAllArticles(), { initialValue: [] });
+	/** Categorias para os links de navegação (S15: cada categoria → /blog/categoria/:slug). */
 	categories = toSignal(this.blogService.getCategories(), { initialValue: [] });
 
-	// --- estado de filtro/paginação ---
-	selectedCategory = signal(ALL_CATEGORIES_LABEL);
+	// --- estado de filtro/paginação (busca textual apenas; filtro por categoria via navegação) ---
 	searchTerm = signal('');
 	currentPage = signal(1);
 
 	// --- estado derivado via computed() ---
 	filteredArticles = computed(() => {
-		let temp = this.allArticles();
-		const cat = this.selectedCategory();
 		const term = this.searchTerm().toLowerCase().trim();
-
-		if (cat !== ALL_CATEGORIES_LABEL) temp = temp.filter((a) => a.category === cat);
-		if (term) temp = temp.filter((a) => a.title.toLowerCase().includes(term) || a.excerpt.toLowerCase().includes(term));
-		return temp;
+		if (!term) return this.allArticles();
+		return this.allArticles().filter((a) => a.title.toLowerCase().includes(term) || a.excerpt.toLowerCase().includes(term));
 	});
 
 	totalPages = computed(() => Math.ceil(this.filteredArticles().length / this.itemsPerPage) || 1);
@@ -72,11 +64,6 @@ export class BlogComponent {
 		this.currentPage.set(1);
 	}
 
-	setCategory(categoryName: string): void {
-		this.selectedCategory.set(categoryName);
-		this.currentPage.set(1);
-	}
-
 	changePage(page: number): void {
 		const total = this.totalPages();
 		if (page >= 1 && page <= total) {
@@ -85,9 +72,8 @@ export class BlogComponent {
 		}
 	}
 
-	clearFilters(): void {
+	clearSearch(): void {
 		this.searchTerm.set('');
-		this.selectedCategory.set(ALL_CATEGORIES_LABEL);
 		this.currentPage.set(1);
 	}
 }

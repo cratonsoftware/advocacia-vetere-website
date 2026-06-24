@@ -17,29 +17,25 @@
 				<svg class="text-n3 absolute top-3.5 left-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
 			</div>
 
-			<div class="flex flex-wrap gap-2">
-				<button
-					(click)="setCategory(allCategoriesLabel)"
-					[class.bg-n4]="selectedCategory() === allCategoriesLabel"
-					[class.text-n0]="selectedCategory() === allCategoriesLabel"
-					[class.border-n4]="selectedCategory() !== allCategoriesLabel"
-					[class.text-n4]="selectedCategory() !== allCategoriesLabel"
-					class="hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300">
-					{{ allCategoriesLabel }}
-				</button>
+			<!-- Categorias como links de navegação (S15): cada botão leva à página pré-renderizada da categoria -->
+			<nav class="flex flex-wrap gap-2" aria-label="Filtrar por categoria">
+				<a
+					routerLink="/blog"
+					routerLinkActive="bg-n4 text-n0"
+					[routerLinkActiveOptions]="{ exact: true }"
+					class="border-n4 text-n4 hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300">
+					Todos
+				</a>
 
 				@for (cat of categories(); track cat.id) {
-					<button
-						(click)="setCategory(cat.name)"
-						[class.bg-n4]="selectedCategory() === cat.name"
-						[class.text-n0]="selectedCategory() === cat.name"
-						[class.border-n4]="selectedCategory() !== cat.name"
-						[class.text-n4]="selectedCategory() !== cat.name"
-						class="hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300">
+					<a
+						[routerLink]="['/blog/categoria', cat.slug]"
+						routerLinkActive="bg-n4 text-n0"
+						class="border-n4 text-n4 hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300">
 						{{ cat.name }}
-					</button>
+					</a>
 				}
-			</div>
+			</nav>
 		</div>
 
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -80,7 +76,7 @@
 			<div class="py-20 text-center">
 				<p class="font-antic-didone text-n4 mb-4 text-3xl">Nenhum artigo encontrado.</p>
 				<p class="text-n3">Tente ajustar a sua pesquisa ou os filtros de categoria.</p>
-				<button (click)="clearFilters()" class="border-n4/30 text-n4 mt-6 border-b pb-1 text-xs font-bold tracking-widest uppercase">Limpar Filtros</button>
+				<button (click)="clearSearch()" class="border-n4/30 text-n4 mt-6 border-b pb-1 text-xs font-bold tracking-widest uppercase">Limpar Busca</button>
 			</div>
 		}
 

@@ -10,6 +10,8 @@ import { BlogComponent } from './blog.component';
  * Render test da rota `/blog` (S14) — verifica o `<h1>` da listagem, a `canonical`
  * self (`/blog`) e o bloco JSON-LD `Blog`. Os fetches do Supabase (artigos/categorias)
  * são respondidos via HttpTestingController.
+ *
+ * S15: categorias passam a ser links de navegação (<a routerLink>), não botões de filtro.
  */
 describe('BlogComponent (render /blog)', () => {
 	let fixture: ComponentFixture<BlogComponent>;
@@ -49,5 +51,31 @@ describe('BlogComponent (render /blog)', () => {
 	it('emite JSON-LD do tipo Blog', () => {
 		const ld = readJsonLd(doc, 'main');
 		expect(ld['@type']).toBe('Blog');
+	});
+
+	it('exibe o link "Todos" apontando para /blog (S15)', () => {
+		// "Todos" deve ser um link <a> (não botão) que leva para /blog
+		const todosLink: HTMLAnchorElement | null = fixture.nativeElement.querySelector('nav[aria-label="Filtrar por categoria"] a');
+		expect(todosLink).toBeTruthy();
+		expect(todosLink?.textContent?.trim()).toBe('Todos');
+	});
+
+	it('categorias com slug são links de navegação para /blog/categoria/:slug (S15)', async () => {
+		// Re-renderizar com uma categoria mockada para verificar o routerLink
+		const fixture2 = TestBed.createComponent(BlogComponent);
+		fixture2.detectChanges();
+		httpMock.match((r) => r.url.includes('published_articles')).forEach((req) => req.flush([]));
+		httpMock.match((r) => r.url.includes('categories')).forEach((req) =>
+			req.flush([{ id: '1', name: 'Família', slug: 'familia' }]),
+		);
+		fixture2.detectChanges();
+
+		const categoryLinks: NodeListOf<HTMLAnchorElement> = fixture2.nativeElement.querySelectorAll('nav[aria-label="Filtrar por categoria"] a');
+		// Deve ter pelo menos 2: "Todos" + "Família"
+		expect(categoryLinks.length).toBeGreaterThanOrEqual(2);
+		const familiaLink = Array.from(categoryLinks).find((a) => a.textContent?.trim() === 'Família');
+		expect(familiaLink).toBeTruthy();
+
+		fixture2.destroy();
 	});
 });

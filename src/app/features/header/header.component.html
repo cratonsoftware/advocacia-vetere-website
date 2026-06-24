@@ -17,12 +17,12 @@
 		</a>
 
 		<div class="text-n3 hidden items-center space-x-6 lg:flex">
-			<a routerLink="/" fragment="home" class="hover:text-destaque-m font-medium transition-colors"> Início </a>
-			<a routerLink="/" fragment="sobre" class="hover:text-destaque-m font-medium transition-colors"> Sobre Mim </a>
-			<a routerLink="/" fragment="areas" class="hover:text-destaque-m font-medium transition-colors"> Áreas de Atuação </a>
-			<a routerLink="/blog" class="hover:text-destaque-m font-medium transition-colors"> Blog </a>
-			<a routerLink="/" fragment="avaliacoes" class="hover:text-destaque-m font-medium transition-colors"> Avaliações </a>
-			<a routerLink="/" fragment="contato" class="hover:text-destaque-m font-medium transition-colors"> Contato </a>
+			<a routerLink="/" fragment="home" routerLinkActive="text-destaque-m" [routerLinkActiveOptions]="{ exact: true }" class="hover:text-destaque-m font-medium transition-colors"> Início </a>
+			<a routerLink="/" fragment="sobre" routerLinkActive="text-destaque-m" [routerLinkActiveOptions]="{ exact: true }" class="hover:text-destaque-m font-medium transition-colors"> Sobre Mim </a>
+			<a routerLink="/" fragment="areas" routerLinkActive="text-destaque-m" [routerLinkActiveOptions]="{ exact: true }" class="hover:text-destaque-m font-medium transition-colors"> Áreas de Atuação </a>
+			<a routerLink="/blog" routerLinkActive="text-destaque-m" class="hover:text-destaque-m font-medium transition-colors"> Blog </a>
+			<a routerLink="/" fragment="avaliacoes" routerLinkActive="text-destaque-m" [routerLinkActiveOptions]="{ exact: true }" class="hover:text-destaque-m font-medium transition-colors"> Avaliações </a>
+			<a routerLink="/" fragment="contato" routerLinkActive="text-destaque-m" [routerLinkActiveOptions]="{ exact: true }" class="hover:text-destaque-m font-medium transition-colors"> Contato </a>
 		</div>
 
 		<button type="button" aria-label="Abrir menu" class="text-n4 hover:bg-n2 hover:text-n1 cursor-pointer rounded-md p-2 transition-colors lg:hidden" (click)="toggleMenu()">
@@ -35,12 +35,12 @@
 	@if (isMenuOpen()) {
 		<div class="bg-n4 border-n3/20 absolute top-19 left-0 w-full border-t shadow-xl lg:hidden">
 			<div class="flex flex-col space-y-4 p-6">
-				<a (click)="toggleMenu()" routerLink="/" fragment="home" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Início </a>
-				<a (click)="toggleMenu()" routerLink="/" fragment="sobre" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Sobre Mim </a>
-				<a (click)="toggleMenu()" routerLink="/" fragment="areas" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Áreas de Atuação </a>
-				<a (click)="toggleMenu()" routerLink="/blog" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Blog </a>
-				<a (click)="toggleMenu()" routerLink="/" fragment="avaliacoes" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Avaliações </a>
-				<a (click)="toggleMenu()" routerLink="/" fragment="contato" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Contato </a>
+				<a (click)="toggleMenu()" routerLink="/" fragment="home" routerLinkActive="text-n0 font-bold" [routerLinkActiveOptions]="{ exact: true }" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Início </a>
+				<a (click)="toggleMenu()" routerLink="/" fragment="sobre" routerLinkActive="text-n0 font-bold" [routerLinkActiveOptions]="{ exact: true }" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Sobre Mim </a>
+				<a (click)="toggleMenu()" routerLink="/" fragment="areas" routerLinkActive="text-n0 font-bold" [routerLinkActiveOptions]="{ exact: true }" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Áreas de Atuação </a>
+				<a (click)="toggleMenu()" routerLink="/blog" routerLinkActive="text-n0 font-bold" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Blog </a>
+				<a (click)="toggleMenu()" routerLink="/" fragment="avaliacoes" routerLinkActive="text-n0 font-bold" [routerLinkActiveOptions]="{ exact: true }" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Avaliações </a>
+				<a (click)="toggleMenu()" routerLink="/" fragment="contato" routerLinkActive="text-n0 font-bold" [routerLinkActiveOptions]="{ exact: true }" class="text-n1 hover:text-n2 text-lg font-medium transition-colors"> Contato </a>
 			</div>
 		</div>
 	}
