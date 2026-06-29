@@ -573,7 +573,7 @@ curl -s https://www.mfernandavetere.adv.br/blog/traicao-da-direito-a-indenizacao
 | Issue (Ahrefs) | Qtd | Causa provável / tratamento |
 | --- | --- | --- |
 | Structured data — rich results validation | 4 | 🔧 **Corrigido** (aguarda build/deploy). Causa: `publisher`/`worksFor` era `LegalService` tronco (só `name`/`logo`) → Local Business com `Missing field "telephone"/"priceRange"/"address"/"image"`. Fix: helper `legalServiceEntity()` (ver §11.4). |
-| Multiple H1 tags | 1 | Quase certo: `#` no Markdown do `content` do artigo (vira `<h1>`). Rebaixar para `##` no Supabase. Regra já no `MODELO-ARTIGO-BLOG.md`. |
+| Multiple H1 tags | 1 | ✅ **Corrigido** (2026-06-29; aguarda rebuild). `content` do artigo começava com `#` (→ `<h1>`); rebaixado para `##` no Supabase **sem alterar texto**. Regra já no `MODELO-ARTIGO-BLOG.md`. |
 | Meta description too long | 3 | Encurtar para 120–160 caracteres. |
 | Title too long | 2 | Sufixo `\| Dra. Maria Fernanda Vetere` infla títulos longos > ~60. Encurtar base / `meta_title` curtos / rever sufixo. |
 | 3XX redirect / HTTP→HTTPS | 4/2 | Esperados e saudáveis — sem ação. |
