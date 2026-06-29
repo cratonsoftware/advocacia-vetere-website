@@ -57,8 +57,8 @@ Cada artigo gera uma página em `https://www.mfernandavetere.adv.br/blog/<slug>`
 
 - **O que é:** o título principal do artigo.
 - **Onde aparece:** é o **H1** grande no topo da página (fonte serifada elegante). Também vira o `<title>` da aba do navegador e o título azul clicável no Google **quando `meta_title` estiver vazio**, e é o `headline` nos dados estruturados.
-- **Como escrever:** claro, específico e atrativo. Prefira a **dúvida real do cliente**, não jargão institucional. O sistema acrescenta automaticamente `| Dra. Maria Fernanda Vetere` ao fim do título da aba — **não** inclua isso você.
-- **Tamanho ideal:** **50 a 70 caracteres**. Evite passar de 70 (o H1 fica visualmente pesado e o `headline` do schema deve ficar abaixo de ~110 com o sufixo).
+- **Como escrever:** claro, específico e atrativo. Prefira a **dúvida real do cliente**, não jargão institucional. **Importante (atualizado em 2026-06-29):** em páginas de artigo o sistema **não** acrescenta mais o sufixo `| Dra. Maria Fernanda Vetere` ao `<title>` — o que você escreve em `title`/`meta_title` é exatamente o `<title>` que vai ao ar (o sufixo de 31 caracteres estourava o limite de ~60 do Google). De qualquer forma, **não** inclua o nome da Dra. no campo.
+- **Tamanho ideal:** **50 a 70 caracteres** para o H1. Se o `title` passar de **60**, preencha um `meta_title` curto (≤60) para o `<title>`/Google — ver abaixo. O `headline` do schema deve ficar abaixo de ~110.
 - **Exemplo bom:** `Pensão de alimentos: como é calculada e quem tem direito`
 - **Exemplo ruim:** `Reflexões sobre a advocacia artesanal no Direito de Família` (abstrato, ninguém pesquisa isso)
 
@@ -120,8 +120,8 @@ Estes campos controlam **como o artigo aparece na busca**. Capricho aqui = mais 
 
 - **O que é:** versão do título otimizada **para o resultado de busca** (pode diferir do H1).
 - **Onde aparece:** apenas no `<title>`/Google/redes — **não** aparece no corpo da página.
-- **Quando usar:** quando o `title` (H1) ficou longo ou pouco "vendedor" para a SERP. Se deixar vazio, o Google usa o `title`.
-- **Tamanho ideal:** **50 a 60 caracteres** (acima disso o Google corta). Coloque a palavra-chave no começo.
+- **Quando usar:** quando o `title` (H1) ficou longo ou pouco "vendedor" para a SERP. Se deixar vazio, o Google usa o `title`. **Sempre preencha quando o `title` passar de 60 caracteres.**
+- **Tamanho ideal:** **50 a 60 caracteres** — e este é o limite **real**, pois o sistema não anexa mais o sufixo do nome em artigos: o `meta_title` é exatamente o `<title>` que vai ao ar. Acima de 60 o Google corta. Coloque a palavra-chave no começo.
 - **Exemplo:** `Pensão de Alimentos: Cálculo e Quem Tem Direito (2026)`
 
 ### `meta_description` — Descrição no Google · Opcional (substitui `excerpt` na busca)

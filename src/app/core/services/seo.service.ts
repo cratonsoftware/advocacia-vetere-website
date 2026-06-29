@@ -18,7 +18,11 @@ export class SeoService {
 	private readonly business = BUSINESS;
 
 	updateMetaTags(config: SeoConfig) {
-		const fullTitle = config.title.includes('Dra. Maria Fernanda Vetere') ? config.title : `${config.title} | Dra. Maria Fernanda Vetere`;
+		// Páginas de artigo usam o `meta_title` como <title> autoritativo, SEM o sufixo de marca:
+		// o sufixo " | Dra. Maria Fernanda Vetere" (31 chars) estouraria o limite de ~60 do <title>.
+		// As demais páginas mantêm o sufixo (a menos que o título-base já contenha a marca).
+		const hasBrand = config.title.includes('Dra. Maria Fernanda Vetere');
+		const fullTitle = hasBrand || config.type === 'article' ? config.title : `${config.title} | Dra. Maria Fernanda Vetere`;
 		this.titleService.setTitle(fullTitle);
 
 		let url = this.baseUrl;

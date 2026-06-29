@@ -574,10 +574,10 @@ curl -s https://www.mfernandavetere.adv.br/blog/traicao-da-direito-a-indenizacao
 | --- | --- | --- |
 | Structured data — rich results validation | 4 | 🔧 **Corrigido** (aguarda build/deploy). Causa: `publisher`/`worksFor` era `LegalService` tronco (só `name`/`logo`) → Local Business com `Missing field "telephone"/"priceRange"/"address"/"image"`. Fix: helper `legalServiceEntity()` (ver §11.4). |
 | Multiple H1 tags | 1 | ✅ **Corrigido** (2026-06-29; aguarda rebuild). `content` do artigo começava com `#` (→ `<h1>`); rebaixado para `##` no Supabase **sem alterar texto**. Regra já no `MODELO-ARTIGO-BLOG.md`. |
-| Meta description too long | 3 | Encurtar para 120–160 caracteres. |
-| Title too long | 2 | Sufixo `\| Dra. Maria Fernanda Vetere` infla títulos longos > ~60. Encurtar base / `meta_title` curtos / rever sufixo. |
+| Meta description too long | 3 | ✅ **Corrigido** (2026-06-29; aguarda build/deploy). Encurtadas para ≤160 em `blog`/`categoria`/`autor` `.component.ts` (autor passou a usar description dedicada, não a `bio` inteira). Ver §11.5. |
+| Title too long | 2 | ✅ **Corrigido** (2026-06-29; aguarda build/deploy). Decisão: **sem sufixo de marca em artigos** — `SeoService` não anexa mais `\| Dra. Maria Fernanda Vetere` quando `type==='article'`. `/blog` ganhou a marca no título-base (42 chars); `meta_title` do artigo encurtado no Supabase (49 chars, H1/slug preservados). Ver §11.5. |
 | 3XX redirect / HTTP→HTTPS | 4/2 | Esperados e saudáveis — sem ação. |
-| Redirect chain | 1 | Achatar para salto único (`http://` → `https://www`). |
+| Redirect chain | 1 | ⏸️ Sem ação. `http://`apex → `https://`apex → `https://www` (2 saltos) é inerente à Vercel (força `http→https` antes de qualquer redirect de config); não há como achatar para 1 salto. Impacto desprezível. |
 
 > O item de **dados estruturados** é o único com peso de SEO; os demais são cosméticos (o Google trunca títulos/descrições, não penaliza) ou redirects saudáveis.
 
@@ -594,6 +594,23 @@ Registrado em [`MELHORIAS.md`](./MELHORIAS.md) §0.1: **P0** conteúdo (via `MOD
 **Correção aplicada no `SeoService`.** Helper `legalServiceEntity()` que retorna o `LegalService` com os campos recomendados (`telephone`, `email`, `priceRange`, `address`, `image`, `logo`) e um `@id` estável `…/#legalservice`, reutilizado como `publisher` (artigo/blog/categoria) e `worksFor` (autor). O mesmo `@id` foi adicionado ao `LegalService` principal da home → **consolidação de entidade** (Google entende ser o mesmo negócio em todas as páginas). Spec de proteção em `seo.service.spec.ts` (publisher rico no `BlogPosting`).
 
 **Validação pendente (operador):** `npm run build` → deploy → reexecutar o Rich Results Test (esperado: sem _non-critical issues_ de Local Business) e recrawl no Ahrefs (esperado: issue zerada).
+
+### 11.5 Higiene de title/description longos — 2026-06-29
+
+**Diagnóstico (CSV do Ahrefs).** Três `meta description` > 160 (`/blog` 206, `/blog/categoria/familia` 171, `/autor/maria-fernanda-vetere` 183) e dois `<title>` > 60 (`/blog` 75, artigo "Traição" 95). Os warnings são cosméticos (o Google trunca, não penaliza), mas afetam o CTR.
+
+**Causa dos títulos.** O `SeoService` anexava o sufixo `| Dra. Maria Fernanda Vetere` (31 caracteres) a quase todo `<title>`. Em páginas cujo título-base já era descritivo, o total estourava ~60 — e com a marca completa é impossível um título de artigo significativo ficar ≤60.
+
+**Correção aplicada.**
+
+- **Sufixo de marca suprimido em artigos** (`seo.service.ts`): `fullTitle = hasBrand || type==='article' ? config.title : title + ' | Dra. Maria Fernanda Vetere'`. Em artigos o `<title>` passa a ser o `meta_title` autoritativo, sem sufixo. Spec adicionado em `seo.service.spec.ts`. **Decisão do operador** (CRO/branding): liderar com o tema melhora o CTR.
+- **`/blog`** (`blog.component.ts`): `title` passou a `Blog Jurídico | Dra. Maria Fernanda Vetere` (42) — já contém a marca, então o sufixo não é reaplicado.
+- **Artigo "Traição"** (Supabase `articles.meta_title`): encurtado para `Traição dá direito a indenização? O que diz a lei` (49). **`title`/H1 e `slug` preservados.**
+- **Meta descriptions** (`blog`/`categoria`/`autor` `.component.ts`): reescritas para ≤160 (132/140/136). A página de autor passou a usar uma description dedicada e concisa em vez da `bio` inteira (a `bio` continua exibida no corpo da página).
+
+**Regra propagada.** O `MODELO-ARTIGO-BLOG.md` foi atualizado: como o sistema não anexa mais o sufixo em artigos, o `meta_title` é o `<title>` literal e deve ficar **≤60**; preencher `meta_title` sempre que o `title`/H1 passar de 60.
+
+**Validação pendente (operador):** `npm run build` + `npm run test` → deploy (rebuild pré-renderiza o artigo com o novo `meta_title`) → recrawl no Ahrefs (esperado: 0 issues de title/description).
 
 ---
 

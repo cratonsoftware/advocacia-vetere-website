@@ -46,7 +46,7 @@ export class AutorComponent implements OnInit {
 
 				this.seoService.updateMetaTags({
 					title: author.name,
-					description: author.bio || `${author.name} — ${author.role || 'Advogada'}. Conheça o perfil profissional e os artigos jurídicos publicados.`,
+					description: `${author.name}, ${(author.role || 'Advogada').toLowerCase()} com foco em Direito de Família em Tambaú-SP. Conheça o perfil profissional e os artigos publicados.`,
 					keywords: `${author.name}, advogada, ${author.role || ''}, perfil, OAB`,
 					image: author.avatar || '/assets/cards/card-home.png',
 					imageAlt: `Foto de ${author.name}`,

@@ -52,6 +52,13 @@ describe('SeoService', () => {
 		expect(meta.getTag('name="twitter:card"')?.content).toBe('summary_large_image');
 	});
 
+	it('NÃO anexa o sufixo de marca em páginas de artigo (limite de ~60 do <title>)', () => {
+		service.updateMetaTags({ title: 'Traição dá direito a indenização? O que diz a lei', description: 'd', slug: 'blog/x', type: 'article' });
+		// O <title> do artigo é o meta_title autoritativo, sem " | Dra. Maria Fernanda Vetere".
+		expect(title.getTitle()).toBe('Traição dá direito a indenização? O que diz a lei');
+		expect(meta.getTag('property="og:title"')?.content).toBe('Traição dá direito a indenização? O que diz a lei');
+	});
+
 	it('define a canonical a partir do slug', () => {
 		service.updateMetaTags({ title: 'Blog', description: 'd', slug: 'blog' });
 		expect(doc.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(`${baseUrl}/blog`);

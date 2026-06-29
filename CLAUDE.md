@@ -155,6 +155,7 @@ Quando novas rotas forem adicionadas, atualizar `api/sitemap.ts` (e, se fizer se
 - Imagens devem ter `alt` descritivo e usar `loading="lazy"` exceto para imagens above-the-fold
 - **Tipos de JSON-LD do `SeoService`** (por `config.type`/`slug`): `article`→`BlogPosting`, `slug='blog'`→`Blog`, `blog/categoria/*`→`CollectionPage`, `type='profile'`→`ProfilePage`+`Person` (página de autor), default→`LegalService`. Blocos coexistem por `data-seo` (`main`/`breadcrumb`/`faq`).
 - **SEO fino por artigo (S8):** `SeoConfig.canonical` sobrescreve canonical/`og:url`/`@id` (consome `canonicalUrl` do artigo); `noIndex` consome `noindex`. O `author.url` do `Person` aponta para `/autor/:slug` (fallback à home se sem slug).
+- **Sufixo de marca no `<title>` (2026-06-29):** o `SeoService` anexa ` | Dra. Maria Fernanda Vetere` ao `<title>` **exceto** quando `config.type === 'article'` (ou quando o título-base já contém a marca). Em artigos o `meta_title` é o `<title>` autoritativo e deve ficar **≤60** (sem o sufixo de 31 chars, que estourava o limite). Regra espelhada no `MODELO-ARTIGO-BLOG.md`. Não reintroduzir o sufixo em artigos.
 
 ### Testes (S8 — aplicado 2026-06-21; S14 — render tests 2026-06-24)
 

@@ -113,7 +113,7 @@ A localização usa um **iframe de embed do Google Maps** (`mapa.component.html`
 
 Camadas de SEO do projeto:
 
-- **`SeoService`** (`core/services/seo.service.ts`): injeta `title`, `description`, Open Graph (incl. `og:locale=pt_BR` e `og:image:alt`), Twitter Card, `canonical` e **JSON-LD** por página. Usa o token `DOCUMENT` (SSR-safe) para manipular `<head>`. Suporta **múltiplos blocos JSON-LD** por página, identificados pelo atributo `data-seo` (`main` + `breadcrumb`).
+- **`SeoService`** (`core/services/seo.service.ts`): injeta `title`, `description`, Open Graph (incl. `og:locale=pt_BR` e `og:image:alt`), Twitter Card, `canonical` e **JSON-LD** por página. Usa o token `DOCUMENT` (SSR-safe) para manipular `<head>`. Suporta **múltiplos blocos JSON-LD** por página, identificados pelo atributo `data-seo` (`main` + `breadcrumb`). **Sufixo de marca no `<title>`** (2026-06-29): ` | Dra. Maria Fernanda Vetere` é anexado **exceto** em `type==='article'` (ou quando o título já contém a marca) — em artigos o `meta_title` é o `<title>` literal e deve ficar ≤60. Ver `BLOG-SEO.md` §11.5.
 - **JSON-LD por tipo** _(S4)_:
     - `article` → **`BlogPosting` rico**: `mainEntityOfPage`, `image` como `ImageObject` (1200×630 + `caption`), `datePublished`/`dateModified` (ISO), `inLanguage`, `articleSection`, `keywords` (quando há `tags`), `author` como `Person` (`jobTitle`, `identifier` OAB, `sameAs`) — sinais de E-E-A-T. Acompanha um bloco **`BreadcrumbList`** (Início › Blog › Artigo).
     - `slug === 'blog'` → `Blog`

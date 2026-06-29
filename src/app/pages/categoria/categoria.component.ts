@@ -46,7 +46,7 @@ export class CategoriaComponent implements OnInit {
 
 				this.seoService.updateMetaTags({
 					title: `Artigos sobre ${category.name}`,
-					description: `Artigos, análises e orientações jurídicas sobre ${category.name} escritos pela Dra. Maria Fernanda Vetere. Conteúdo claro e confiável para você entender e exercer os seus direitos.`,
+					description: `Artigos e orientações jurídicas sobre ${category.name} pela Dra. Maria Fernanda Vetere. Conteúdo claro para você entender e exercer os seus direitos.`,
 					keywords: `${category.name}, advocacia, direito, ${category.name.toLowerCase()} advogada`,
 					image: '/assets/cards/card-blog.png',
 					slug: `blog/categoria/${category.slug}`,
