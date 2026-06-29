@@ -2,7 +2,9 @@
 
 > Catálogo de melhorias possíveis para o site da Dra. Maria Fernanda Vetere. Elaborado pela CRATON Software a partir de uma leitura completa do código-fonte. **Nenhuma sugestão aqui altera o código** — este é um documento de planejamento. Cada item preserva a essência do projeto: elegância sóbria, SSR para SEO e o padrão técnico CRATON.
 
-Última revisão: 2026-06-19 · Stack analisada: Angular 21 SSR · TailwindCSS 4 · Supabase · Vercel
+Última revisão: 2026-06-29 · Stack analisada: Angular 21 SSR · TailwindCSS 4 · Supabase · Vercel
+
+> **Documentos correlatos (2026-06-29):** [`ANALISE-SEO-GEMINI-AHREFS.md`](./ANALISE-SEO-GEMINI-AHREFS.md) (análise consolidada Gemini × Ahrefs × estado real, com o plano priorizado) e [`MODELO-ARTIGO-BLOG.md`](./MODELO-ARTIGO-BLOG.md) (guia de autoria de artigos para a IA da Dra., mapeado ao Supabase).
 
 ---
 
@@ -34,6 +36,30 @@ Sugestão de ordem de ataque: priorizar **Alto impacto / esforço P–M** primei
 **Diagnóstico completo, evidências, código e passos de validação:** [`BLOG-SEO.md`](./BLOG-SEO.md) §10.
 
 > Sem isso, as demais melhorias de SEO de artigo (§7/§2) não têm efeito — a página precisa primeiro **existir com SEO próprio e ser indexável**.
+
+> **✅ P0 confirmado resolvido (auditoria Ahrefs de 2026-06-29).** O Site Audit reportou **Health Score 100/100, 0 erros**, com as **5 páginas HTML indexáveis e canonical self-referente** (Home, `/blog`, o artigo, `/blog/categoria/familia`, `/autor/maria-fernanda-vetere`). A correção da S1 + o guard de build da S11 (§1.10) estão funcionando em produção. Detalhes da auditoria em [`BLOG-SEO.md`](./BLOG-SEO.md) §11 e em [`ANALISE-SEO-GEMINI-AHREFS.md`](./ANALISE-SEO-GEMINI-AHREFS.md).
+
+---
+
+## 0.1 Auditoria Ahrefs (2026-06-29) — higiene on-page e plano priorizado
+
+> Origem: Site Audit do Ahrefs (`app.ahrefs.com/site-audit`) de 2026-06-29, cruzado com o relatório estratégico do Gemini. **Conclusão central:** a base técnica está exemplar (Health 100, 0 erros, P0 resolvido); o gargalo real é **falta de conteúdo** (1 artigo, tráfego orgânico 0) e **presença local/off-site**, não engenharia. Análise completa e triagem do que faz/não faz sentido em [`ANALISE-SEO-GEMINI-AHREFS.md`](./ANALISE-SEO-GEMINI-AHREFS.md).
+
+Itens acionáveis novos (nenhum é erro; todos warnings/notices de baixo esforço):
+
+- **0.1.a — H1 duplicado em 1 página — Impacto Médio · Esforço P.** Todo template tem um único `<h1>` estático; o segundo H1 vem quase certamente de um `#` no Markdown do `content` do artigo "Traição" (no `ngx-markdown`, `#` → `<h1>`). **Correção:** editar o `content` no Supabase rebaixando `#` → `##`/`###`. Já prevenido para os próximos artigos pela regra do [`MODELO-ARTIGO-BLOG.md`](./MODELO-ARTIGO-BLOG.md) ("começar em `##`"). Confirmar a URL no detalhe da issue.
+- **0.1.b — Erro de validação de dados estruturados (rich results) em 4 páginas — Impacto Médio · Esforço P–M.** Os schemas do `SeoService` estão bem formados; a causa exata exige a mensagem do Google. **Ação:** rodar as 4 URLs no Rich Results Test (`search.google.com/test/rich-results`) e no Schema Validator (`validator.schema.org`); corrigir o `SeoService` cirurgicamente com base na mensagem. **(Aguardando o operador rodar os testes.)**
+- **0.1.c — Meta description longa (3 páginas) — Impacto Baixo · Esforço P.** Encurtar para 120–160 caracteres (no `meta_description`/`excerpt` dos artigos e/ou na config das páginas).
+- **0.1.d — Title longo (2 páginas) — Impacto Baixo · Esforço P.** O sufixo automático `| Dra. Maria Fernanda Vetere` infla títulos já longos (ex.: `/blog`, artigo) acima de ~60 caracteres. Encurtar títulos-base, usar `meta_title` curtos (≤60) nos artigos e/ou rever a aplicação do sufixo em artigo/listagem.
+- **0.1.e — Redirect chain (1) — Impacto Baixo · Esforço P.** Achatar para salto único (`http://` → `https://www` diretamente).
+
+**Plano priorizado (síntese — detalhe na análise consolidada):**
+
+1. **P0 — Conteúdo:** produzir artigos com o `MODELO-ARTIGO-BLOG.md` (pilares Divórcio, Alimentos/Guarda, Sucessões; cadência quinzenal; linkagem interna). É o que destrava o resto.
+2. **P1 — Higiene técnica:** itens 0.1.a–0.1.e (sessão curta).
+3. **P2 — Conversão/prova social:** widget flutuante de WhatsApp + CTAs contextuais (§5; S17); schema `Review`/`aggregateRating` a partir de `google_reviews` (§2.1, validando política e ética OAB).
+4. **P3 — Off-site (não-código):** Google Business Profile + NAP consistente; e-mail próprio `@adv.br`.
+5. **Reavaliar com dados:** landing pages por serviço ("silos") e trilha de tráfego pago (cautela ética) — prematuros sem tração de blog.
 
 ---
 

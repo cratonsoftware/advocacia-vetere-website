@@ -2,7 +2,7 @@
 
 > Contexto permanente para o Claude Code. Leia antes de qualquer intervenção no projeto.
 
-> **Documentação relacionada:** [`README.md`](./README.md) (uso) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) (arquitetura técnica e fluxo de dados) · [`MELHORIAS.md`](./MELHORIAS.md) (backlog de melhorias priorizado) · [`BLOG-SEO.md`](./BLOG-SEO.md) (banco, blog e SEO de alto nível) · [`PLANO-EXECUCAO.md`](./PLANO-EXECUCAO.md) (runbook de execução por sessões + registro de progresso).
+> **Documentação relacionada:** [`README.md`](./README.md) (uso) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) (arquitetura técnica e fluxo de dados) · [`MELHORIAS.md`](./MELHORIAS.md) (backlog de melhorias priorizado) · [`BLOG-SEO.md`](./BLOG-SEO.md) (banco, blog e SEO de alto nível) · [`PLANO-EXECUCAO.md`](./PLANO-EXECUCAO.md) (runbook de execução por sessões + registro de progresso) · [`MODELO-ARTIGO-BLOG.md`](./MODELO-ARTIGO-BLOG.md) (guia autocontido de autoria de artigos para a IA da Dra. — mapeado ao Supabase) · [`ANALISE-SEO-GEMINI-AHREFS.md`](./ANALISE-SEO-GEMINI-AHREFS.md) (análise consolidada Gemini × Ahrefs × estado real + plano priorizado).
 
 ---
 
@@ -19,6 +19,8 @@ Estas regras valem para **qualquer** intervenção no projeto e têm precedênci
 4. **Definition of Done.** Nenhum item é "feito" sem: `npm run build` sem erros, validação específica aprovada, documentação atualizada e progresso marcado. Em caso de bloqueio, registrar `⏸️` com a causa.
 
 5. **Execução de comandos pesados é do operador, não do agente.** O agente **não** executa por conta própria operações de Git (`branch`, `checkout`, `add`, `commit`, `push`, `merge`, `rebase`, `reset`), builds (`npm run build`, `ng build` e afins) nem outras ações custosas ou demoradas. Em vez disso, **monta o comando exato**, explica o que ele faz e o resultado esperado, e **pede ao operador para executá-lo** — aguardando a saída (ou um "ok") antes de prosseguir. Tentativas e retentativas automáticas desperdiçam a cota de uso e o tempo do operador. Permanecem livres para o agente as ações **leves**: ler, editar e escrever arquivos do projeto, inspeções rápidas (grep/leitura) e consultas via MCP. **Exceção:** quando o operador autorizar explicitamente ("pode rodar"), o agente executa aquele comando específico.
+
+6. **`MODELO-ARTIGO-BLOG.md` é contrato com a IA da Dra. — manter sincronizado (OBRIGATÓRIO).** O [`MODELO-ARTIGO-BLOG.md`](./MODELO-ARTIGO-BLOG.md) é a **única ponte** da IA assistente da Dra. (que **não** tem acesso ao Supabase nem a esta documentação) com a estrutura real dos artigos. **Qualquer** mudança que afete os campos do artigo, seus formatos/limites, a renderização ou o SEO — nova coluna em `articles`/view `published_articles`, alteração no `SeoService`, no `artigo.component`, no fluxo de capa (Storage/1200×630), nas regras de slug/FAQ/ética OAB, etc. — **deve ser refletida imediatamente** nesse arquivo, na mesma sessão da alteração. Documento desatualizado = artigos cadastrados errados. Tratar como parte da Definition of Done (regra 4).
 
 ---
 

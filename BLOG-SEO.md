@@ -558,6 +558,35 @@ curl -s https://www.mfernandavetere.adv.br/blog/traicao-da-direito-a-indenizacao
 
 ---
 
+## 11. Auditoria Ahrefs (2026-06-29) — estado pós-S15 e novos achados
+
+> Fonte: Site Audit do Ahrefs (`app.ahrefs.com/site-audit`) de 2026-06-29, cruzado com o relatório estratégico do Gemini. Síntese e triagem completa (o que faz/não faz sentido implementar) em [`ANALISE-SEO-GEMINI-AHREFS.md`](./ANALISE-SEO-GEMINI-AHREFS.md). O guia de autoria que destrava o gargalo de conteúdo está em [`MODELO-ARTIGO-BLOG.md`](./MODELO-ARTIGO-BLOG.md).
+
+### 11.1 Estado confirmado (boas notícias)
+
+- **Health Score 100/100, 0 erros.** Apenas 9 warnings + 8 notices.
+- **P0 resolvido e estável:** 9 URLs rastreadas, 5 páginas HTML, **5 indexáveis e 5 com canonical self-referente** (Home, `/blog`, `/blog/traicao-da-direito-a-indenizacao`, `/blog/categoria/familia`, `/autor/maria-fernanda-vetere`); 0 páginas quebradas. As 4 não-indexáveis são apenas os redirects esperados (apex→www, http→https). A correção da S1 + o guard da S11 (§10.8) estão funcionando.
+- **Diagnóstico de fundo:** tráfego orgânico = 0 em todas as páginas e só 5 páginas HTML — confirma que o gargalo é **volume de conteúdo** (1 artigo) e **presença local/off-site**, não a engenharia. A maior parte da "auditoria técnica" do Gemini está desatualizada (não considerou S1–S15).
+
+### 11.2 Achados on-page a tratar (warnings/notices)
+
+| Issue (Ahrefs)                            | Qtd | Causa provável / tratamento                                                                                                                 |
+| ----------------------------------------- | --- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Structured data — rich results validation | 4   | Schemas do `SeoService` estão bem formados; rodar Rich Results Test nas 4 URLs e corrigir com base na mensagem exata (aguardando operador). |
+| Multiple H1 tags                          | 1   | Quase certo: `#` no Markdown do `content` do artigo (vira `<h1>`). Rebaixar para `##` no Supabase. Regra já no `MODELO-ARTIGO-BLOG.md`.     |
+| Meta description too long                 | 3   | Encurtar para 120–160 caracteres.                                                                                                           |
+| Title too long                            | 2   | Sufixo `\| Dra. Maria Fernanda Vetere` infla títulos longos > ~60. Encurtar base / `meta_title` curtos / rever sufixo.                      |
+| 3XX redirect / HTTP→HTTPS                 | 4/2 | Esperados e saudáveis — sem ação.                                                                                                           |
+| Redirect chain                            | 1   | Achatar para salto único (`http://` → `https://www`).                                                                                       |
+
+> O item de **dados estruturados** é o único com peso de SEO; os demais são cosméticos (o Google trunca títulos/descrições, não penaliza) ou redirects saudáveis. O fix do `SeoService` fica pendente da mensagem exata do Rich Results Test.
+
+### 11.3 Plano priorizado
+
+Registrado em [`MELHORIAS.md`](./MELHORIAS.md) §0.1: **P0** conteúdo (via `MODELO-ARTIGO-BLOG.md`) → **P1** higiene técnica (§11.2) → **P2** WhatsApp flutuante + `Review`/`aggregateRating` → **P3** Google Business + e-mail `@adv.br`. Landing pages por serviço e tráfego pago ficam para reavaliação com dados.
+
+---
+
 ## Fontes
 
 - [Learn About Article Schema Markup — Google Search Central](https://developers.google.com/search/docs/appearance/structured-data/article)
