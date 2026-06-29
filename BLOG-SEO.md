@@ -570,20 +570,30 @@ curl -s https://www.mfernandavetere.adv.br/blog/traicao-da-direito-a-indenizacao
 
 ### 11.2 Achados on-page a tratar (warnings/notices)
 
-| Issue (Ahrefs)                            | Qtd | Causa provável / tratamento                                                                                                                 |
-| ----------------------------------------- | --- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Structured data — rich results validation | 4   | Schemas do `SeoService` estão bem formados; rodar Rich Results Test nas 4 URLs e corrigir com base na mensagem exata (aguardando operador). |
-| Multiple H1 tags                          | 1   | Quase certo: `#` no Markdown do `content` do artigo (vira `<h1>`). Rebaixar para `##` no Supabase. Regra já no `MODELO-ARTIGO-BLOG.md`.     |
-| Meta description too long                 | 3   | Encurtar para 120–160 caracteres.                                                                                                           |
-| Title too long                            | 2   | Sufixo `\| Dra. Maria Fernanda Vetere` infla títulos longos > ~60. Encurtar base / `meta_title` curtos / rever sufixo.                      |
-| 3XX redirect / HTTP→HTTPS                 | 4/2 | Esperados e saudáveis — sem ação.                                                                                                           |
-| Redirect chain                            | 1   | Achatar para salto único (`http://` → `https://www`).                                                                                       |
+| Issue (Ahrefs) | Qtd | Causa provável / tratamento |
+| --- | --- | --- |
+| Structured data — rich results validation | 4 | 🔧 **Corrigido** (aguarda build/deploy). Causa: `publisher`/`worksFor` era `LegalService` tronco (só `name`/`logo`) → Local Business com `Missing field "telephone"/"priceRange"/"address"/"image"`. Fix: helper `legalServiceEntity()` (ver §11.4). |
+| Multiple H1 tags | 1 | Quase certo: `#` no Markdown do `content` do artigo (vira `<h1>`). Rebaixar para `##` no Supabase. Regra já no `MODELO-ARTIGO-BLOG.md`. |
+| Meta description too long | 3 | Encurtar para 120–160 caracteres. |
+| Title too long | 2 | Sufixo `\| Dra. Maria Fernanda Vetere` infla títulos longos > ~60. Encurtar base / `meta_title` curtos / rever sufixo. |
+| 3XX redirect / HTTP→HTTPS | 4/2 | Esperados e saudáveis — sem ação. |
+| Redirect chain | 1 | Achatar para salto único (`http://` → `https://www`). |
 
-> O item de **dados estruturados** é o único com peso de SEO; os demais são cosméticos (o Google trunca títulos/descrições, não penaliza) ou redirects saudáveis. O fix do `SeoService` fica pendente da mensagem exata do Rich Results Test.
+> O item de **dados estruturados** é o único com peso de SEO; os demais são cosméticos (o Google trunca títulos/descrições, não penaliza) ou redirects saudáveis.
 
 ### 11.3 Plano priorizado
 
 Registrado em [`MELHORIAS.md`](./MELHORIAS.md) §0.1: **P0** conteúdo (via `MODELO-ARTIGO-BLOG.md`) → **P1** higiene técnica (§11.2) → **P2** WhatsApp flutuante + `Review`/`aggregateRating` → **P3** Google Business + e-mail `@adv.br`. Landing pages por serviço e tráfego pago ficam para reavaliação com dados.
+
+### 11.4 Correção dos dados estruturados (publisher/worksFor) — 2026-06-29
+
+**Diagnóstico (Rich Results Test, 5 URLs).** As 5 páginas têm itens **válidos** (Articles, Breadcrumbs, Local businesses, Organization, ProfilePage conforme a página) — não há erro crítico. O que o Ahrefs reportava como "validation error" eram **non-critical issues** do rich result de **Local Business**: em todas as páginas exceto a home, o `LegalService` aparecia como _stub_ e o Google acusava `Missing field "telephone"`, `"priceRange"`, `"address"`, `"image"` (todos opcionais/recomendados).
+
+**Causa.** O `publisher` do `BlogPosting` (artigo) e dos schemas `Blog`/`CollectionPage`, além do `worksFor` do `Person` (autor), eram emitidos como `{ '@type': 'LegalService', name, [logo] }`. A home não tinha o problema por já emitir o `LegalService` completo — daí **4 das 5** páginas afetadas.
+
+**Correção aplicada no `SeoService`.** Helper `legalServiceEntity()` que retorna o `LegalService` com os campos recomendados (`telephone`, `email`, `priceRange`, `address`, `image`, `logo`) e um `@id` estável `…/#legalservice`, reutilizado como `publisher` (artigo/blog/categoria) e `worksFor` (autor). O mesmo `@id` foi adicionado ao `LegalService` principal da home → **consolidação de entidade** (Google entende ser o mesmo negócio em todas as páginas). Spec de proteção em `seo.service.spec.ts` (publisher rico no `BlogPosting`).
+
+**Validação pendente (operador):** `npm run build` → deploy → reexecutar o Rich Results Test (esperado: sem _non-critical issues_ de Local Business) e recrawl no Ahrefs (esperado: issue zerada).
 
 ---
 

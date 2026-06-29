@@ -105,6 +105,35 @@ export class SeoService {
 		return script;
 	}
 
+	/**
+	 * Entidade `LegalService` reutilizável — usada como `publisher` (artigo/blog/categoria) e
+	 * `worksFor` (autor). Inclui os campos recomendados do rich result de Local Business
+	 * (`telephone`, `priceRange`, `address`, `image`) para eliminar os "non-critical issues"
+	 * que o Rich Results Test acusava quando o publisher era um stub (só `name`/`logo`).
+	 * Compartilha o `@id` com o `LegalService` principal da home → consolidação de entidade.
+	 */
+	private legalServiceEntity(): Record<string, unknown> {
+		return {
+			'@type': 'LegalService',
+			'@id': `${this.baseUrl}/#legalservice`,
+			name: this.siteName,
+			url: this.baseUrl,
+			image: `${this.baseUrl}${this.defaultImage}`,
+			logo: { '@type': 'ImageObject', url: `${this.baseUrl}${this.defaultImage}` },
+			telephone: this.business.telephone,
+			email: this.business.email,
+			priceRange: this.business.priceRange,
+			address: {
+				'@type': 'PostalAddress',
+				streetAddress: this.business.streetAddress,
+				addressLocality: this.business.addressLocality,
+				addressRegion: this.business.addressRegion,
+				postalCode: this.business.postalCode,
+				addressCountry: this.business.addressCountry,
+			},
+		};
+	}
+
 	private setJsonLd(config: SeoConfig, url: string, imageUrl: string, fullTitle: string, imageAlt: string) {
 		const script = this.getJsonLdScript('main');
 
@@ -128,11 +157,7 @@ export class SeoService {
 				description: config.description,
 				image: { '@type': 'ImageObject', url: imageUrl, width: 1200, height: 630, caption: imageAlt },
 				author,
-				publisher: {
-					'@type': 'LegalService',
-					name: this.siteName,
-					logo: { '@type': 'ImageObject', url: `${this.baseUrl}${this.defaultImage}` },
-				},
+				publisher: this.legalServiceEntity(),
 				datePublished: config.publishedDate,
 				dateModified: config.modifiedDate || config.publishedDate,
 				inLanguage: config.inLanguage || 'pt-BR',
@@ -147,7 +172,7 @@ export class SeoService {
 				description: config.description,
 				url: url,
 				inLanguage: 'pt-BR',
-				publisher: { '@type': 'LegalService', name: this.siteName },
+				publisher: this.legalServiceEntity(),
 			};
 		} else if (config.slug?.startsWith('blog/categoria')) {
 			schema = {
@@ -158,7 +183,7 @@ export class SeoService {
 				url: url,
 				inLanguage: 'pt-BR',
 				isPartOf: { '@type': 'Blog', name: 'Blog Jurídico | Dra. Maria Fernanda Vetere', url: `${this.baseUrl}/blog` },
-				publisher: { '@type': 'LegalService', name: this.siteName },
+				publisher: this.legalServiceEntity(),
 			};
 		} else if (config.type === 'profile') {
 			// Página de autor (E-E-A-T) — `ProfilePage` com `mainEntity` Person rico.
@@ -168,7 +193,7 @@ export class SeoService {
 				jobTitle: config.authorPerson?.jobTitle || 'Advogada',
 				url: config.authorPerson?.url || url,
 				image: imageUrl,
-				worksFor: { '@type': 'LegalService', name: this.siteName, url: this.baseUrl },
+				worksFor: this.legalServiceEntity(),
 			};
 			if (config.authorPerson?.oab) person['identifier'] = config.authorPerson.oab;
 			if (config.authorPerson?.sameAs?.length) person['sameAs'] = config.authorPerson.sameAs;
@@ -185,6 +210,7 @@ export class SeoService {
 			schema = {
 				'@context': 'https://schema.org',
 				'@type': 'LegalService',
+				'@id': `${this.baseUrl}/#legalservice`,
 				name: this.siteName,
 				url: url,
 				image: imageUrl,

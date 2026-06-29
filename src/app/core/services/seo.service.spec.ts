@@ -91,6 +91,16 @@ describe('SeoService', () => {
 		expect(ld.author.identifier).toBe('OAB/SP 527.527');
 		expect(ld.author.sameAs).toContain('https://instagram.com/mfernandavetere');
 		expect(meta.getTag('property="article:published_time"')?.content).toBe('2026-06-18T00:00:00.000Z');
+
+		// O publisher (LegalService) deve trazer os campos recomendados do rich result de
+		// Local Business (telephone/priceRange/address/image) — senão o Rich Results Test
+		// acusa "non-critical issues" (corrigido em 2026-06-29).
+		expect(ld.publisher['@type']).toBe('LegalService');
+		expect(ld.publisher['@id']).toBe(`${baseUrl}/#legalservice`);
+		expect(ld.publisher.telephone).toBeTruthy();
+		expect(ld.publisher.priceRange).toBeTruthy();
+		expect(ld.publisher.address.addressLocality).toBe('Tambaú');
+		expect(ld.publisher.image).toBeTruthy();
 	});
 
 	it('emite LegalService rico na home (sem slug)', () => {

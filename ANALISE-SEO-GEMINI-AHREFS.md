@@ -42,13 +42,9 @@ As issues abertas são **9 warnings + 8 notices, 0 errors**. Tradução e priori
 
 ### 2.1 Structured data — rich results validation error (4 páginas)
 
-Esse é o item técnico mais relevante. Revisei o `SeoService` e os schemas emitidos (`BlogPosting`, `BreadcrumbList`, `FAQPage`, `CollectionPage`, `ProfilePage`/`Person`, `LegalService`) — estão **bem formados**. Logo, o mais provável é uma das hipóteses abaixo, e a única forma de cravar é olhar a mensagem exata do Google:
+**✅ Causa confirmada e corrigida (2026-06-29).** O Rich Results Test mostrou que as 5 páginas têm itens **válidos** (Articles, Breadcrumbs, Local businesses, Organization/ProfilePage) — não há erro crítico. O que o Ahrefs marcava como "validation error" eram **non-critical issues** do rich result de **Local Business**: em todas as páginas exceto a home, o `LegalService` usado como `publisher` (do `BlogPosting`/`Blog`/`CollectionPage`) e como `worksFor` (do `Person` no autor) era um _stub_ (só `name`/`logo`), e o Google acusava `Missing field "telephone"`, `"priceRange"`, `"address"`, `"image"`. A home passava limpa por já ter o `LegalService` completo — por isso **4 das 5** páginas.
 
-- um **campo recomendado** ausente que o Google sinaliza (ex.: algo do `Article`/`LocalBusiness`);
-- a **política do `FAQPage`** (desde 2023 o Google só exibe FAQ rica para sites de governo/saúde — pode reportar como inelegível/aviso);
-- formatação de um campo específico (ex.: `priceRange`, `openingHoursSpecification`).
-
-**Ação:** rodar cada uma das 4 URLs no **Rich Results Test** (`search.google.com/test/rich-results`) e no **Schema Markup Validator** (`validator.schema.org`) e copiar a mensagem exata. Com isso, corrijo o `SeoService` cirurgicamente. Não vale "consertar no escuro".
+**Correção aplicada no `SeoService`:** helper `legalServiceEntity()` que devolve o `LegalService` completo (`telephone`, `email`, `priceRange`, `address`, `image`, `logo`) com `@id` estável `…/#legalservice`, reutilizado como `publisher` e `worksFor`; o mesmo `@id` foi adicionado ao `LegalService` da home (consolidação de entidade). Spec adicionado. Detalhes em [`BLOG-SEO.md`](./BLOG-SEO.md) §11.4. **Pendente:** build + deploy + reteste.
 
 ### 2.2 Multiple H1 tags (1 página) — provável causa e por que importa
 
