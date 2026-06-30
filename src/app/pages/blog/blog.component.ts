@@ -51,7 +51,7 @@ export class BlogComponent {
 	constructor() {
 		this.seoService.updateMetaTags({
 			title: 'Blog Jurídico | Dra. Maria Fernanda Vetere',
-			description: 'Artigos, análises da legislação e orientações jurídicas da Dra. Maria Fernanda Vetere para você entender e exercer os seus direitos.',
+			description: 'Artigos e análises jurídicas da Dra. Maria Fernanda Vetere para você entender e exercer os seus direitos.',
 			keywords: 'blog jurídico, artigos direito, planejamento sucessório, notícias jurídicas',
 			image: '/assets/cards/card-blog.png',
 			slug: 'blog',
