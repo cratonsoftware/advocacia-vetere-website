@@ -1,8 +1,9 @@
 import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
 import { MarkdownModule } from 'ngx-markdown';
+import { switchMap } from 'rxjs/operators';
 import { SITE_URL } from 'src/app/core/config/site.config';
 import { SeoService } from 'src/app/core/services/seo.service';
 import { Artigo } from '../../core/models/artigo.model';
@@ -14,7 +15,7 @@ import { ArtigoNotFoundComponent } from './not-found/not-found.component';
 	templateUrl: './artigo.component.html',
 	standalone: true,
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [RouterLink, MarkdownModule, ArtigoNotFoundComponent, NgOptimizedImage],
+	imports: [RouterLink, MarkdownModule, ArtigoNotFoundComponent, NgOptimizedImage, MatIconModule],
 })
 export class ArtigoComponent implements OnInit {
 	private route = inject(ActivatedRoute);
