@@ -33,10 +33,34 @@ function fontSizeFor(text: string): number {
 	return 42;
 }
 
-async function arrayBuffer(url: string): Promise<ArrayBuffer> {
+async function fetchBuffer(url: string): Promise<ArrayBuffer> {
 	const res = await fetch(url);
 	if (!res.ok) throw new Error(`fetch ${url} → ${res.status}`);
 	return res.arrayBuffer();
+}
+
+/** Base64 em chunks — evita estouro de pilha do `String.fromCharCode(...)` em buffers grandes. */
+function toBase64(buffer: ArrayBuffer): string {
+	const bytes = new Uint8Array(buffer);
+	let binary = '';
+	const chunk = 0x8000;
+	for (let i = 0; i < bytes.length; i += chunk) {
+		binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + chunk)));
+	}
+	return btoa(binary);
+}
+
+/**
+ * Busca uma imagem e devolve como data-URI PNG/JPEG (formatos que o Satori decodifica — WebP NÃO é suportado).
+ * Rejeita respostas que não sejam imagem (ex.: fallback SPA que devolve HTML com 200), evitando o
+ * "PNG de 0 bytes" (a falha do Satori acontece em streaming, depois do header, e não vira erro 500).
+ */
+async function fetchImageDataUri(url: string): Promise<string> {
+	const res = await fetch(url);
+	if (!res.ok) throw new Error(`img ${url} → ${res.status}`);
+	const mime = res.headers.get('content-type') || '';
+	if (!mime.startsWith('image/') || mime.includes('webp')) throw new Error(`img ${url} → tipo não suportado: ${mime}`);
+	return `data:${mime};base64,${toBase64(await res.arrayBuffer())}`;
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -59,48 +83,52 @@ export default async function handler(req: Request): Promise<Response> {
 		const headline = deriveHeadline(article.title, article.ogHeadline);
 		const titleSize = fontSizeFor(headline);
 
-		const [anticDidone, inter] = await Promise.all([arrayBuffer(`${SITE}/assets/fonts/AnticDidone-Regular.ttf`), arrayBuffer(`${SITE}/assets/fonts/Inter-VariableFont_opsz%2Cwght.ttf`)]);
+		// Foto: o Satori não lê WebP. A página usa o `.webp` limpo; para o card usamos o `.png` irmão
+		// (mantido no Storage). Se um dia só houver JPEG, também funciona (Satori suporta JPEG).
+		const photoUrl = article.coverImage.replace(/\.webp$/i, '.png');
+
+		// Fontes (binário — carregam direto). Logo/foto viram data-URI (robustez contra falha silenciosa).
+		const [anticDidone, inter, photo] = await Promise.all([
+			fetchBuffer(`${SITE}/assets/fonts/AnticDidone-Regular.ttf`),
+			fetchBuffer(`${SITE}/assets/fonts/Inter-VariableFont_opsz,wght.ttf`),
+			fetchImageDataUri(photoUrl),
+		]);
+
+		// Logo é opcional: se falhar, o card ainda sai (só sem o logo), em vez de zerar.
+		let logo: string | null = null;
+		try {
+			logo = await fetchImageDataUri(`${SITE}/assets/logo/mfv-logo-sem-cla-hor.png`);
+		} catch {
+			logo = null;
+		}
+
+		const panelChildren: unknown[] = [];
+		if (logo) {
+			panelChildren.push(
+				h('img', {
+					src: logo,
+					width: 315,
+					height: 119,
+					style: { position: 'absolute', left: '63.9px', top: '63px', width: '314.6px', height: '118.6px', opacity: 0.7 },
+				}),
+			);
+		}
+		panelChildren.push(
+			h(
+				'div',
+				{ style: { position: 'absolute', left: '63px', top: '181.6px', width: '543px', height: '358.9px', display: 'flex', alignItems: 'center' } },
+				h('div', { style: { display: 'flex', fontFamily: 'Antic Didone', fontSize: `${titleSize}px`, lineHeight: 1.05, color: INK } }, headline),
+			),
+			h('div', { style: { position: 'absolute', left: '63.9px', top: '540.5px', fontFamily: 'Inter', fontSize: '16.6px', color: INK, opacity: 0.5 } }, 'mfernandavetere.adv.br'),
+		);
 
 		const tree = h(
 			'div',
 			{ style: { display: 'flex', width: '1200px', height: '630px', fontFamily: 'Inter' } },
 			// Painel esquerdo (#572c1c) — 669.9 × 630
-			h(
-				'div',
-				{ style: { position: 'relative', display: 'flex', width: '669.9px', height: '630px', backgroundColor: PANEL } },
-				// Logo — 314.6 × 118.6 @ (63.9, 63), opacidade 70%
-				h('img', {
-					src: `${SITE}/assets/logo/mfv-logo-sem-cla-hor.png`,
-					width: 315,
-					height: 119,
-					style: { position: 'absolute', left: '63.9px', top: '63px', width: '314.6px', height: '118.6px', opacity: 0.7 },
-				}),
-				// Título — Antic Didone, centralizado verticalmente entre a logo (base ~181.6) e o site (topo ~540.5)
-				h(
-					'div',
-					{
-						style: {
-							position: 'absolute',
-							left: '63px',
-							top: '181.6px',
-							width: '543px',
-							height: '358.9px',
-							display: 'flex',
-							alignItems: 'center',
-						},
-					},
-					h('div', { style: { display: 'flex', fontFamily: 'Antic Didone', fontSize: `${titleSize}px`, lineHeight: 1.05, color: INK } }, headline),
-				),
-				// Site — Inter 16.6, opacidade 50% @ (63.9, 540.5)
-				h('div', { style: { position: 'absolute', left: '63.9px', top: '540.5px', fontFamily: 'Inter', fontSize: '16.6px', color: INK, opacity: 0.5 } }, 'mfernandavetere.adv.br'),
-			),
-			// Foto (limpa, do Storage) — 530.1 × 630, cobrindo
-			h('img', {
-				src: article.coverImage,
-				width: 530,
-				height: 630,
-				style: { width: '530.1px', height: '630px', objectFit: 'cover' },
-			}),
+			h('div', { style: { position: 'relative', display: 'flex', width: '669.9px', height: '630px', backgroundColor: PANEL } }, ...panelChildren),
+			// Foto (limpa, do Storage, versão PNG) — 530.1 × 630, cobrindo
+			h('img', { src: photo, width: 530, height: 630, style: { width: '530.1px', height: '630px', objectFit: 'cover' } }),
 		);
 
 		return new ImageResponse(tree as never, {
