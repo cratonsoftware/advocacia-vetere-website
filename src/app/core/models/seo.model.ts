@@ -30,8 +30,8 @@ export interface SeoConfig {
 	imageAlt?: string;
 	/**
 	 * Imagem dedicada de compartilhamento social (og:image/twitter:image) — desacoplada do `image`.
-	 * Quando presente, o card com template (ex.: `/api/og?slug=…`) vai para as redes, enquanto o
-	 * `image` (foto limpa) permanece no `BlogPosting.image`/Google (Discover pede imagem sem texto).
+	 * Quando presente (imagem COM template, feita no Canva → coluna `social_image`), vai para as redes,
+	 * enquanto o `image` (foto limpa) permanece no `BlogPosting.image`/Google (Discover pede imagem sem texto).
 	 */
 	ogImage?: string;
 	slug?: string;

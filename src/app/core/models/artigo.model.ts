@@ -54,8 +54,8 @@ export interface Artigo {
 	tldr?: string | null;
 	/** perguntas frequentes do artigo → seção visível + `FAQPage` — S5. */
 	faq?: FaqItem[] | null;
-	/** headline curta do card social (api/og). Fallback: derivada do `title`. Não usada no front — 2026-07-01. */
-	ogHeadline?: string | null;
+	/** imagem de compartilhamento COM template (.webp, feita no Canva) → og:image/twitter:image. Fallback: `coverImage`. */
+	socialImage?: string | null;
 	/** idioma do conteúdo (ex.: `pt-BR`) — `inLanguage` no schema. */
 	locale?: string;
 	/** slug da categoria — base para `/blog/categoria/:slug` (S5). */

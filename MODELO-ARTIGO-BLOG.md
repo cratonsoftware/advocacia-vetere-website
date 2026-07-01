@@ -36,7 +36,7 @@ Cada artigo gera uma página em `https://www.mfernandavetere.adv.br/blog/<slug>`
 | `author`            | **Sim**      | Assinatura no rodapé do artigo                | Autor (E-E-A-T) no schema — sinal crítico para Direito     |
 | `cover_image`       | Recomendado  | Imagem grande de capa (foto limpa, WebP)      | Imagem indexada pelo Google/Discover + schema (foto limpa) |
 | `cover_image_alt`   | Recomendado  | Texto alternativo da capa (leitores de tela)  | SEO de imagem + acessibilidade                             |
-| `og_headline`       | Opcional     | — (não aparece no site)                       | Frase curta do card de compartilhamento (redes)            |
+| `social_image`      | Opcional     | — (só no compartilhamento)                    | Imagem COM template (Canva, `.webp`) no card das redes     |
 | `meta_title`        | Opcional     | — (não aparece no corpo)                      | Título azul no Google (sobrepõe `title`)                   |
 | `meta_description`  | Opcional     | — (não aparece no corpo)                      | Descrição no Google (sobrepõe `excerpt`)                   |
 | `tldr`              | Recomendado  | Caixa "Resposta direta" no topo do artigo     | Resposta extraível por IA (ChatGPT/Gemini/AI Overviews)    |
@@ -140,7 +140,7 @@ Estes campos controlam **como o artigo aparece na busca**. Capricho aqui = mais 
 ### `cover_image` — Imagem de capa · Recomendado
 
 - **O que é:** a **foto limpa** (só a foto, sem texto e sem logo) exibida no topo do artigo e indexada pelo Google/Discover.
-- **Onde aparece:** capa no artigo, card da listagem e `BlogPosting.image` no schema. **Atenção (2026-07-01):** esta **não** é mais a imagem de compartilhamento nas redes — o card social (com logo + headline) é **gerado automaticamente** pelo sistema (`/api/og?slug=…`); ver `og_headline`. A capa fica limpa porque o Google Discover pede imagem **sem texto sobreposto e sem logo**.
+- **Onde aparece:** capa no artigo, card da listagem e `BlogPosting.image` no schema. **Atenção (2026-07-01):** esta **não** é a imagem de compartilhamento nas redes — para isso existe o campo separado **`social_image`** (imagem com template). A capa fica limpa porque o Google Discover pede imagem **sem texto sobreposto e sem logo**.
 - **Especificação técnica (quem sobe a imagem é o Luiz):**
     - formato **WebP** (CloudConvert: Fit = Crop, Strip = Yes, Quality = 80);
     - dimensão **1200 × 630 px** (1600 × 840 opcional para nitidez retina);
@@ -155,12 +155,12 @@ Estes campos controlam **como o artigo aparece na busca**. Capricho aqui = mais 
 - **Como escrever:** descreva objetivamente o que a imagem mostra, de forma relacionada ao tema. 1 frase.
 - **Exemplo:** `Aliança de casamento sobre documentos de divórcio em uma mesa de escritório.`
 
-### `og_headline` — Frase do card de compartilhamento · Opcional
+### `social_image` — Imagem de compartilhamento (com template) · Opcional
 
-- **O que é:** a frase curta que aparece **sobre o painel marrom** no card gerado quando o artigo é compartilhado nas redes (LinkedIn/Facebook/WhatsApp). **Não** aparece no site.
-- **Quando preencher:** só quando quiser controlar a frase exata. **Se deixar vazio**, o sistema deriva automaticamente do `title` (corta na primeira pontuação de fim de frase — ex.: "Traição dá direito a indenização?").
-- **Como escrever:** **4 a 8 palavras**, a "promessa" do artigo, legível em miniatura. Máx. ~48 caracteres.
-- **Exemplo:** `Traição gera indenização?` · `Namoro ou união estável?`
+- **O que é:** o **link** da imagem **com o template** (painel marrom + logo + headline, feita no Canva) que aparece quando o artigo é compartilhado nas redes (LinkedIn/Facebook/WhatsApp/X). **Não** aparece no site — é exclusiva do `og:image`.
+- **Formato:** `.webp` (ou `.jpg`), **1200 × 630 px**, enviada ao Storage; cole aqui a URL pública.
+- **Se deixar vazio:** o compartilhamento cai automaticamente na `cover_image` (a foto limpa) — funciona, só não terá o template.
+- **Divisão de papéis:** `cover_image` = **foto limpa** (site + Google/Discover); `social_image` = **foto com template** (só redes).
 
 ---
 
@@ -367,9 +367,9 @@ Aliança de casamento sobre documentos jurídicos em uma mesa de escritório.
 
 Foto sóbria e profissional de documentos/contrato e uma caneta sobre mesa de madeira, tom neutro, **sem texto e sem selo**. Arquivo: pensao-de-alimentos-como-e-calculada.webp (1200x630, WebP).
 
-## og_headline (opcional — frase do card social; vazio = derivado do title)
+## social_image (opcional — URL da imagem COM template; vazio = usa a cover_image)
 
-Como se calcula a pensão?
+(vazio)
 
 ## tldr
 
@@ -418,8 +418,8 @@ false
 > - `faq`: entregue como **JSON válido** (lista de objetos com `q` e `a`), pois o campo é JSON no banco. Lembre: as respostas (`a`) são **texto simples**, sem Markdown.
 > - `content`: cole o Markdown completo do corpo (começando em `##`).
 > - `category` e `author`: por **nome** — o operador faz a ligação interna.
-> - `cover_image`: você descreve a **foto limpa** (sem texto/selo); o operador cria/sobe `(<slug>.webp)` em 1200×630. O card de compartilhamento (com logo + headline) é gerado automaticamente — não precisa produzir imagem para as redes.
-> - `og_headline`: opcional; se vazio, o sistema deriva do `title`. Preencha só para controlar a frase exata do card social (4–8 palavras).
+> - `cover_image`: você descreve a **foto limpa** (sem texto/selo); o operador cria/sobe `(<slug>.webp)` em 1200×630.
+> - `social_image`: opcional; URL da imagem **com template** (Canva) para as redes. Se vazio, o compartilhamento usa a `cover_image`. Quem produz/sobe é o operador.
 
 ---
 

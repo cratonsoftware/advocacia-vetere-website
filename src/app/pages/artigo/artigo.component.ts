@@ -53,9 +53,10 @@ export class ArtigoComponent implements OnInit {
 						description: data.metaDescription || data.excerpt,
 						image: data.coverImage,
 						imageAlt: data.coverImageAlt,
-						// Card social com template gerado dinamicamente (api/og) — só para og:image/twitter:image.
-						// A foto limpa (`image`) permanece no BlogPosting.image/Google.
-						ogImage: `${baseUrl}/api/og?slug=${encodeURIComponent(data.slug)}`,
+						// Card social COM template (imagem manual do Canva, .webp) — só para og:image/twitter:image.
+						// Fallback: se vazio, o SeoService usa `coverImage` (imagem limpa). O BlogPosting.image (JSON-LD)
+						// permanece sempre com a imagem limpa (`image`) — Google/Discover pede foto sem texto.
+						ogImage: data.socialImage || undefined,
 						slug: `blog/${data.slug}`,
 						type: 'article',
 						author: data.author?.name || 'Dra. Maria Fernanda Vetere',
