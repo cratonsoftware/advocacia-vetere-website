@@ -125,7 +125,7 @@
 							type="button"
 							(click)="copyLink()"
 							[attr.aria-label]="linkCopied ? 'Link copiado' : 'Copiar link do artigo'"
-							class="border-n4/20 text-n4 hover:bg-n4 hover:text-n0 flex h-9 items-center justify-center gap-2 rounded-full border px-4 transition-all">
+							class="border-n4/20 text-n4 hover:bg-n4 hover:text-n0 flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full border px-4 transition-all">
 							@if (linkCopied) {
 								<mat-icon class="size-4!" svgIcon="check" />
 								<span class="text-[11px] font-bold tracking-widest uppercase">Copiado</span>
