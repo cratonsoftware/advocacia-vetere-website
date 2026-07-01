@@ -22,7 +22,14 @@ describe('ArtigoComponent (render /blog/:slug)', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
 			imports: [ArtigoComponent],
-			providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(), provideMarkdown(), ...provideRenderTestStubs(), { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ slug })), snapshot: { paramMap: convertToParamMap({ slug }) } } }],
+			providers: [
+				provideRouter([]),
+				provideHttpClient(),
+				provideHttpClientTesting(),
+				provideMarkdown(),
+				...provideRenderTestStubs(),
+				{ provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ slug })), snapshot: { paramMap: convertToParamMap({ slug }) } } },
+			],
 		});
 		doc = TestBed.inject(DOCUMENT);
 		httpMock = TestBed.inject(HttpTestingController);

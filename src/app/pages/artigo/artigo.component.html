@@ -110,13 +110,13 @@
 						</div>
 					</div>
 
-					<div class="flex items-center gap-4">
+					<div class="flex items-center gap-2">
 						<span class="text-n3 text-[11px] font-bold tracking-[0.2em] uppercase">Compartilhar:</span>
 						<a
 							[href]="'https://api.whatsapp.com/send?text=' + article.title + ' - ' + siteUrl + '/blog/' + article.slug"
 							target="_blank"
 							aria-label="Compartilhar no WhatsApp"
-							class="border-n4/20 text-n4 hover:bg-n4 hover:text-n0 flex h-9 w-9 items-center justify-center rounded-full border transition-all">
+							class="border-n4/20 text-n4 hover:bg-n4 hover:text-n0 flex size-9 items-center justify-center rounded-full border transition-all">
 							<mat-icon class="size-4!" svgIcon="whatsapp_logo" />
 						</a>
 
@@ -125,15 +125,8 @@
 							type="button"
 							(click)="copyLink()"
 							[attr.aria-label]="linkCopied ? 'Link copiado' : 'Copiar link do artigo'"
-							class="border-n4/20 text-n4 hover:bg-n4 hover:text-n0 flex h-9 cursor-pointer items-center justify-center gap-2 rounded-full border transition-all"
-							[class.px-4]="linkCopied"
-							[class.w-9]="!linkCopied">
-							@if (linkCopied) {
-								<mat-icon class="size-4!" svgIcon="check" />
-								<span class="text-[11px] font-bold tracking-widest uppercase">Copiado</span>
-							} @else {
-								<mat-icon class="size-4!" svgIcon="link_2" />
-							}
+							class="border-n4/20 text-n4 hover:bg-n4 hover:text-n0 flex size-9 cursor-pointer items-center justify-center rounded-full border transition-all">
+							<mat-icon class="size-4!" [svgIcon]="linkCopied ? 'check' : 'link_2'" />
 						</button>
 					</div>
 				</div>
