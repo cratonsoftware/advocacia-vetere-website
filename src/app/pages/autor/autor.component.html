@@ -91,7 +91,7 @@
 				<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
 					@for (article of articles; track article.id) {
 						<article class="group border-n2/20 bg-n0 flex flex-col border transition-all duration-500 hover:shadow-xl">
-							<div class="relative h-56 w-full overflow-hidden">
+							<div class="relative aspect-[1200/630] w-full overflow-hidden">
 								<img [ngSrc]="article.coverImage" fill [alt]="article.coverImageAlt || article.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
 								<a [routerLink]="['/blog/categoria', article.categorySlug]" class="bg-n0 text-n4 hover:text-n3 absolute top-4 left-4 px-3 py-1 text-[11px] font-bold tracking-widest uppercase transition-colors">{{
 									article.category

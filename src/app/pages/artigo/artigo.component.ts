@@ -1,6 +1,7 @@
-import { NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
 import { MarkdownModule } from 'ngx-markdown';
 import { SITE_URL } from 'src/app/core/config/site.config';
 import { SeoService } from 'src/app/core/services/seo.service';
@@ -20,19 +21,35 @@ export class ArtigoComponent implements OnInit {
 	private blogService = inject(BlogService);
 	private seoService = inject(SeoService);
 	private cdr = inject(ChangeDetectorRef);
+	private platformId = inject(PLATFORM_ID);
 
 	article: Artigo | null = null;
 	relatedArticles: Artigo[] = [];
 	isLoading = true;
 
+	/** Feedback do botão "Copiar link" — volta a false após alguns segundos. */
+	linkCopied = false;
+
 	/** URL base canônica — usada no link de compartilhamento do template. */
 	protected readonly siteUrl = SITE_URL;
 
 	ngOnInit(): void {
-		const slug = this.route.snapshot.paramMap.get('slug');
-
-		if (slug) {
-			this.blogService.getArticleBySlug(slug).subscribe((data) => {
+		// paramMap como observable (não snapshot): ao navegar entre artigos ("Leia também"),
+		// o Angular reaproveita a instância do componente e o ngOnInit não roda de novo —
+		// só a mudança de parâmetro recarrega os dados. switchMap cancela o fetch anterior.
+		this.route.paramMap
+			.pipe(
+				switchMap((params) => {
+					const slug = params.get('slug');
+					this.isLoading = true;
+					this.article = null;
+					this.relatedArticles = [];
+					this.linkCopied = false;
+					this.cdr.markForCheck();
+					return this.blogService.getArticleBySlug(slug ?? '');
+				}),
+			)
+			.subscribe((data) => {
 				this.article = data;
 				this.isLoading = false;
 				this.cdr.markForCheck();
@@ -85,9 +102,20 @@ export class ArtigoComponent implements OnInit {
 					});
 				}
 			});
-		} else {
-			this.isLoading = false;
+	}
+
+	/** Copia a URL canônica do artigo para a área de transferência (apenas no browser). */
+	copyLink(): void {
+		if (!isPlatformBrowser(this.platformId) || !this.article) return;
+
+		const url = `${this.siteUrl}/blog/${this.article.slug}`;
+		navigator.clipboard?.writeText(url).then(() => {
+			this.linkCopied = true;
 			this.cdr.markForCheck();
-		}
+			setTimeout(() => {
+				this.linkCopied = false;
+				this.cdr.markForCheck();
+			}, 2500);
+		});
 	}
 }

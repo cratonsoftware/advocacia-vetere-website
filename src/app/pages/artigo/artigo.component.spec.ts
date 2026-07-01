@@ -4,6 +4,7 @@ import { DOCUMENT } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { provideMarkdown } from 'ngx-markdown';
+import { of } from 'rxjs';
 import { canonicalHref, cleanSeoHead, mockArtigo, provideRenderTestStubs, readJsonLd, TEST_BASE_URL } from '../../testing/seo-dom.helper';
 import { ArtigoComponent } from './artigo.component';
 
@@ -21,7 +22,7 @@ describe('ArtigoComponent (render /blog/:slug)', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
 			imports: [ArtigoComponent],
-			providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(), provideMarkdown(), ...provideRenderTestStubs(), { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ slug }) } } }],
+			providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(), provideMarkdown(), ...provideRenderTestStubs(), { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ slug })), snapshot: { paramMap: convertToParamMap({ slug }) } } }],
 		});
 		doc = TestBed.inject(DOCUMENT);
 		httpMock = TestBed.inject(HttpTestingController);

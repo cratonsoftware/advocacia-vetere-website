@@ -207,6 +207,17 @@ Ao criar novos serviços/SEO ou novas rotas, **adicionar specs** (smoke de servi
 - **Varredura confirmada:** `jobTitle` no `SeoService` e componentes usa fallback `'Advogada'`; `authors.role = 'Advogada'`; `authors.bio` sem referência a "especialista". A menção a "especialistas renomados" em `areas.component.html` refere-se a parceiros do escritório — manter.
 - **Artigo "Traição":** `title` e `meta_title` atualizados para "Traição dá direito a indenização? Veja o que a lei diz sobre isso." no Supabase; `faq = NULL` (seção FAQ e JSON-LD `FAQPage` ocultados automaticamente pelo template). Slug `traicao-da-direito-a-indenizacao` **preservado** — nenhum redirect necessário.
 
+### Correções de UX/consistência (2026-07-01)
+
+Lote de ajustes pontuais reportados pelo operador ao usar o site:
+
+- **Bold do markdown no artigo:** o `prose` do `artigo.component.html` ganhou `prose-strong:text-n4 prose-strong:font-semibold`. Sem isso, o `<strong>` herdava o `--tw-prose-bold` padrão (quase preto) e ficava mais chamativo que os títulos. **Não** remover — manter o bold na paleta da marca (`text-n4`), não em preto puro.
+- **Copiar link do artigo:** botão "Copiar link" na seção _Compartilhar_ (`artigo.component.html`), com `ArtigoComponent.copyLink()` usando `navigator.clipboard` sob `isPlatformBrowser` (SSR-safe) e feedback temporário via `linkCopied` (reset em 2,5s, com `markForCheck()` — zoneless).
+- **Card "Leia também" padronizado:** o card da seção _Leia também_ foi igualado aos demais (blog/categoria/autor/home) — `aspect-[1200/630]`, `p-8`, título `text-2xl`, `excerpt` com `line-clamp-3`, CTA "Ler Artigo Completo" e **tag de categoria clicável** (`/blog/categoria/:slug`). Manter paridade com o card do `blog.component.html`.
+- **Navegação entre artigos (bug):** `ArtigoComponent` passou a assinar `route.paramMap` (observable) via `switchMap` em vez de `route.snapshot` no `ngOnInit`. O Angular reaproveita a instância do componente ao navegar de `/blog/:slug` para outro `:slug` (ex.: clicar em "Leia também"), então o `snapshot` não recarregava os dados. O spec da rota agora provê `paramMap: of(convertToParamMap(...))` além do `snapshot`.
+- **Aspect-ratio dos cards padronizado:** todos os cards de artigo (`blog`, `categoria`, `autor`, `blog-preview`, "Leia também") trocaram altura fixa (`h-56`/`h-44`) por `aspect-[1200/630]`, alinhando à proporção real das capas (evita corte arbitrário e inconsistência entre telas). Hero do artigo já usava `aspect-[1200/630]`.
+- **Handle do TikTok:** corrigido para `@mfernandavetere.adv` (faltava o `.adv`) no `contato.component.html` e em `BUSINESS.sameAs` (`site.config.ts`, consumido pelo footer/schema).
+
 ### Configuração central — `site.config.ts` (S13 — aplicado 2026-06-23)
 
 - **Fonte única de constantes:** `src/app/core/config/site.config.ts` exporta `SITE_URL`, `BUSINESS` (telefone, `telephoneDisplay`, e-mail, endereço, geo, `priceRange`, `sameAs`, `openingHours`), `WHATSAPP_PHONE`/`WHATSAPP_MESSAGE`/`WHATSAPP_URL` e `ALL_CATEGORIES_LABEL` (`'Todos'`). **Não** voltar a hardcodar esses valores em componentes/serviços/templates — importar da config.

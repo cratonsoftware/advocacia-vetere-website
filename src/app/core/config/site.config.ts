@@ -32,7 +32,7 @@ export const BUSINESS = {
 	longitude: -47.2714927,
 	priceRange: '$$',
 	/** Perfis sociais oficiais (schema `sameAs`). */
-	sameAs: ['https://instagram.com/mfernandavetere', 'https://facebook.com/profile.php?id=61587259521188', 'https://tiktok.com/@mfernandavetere'],
+	sameAs: ['https://instagram.com/mfernandavetere', 'https://facebook.com/profile.php?id=61587259521188', 'https://tiktok.com/@mfernandavetere.adv'],
 	/** Horário de atendimento. */
 	openingHours: {
 		daysLabel: 'Segunda a Sexta',
