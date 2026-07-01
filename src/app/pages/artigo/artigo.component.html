@@ -49,8 +49,8 @@
 
 			@if (article.coverImage) {
 				<div class="mb-20">
-					<div class="border-n2/20 relative h-[40vh] w-full overflow-hidden border shadow-sm">
-						<!-- fill no container relative h-[40vh] — S6 -->
+					<div class="border-n2/20 relative aspect-[1200/630] w-full overflow-hidden border shadow-sm">
+						<!-- fill no container relative com proporção 1200/630 (evita corte no mobile) — S6/2026-07-01 -->
 						<img [ngSrc]="article.coverImage" fill [alt]="article.coverImageAlt || article.title" class="object-cover grayscale-15 transition-transform duration-1000 hover:scale-105 hover:grayscale-0" />
 					</div>
 				</div>

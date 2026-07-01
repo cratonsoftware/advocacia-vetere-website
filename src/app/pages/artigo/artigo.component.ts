@@ -53,6 +53,9 @@ export class ArtigoComponent implements OnInit {
 						description: data.metaDescription || data.excerpt,
 						image: data.coverImage,
 						imageAlt: data.coverImageAlt,
+						// Card social com template gerado dinamicamente (api/og) — só para og:image/twitter:image.
+						// A foto limpa (`image`) permanece no BlogPosting.image/Google.
+						ogImage: `${baseUrl}/api/og?slug=${encodeURIComponent(data.slug)}`,
 						slug: `blog/${data.slug}`,
 						type: 'article',
 						author: data.author?.name || 'Dra. Maria Fernanda Vetere',

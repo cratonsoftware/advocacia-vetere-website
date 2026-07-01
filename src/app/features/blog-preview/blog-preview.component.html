@@ -33,7 +33,9 @@
 							<!-- fill ocupa o container relative h-56; loading=lazy automático pelo NgOptimizedImage — S6 -->
 							<img [ngSrc]="article.coverImage" fill [alt]="article.title" class="object-cover grayscale-20 transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0" />
 							@if (article.categorySlug) {
-								<a [routerLink]="['/blog/categoria', article.categorySlug]" class="bg-n0 text-n4 hover:bg-n4 hover:text-n0 absolute top-4 left-4 px-3 py-1 text-[11px] font-bold tracking-widest uppercase transition-colors">{{ article.category }}</a>
+								<a [routerLink]="['/blog/categoria', article.categorySlug]" class="bg-n0 text-n4 hover:bg-n4 hover:text-n0 absolute top-4 left-4 px-3 py-1 text-[11px] font-bold tracking-widest uppercase transition-colors">{{
+									article.category
+								}}</a>
 							} @else {
 								<div class="bg-n0 text-n4 absolute top-4 left-4 px-3 py-1 text-[11px] font-bold tracking-widest uppercase">{{ article.category }}</div>
 							}

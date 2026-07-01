@@ -26,26 +26,27 @@
 
 Cada artigo gera uma página em `https://www.mfernandavetere.adv.br/blog/<slug>`. A tabela abaixo mostra, em resumo, para onde vai cada campo. Os detalhes vêm nas seções seguintes.
 
-| Campo               | Obrigatório? | Onde aparece na página                        | Onde aparece no SEO / Google                              |
-| ------------------- | ------------ | --------------------------------------------- | --------------------------------------------------------- |
-| `title`             | **Sim**      | Título principal grande (H1)                  | `<title>` e título azul no Google (se `meta_title` vazio) |
-| `slug`              | **Sim**      | Define a URL (`/blog/<slug>`)                 | A própria URL indexada                                    |
-| `excerpt`           | **Sim**      | Resumo no card da listagem `/blog`            | Descrição do Google (se `meta_description` vazio)         |
-| `content`           | **Sim**      | Corpo do texto (Markdown renderizado)         | Todo o conteúdo lido pelo Google e pelas IAs              |
-| `category`          | **Sim**      | Etiqueta (badge) clicável acima do título     | `articleSection` no schema + página de categoria          |
-| `author`            | **Sim**      | Assinatura no rodapé do artigo                | Autor (E-E-A-T) no schema — sinal crítico para Direito    |
-| `cover_image`       | Recomendado  | Imagem grande de capa                         | Imagem do card social (compartilhamento) + schema         |
-| `cover_image_alt`   | Recomendado  | Texto alternativo da capa (leitores de tela)  | SEO de imagem + acessibilidade                            |
-| `meta_title`        | Opcional     | — (não aparece no corpo)                      | Título azul no Google (sobrepõe `title`)                  |
-| `meta_description`  | Opcional     | — (não aparece no corpo)                      | Descrição no Google (sobrepõe `excerpt`)                  |
-| `tldr`              | Recomendado  | Caixa "Resposta direta" no topo do artigo     | Resposta extraível por IA (ChatGPT/Gemini/AI Overviews)   |
-| `faq`               | Recomendado  | Seção "Perguntas frequentes" (sanfona) no fim | Rich snippet `FAQPage` no Google                          |
-| `tags`              | Recomendado  | Chips "Temas:" no fim do artigo               | `keywords` no schema + autoridade temática                |
-| `read_time_minutes` | Opcional     | "X min de leitura" no topo                    | —                                                         |
-| `published_at`      | **Sim**      | Data exibida no topo                          | `datePublished` (data de publicação)                      |
-| `locale`            | Opcional     | —                                             | `inLanguage` (padrão `pt-BR`)                             |
-| `canonical_url`     | Opcional     | —                                             | URL canônica (deixe vazio em 99% dos casos)               |
-| `noindex`           | Opcional     | —                                             | Esconde do Google (deixe `false`)                         |
+| Campo               | Obrigatório? | Onde aparece na página                        | Onde aparece no SEO / Google                               |
+| ------------------- | ------------ | --------------------------------------------- | ---------------------------------------------------------- |
+| `title`             | **Sim**      | Título principal grande (H1)                  | `<title>` e título azul no Google (se `meta_title` vazio)  |
+| `slug`              | **Sim**      | Define a URL (`/blog/<slug>`)                 | A própria URL indexada                                     |
+| `excerpt`           | **Sim**      | Resumo no card da listagem `/blog`            | Descrição do Google (se `meta_description` vazio)          |
+| `content`           | **Sim**      | Corpo do texto (Markdown renderizado)         | Todo o conteúdo lido pelo Google e pelas IAs               |
+| `category`          | **Sim**      | Etiqueta (badge) clicável acima do título     | `articleSection` no schema + página de categoria           |
+| `author`            | **Sim**      | Assinatura no rodapé do artigo                | Autor (E-E-A-T) no schema — sinal crítico para Direito     |
+| `cover_image`       | Recomendado  | Imagem grande de capa (foto limpa, WebP)      | Imagem indexada pelo Google/Discover + schema (foto limpa) |
+| `cover_image_alt`   | Recomendado  | Texto alternativo da capa (leitores de tela)  | SEO de imagem + acessibilidade                             |
+| `og_headline`       | Opcional     | — (não aparece no site)                       | Frase curta do card de compartilhamento (redes)            |
+| `meta_title`        | Opcional     | — (não aparece no corpo)                      | Título azul no Google (sobrepõe `title`)                   |
+| `meta_description`  | Opcional     | — (não aparece no corpo)                      | Descrição no Google (sobrepõe `excerpt`)                   |
+| `tldr`              | Recomendado  | Caixa "Resposta direta" no topo do artigo     | Resposta extraível por IA (ChatGPT/Gemini/AI Overviews)    |
+| `faq`               | Recomendado  | Seção "Perguntas frequentes" (sanfona) no fim | Rich snippet `FAQPage` no Google                           |
+| `tags`              | Recomendado  | Chips "Temas:" no fim do artigo               | `keywords` no schema + autoridade temática                 |
+| `read_time_minutes` | Opcional     | "X min de leitura" no topo                    | —                                                          |
+| `published_at`      | **Sim**      | Data exibida no topo                          | `datePublished` (data de publicação)                       |
+| `locale`            | Opcional     | —                                             | `inLanguage` (padrão `pt-BR`)                              |
+| `canonical_url`     | Opcional     | —                                             | URL canônica (deixe vazio em 99% dos casos)                |
+| `noindex`           | Opcional     | —                                             | Esconde do Google (deixe `false`)                          |
 
 > **Importante:** os campos `category` e `author` no banco são ligações (chaves) para outras tabelas. Você **não precisa saber códigos internos** — basta informar o **nome** (ex.: categoria `Família`, autora `Dra. Maria Fernanda Vetere`). O Luiz faz a ligação no banco.
 
@@ -138,11 +139,13 @@ Estes campos controlam **como o artigo aparece na busca**. Capricho aqui = mais 
 
 ### `cover_image` — Imagem de capa · Recomendado
 
-- **O que é:** a imagem grande exibida no topo do artigo e no card de compartilhamento.
-- **Onde aparece:** imagem de capa no artigo, no card da listagem e como **imagem social** (`og:image`) quando alguém compartilha o link no WhatsApp/Instagram/etc.
+- **O que é:** a **foto limpa** (só a foto, sem texto e sem logo) exibida no topo do artigo e indexada pelo Google/Discover.
+- **Onde aparece:** capa no artigo, card da listagem e `BlogPosting.image` no schema. **Atenção (2026-07-01):** esta **não** é mais a imagem de compartilhamento nas redes — o card social (com logo + headline) é **gerado automaticamente** pelo sistema (`/api/og?slug=…`); ver `og_headline`. A capa fica limpa porque o Google Discover pede imagem **sem texto sobreposto e sem logo**.
 - **Especificação técnica (quem sobe a imagem é o Luiz):**
-    - dimensão **1200 × 630 px** (proporção de card social);
-    - nome do arquivo = **`<slug>.png`** (mesma convenção do slug);
+    - formato **WebP** (CloudConvert: Fit = Crop, Strip = Yes, Quality = 80);
+    - dimensão **1200 × 630 px** (1600 × 840 opcional para nitidez retina);
+    - nome do arquivo = **`<slug>.webp`** (mesma convenção do slug);
+    - **sem selo, sem texto** — apenas a foto;
     - armazenada no Storage do projeto.
 - **O que você (IA) faz:** como você não sobe imagens, **descreva a capa ideal** em uma linha (tema, estilo sóbrio e profissional, sem texto sobreposto) e **sempre forneça o `cover_image_alt`**.
 
@@ -151,6 +154,13 @@ Estes campos controlam **como o artigo aparece na busca**. Capricho aqui = mais 
 - **O que é:** descrição textual da imagem (para leitores de tela e SEO de imagem).
 - **Como escrever:** descreva objetivamente o que a imagem mostra, de forma relacionada ao tema. 1 frase.
 - **Exemplo:** `Aliança de casamento sobre documentos de divórcio em uma mesa de escritório.`
+
+### `og_headline` — Frase do card de compartilhamento · Opcional
+
+- **O que é:** a frase curta que aparece **sobre o painel marrom** no card gerado quando o artigo é compartilhado nas redes (LinkedIn/Facebook/WhatsApp). **Não** aparece no site.
+- **Quando preencher:** só quando quiser controlar a frase exata. **Se deixar vazio**, o sistema deriva automaticamente do `title` (corta na primeira pontuação de fim de frase — ex.: "Traição dá direito a indenização?").
+- **Como escrever:** **4 a 8 palavras**, a "promessa" do artigo, legível em miniatura. Máx. ~48 caracteres.
+- **Exemplo:** `Traição gera indenização?` · `Namoro ou união estável?`
 
 ---
 
@@ -355,7 +365,11 @@ Aliança de casamento sobre documentos jurídicos em uma mesa de escritório.
 
 ## cover_image (sugestão de imagem — quem sobe é o operador)
 
-Foto sóbria e profissional de documentos/contrato e uma caneta sobre mesa de madeira, tom neutro, sem texto sobreposto. Arquivo: pensao-de-alimentos-como-e-calculada.png (1200x630).
+Foto sóbria e profissional de documentos/contrato e uma caneta sobre mesa de madeira, tom neutro, **sem texto e sem selo**. Arquivo: pensao-de-alimentos-como-e-calculada.webp (1200x630, WebP).
+
+## og_headline (opcional — frase do card social; vazio = derivado do title)
+
+Como se calcula a pensão?
 
 ## tldr
 
@@ -404,7 +418,8 @@ false
 > - `faq`: entregue como **JSON válido** (lista de objetos com `q` e `a`), pois o campo é JSON no banco. Lembre: as respostas (`a`) são **texto simples**, sem Markdown.
 > - `content`: cole o Markdown completo do corpo (começando em `##`).
 > - `category` e `author`: por **nome** — o operador faz a ligação interna.
-> - `cover_image`: você descreve a imagem ideal; o operador cria/sobe o arquivo `(<slug>.png)` em 1200×630.
+> - `cover_image`: você descreve a **foto limpa** (sem texto/selo); o operador cria/sobe `(<slug>.webp)` em 1200×630. O card de compartilhamento (com logo + headline) é gerado automaticamente — não precisa produzir imagem para as redes.
+> - `og_headline`: opcional; se vazio, o sistema deriva do `title`. Preencha só para controlar a frase exata do card social (4–8 palavras).
 
 ---
 

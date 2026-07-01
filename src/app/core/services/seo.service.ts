@@ -35,11 +35,16 @@ export class SeoService {
 
 		const rawImageUrl = config.image || this.defaultImage;
 		const absoluteImageUrl = rawImageUrl.startsWith('http') ? rawImageUrl : `${this.baseUrl}${rawImageUrl.startsWith('/') ? '' : '/'}${rawImageUrl}`;
+		// Imagem social (og/twitter): usa `ogImage` (card com template) quando presente; senão, a mesma `image`.
+		// O JSON-LD (`BlogPosting.image`) permanece com `absoluteImageUrl` — Google/Discover pede foto sem texto.
+		const rawOgImageUrl = config.ogImage || rawImageUrl;
+		const absoluteOgImageUrl = rawOgImageUrl.startsWith('http') ? rawOgImageUrl : `${this.baseUrl}${rawOgImageUrl.startsWith('/') ? '' : '/'}${rawOgImageUrl}`;
 		const type = config.type || 'website';
 		const imageAlt = config.imageAlt || fullTitle;
 
+		// `max-image-preview:large` habilita a imagem grande no Google Discover/Search.
 		if (config.noIndex) this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
-		else this.meta.updateTag({ name: 'robots', content: 'index, follow' });
+		else this.meta.updateTag({ name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' });
 
 		const tags: MetaDefinition[] = [
 			{ name: 'description', content: config.description },
@@ -47,8 +52,8 @@ export class SeoService {
 
 			{ property: 'og:title', content: fullTitle },
 			{ property: 'og:description', content: config.description },
-			{ property: 'og:image', content: absoluteImageUrl },
-			{ property: 'og:image:secure_url', content: absoluteImageUrl },
+			{ property: 'og:image', content: absoluteOgImageUrl },
+			{ property: 'og:image:secure_url', content: absoluteOgImageUrl },
 			{ property: 'og:image:width', content: '1200' },
 			{ property: 'og:image:height', content: '630' },
 			{ property: 'og:image:alt', content: imageAlt },
@@ -60,7 +65,7 @@ export class SeoService {
 			{ name: 'twitter:card', content: 'summary_large_image' },
 			{ name: 'twitter:title', content: fullTitle },
 			{ name: 'twitter:description', content: config.description },
-			{ name: 'twitter:image', content: absoluteImageUrl },
+			{ name: 'twitter:image', content: absoluteOgImageUrl },
 			{ name: 'twitter:image:alt', content: imageAlt },
 		];
 

@@ -26,7 +26,7 @@
 					#todosRla="routerLinkActive"
 					routerLinkActive
 					[routerLinkActiveOptions]="{ exact: true }"
-					class="border border-n4 hover:bg-n4/10 px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300"
+					class="border-n4 hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300"
 					[class.bg-n4]="todosRla.isActive"
 					[class.text-n0]="todosRla.isActive"
 					[class.text-n4]="!todosRla.isActive">
@@ -38,7 +38,7 @@
 						[routerLink]="['/blog/categoria', cat.slug]"
 						#catRla="routerLinkActive"
 						routerLinkActive
-						class="border border-n4 hover:bg-n4/10 px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300"
+						class="border-n4 hover:bg-n4/10 border px-5 py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all duration-300"
 						[class.bg-n4]="catRla.isActive"
 						[class.text-n0]="catRla.isActive"
 						[class.text-n4]="!catRla.isActive">

@@ -65,9 +65,7 @@ describe('BlogComponent (render /blog)', () => {
 		const fixture2 = TestBed.createComponent(BlogComponent);
 		fixture2.detectChanges();
 		httpMock.match((r) => r.url.includes('published_articles')).forEach((req) => req.flush([]));
-		httpMock.match((r) => r.url.includes('categories')).forEach((req) =>
-			req.flush([{ id: '1', name: 'Família', slug: 'familia' }]),
-		);
+		httpMock.match((r) => r.url.includes('categories')).forEach((req) => req.flush([{ id: '1', name: 'Família', slug: 'familia' }]));
 		fixture2.detectChanges();
 
 		const categoryLinks: NodeListOf<HTMLAnchorElement> = fixture2.nativeElement.querySelectorAll('nav[aria-label="Filtrar por categoria"] a');

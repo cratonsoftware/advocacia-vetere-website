@@ -28,6 +28,12 @@ export interface SeoConfig {
 	image?: string;
 	/** texto alternativo da imagem → `caption` do `ImageObject`. */
 	imageAlt?: string;
+	/**
+	 * Imagem dedicada de compartilhamento social (og:image/twitter:image) — desacoplada do `image`.
+	 * Quando presente, o card com template (ex.: `/api/og?slug=…`) vai para as redes, enquanto o
+	 * `image` (foto limpa) permanece no `BlogPosting.image`/Google (Discover pede imagem sem texto).
+	 */
+	ogImage?: string;
 	slug?: string;
 	type?: 'website' | 'article' | 'profile';
 	/** nome do autor (string) — mantido para `article:author`/fallback. */
