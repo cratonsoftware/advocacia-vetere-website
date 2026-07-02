@@ -176,4 +176,14 @@ export class ReviewsComponent implements OnInit, OnDestroy {
 	getInitial(name: string): string {
 		return name ? name.charAt(0).toUpperCase() : 'G';
 	}
+
+	/** Alterna expandir/colapsar do texto — mutação direta no objeto do template, mesmo padrão de handleImageError (S17). */
+	toggleExpand(review: GoogleReview) {
+		review.expanded = !review.expanded;
+	}
+
+	/** Heurística por tamanho do texto (sem medir DOM): ~200 caracteres aproxima o corte real do line-clamp-6 (S17). */
+	isLongReview(text: string): boolean {
+		return !!text && text.length > 200;
+	}
 }

@@ -223,7 +223,24 @@ Lote de ajustes pontuais reportados pelo operador ao usar o site:
 - **Fonte única de constantes:** `src/app/core/config/site.config.ts` exporta `SITE_URL`, `BUSINESS` (telefone, `telephoneDisplay`, e-mail, endereço, geo, `priceRange`, `sameAs`, `openingHours`), `WHATSAPP_PHONE`/`WHATSAPP_MESSAGE`/`WHATSAPP_URL` e `ALL_CATEGORIES_LABEL` (`'Todos'`). **Não** voltar a hardcodar esses valores em componentes/serviços/templates — importar da config.
 - **Consumidores:** `SeoService` (`baseUrl` + `business`; `openingHoursSpecification` é derivado de `BUSINESS.openingHours.periods`), `ArtigoComponent`/`CategoriaComponent`/`AutorComponent` (`SITE_URL`), `BlogComponent` (sem `ALL_CATEGORIES_LABEL` desde S15 — filtro de categoria virou navegação), `AppComponent` e `ContatoComponent` (`WHATSAPP_URL` + campos de `BUSINESS`), `FooterComponent` (`BUSINESS` + `WHATSAPP_URL` — S15).
 - **`api/*` e `robots.txt` (fora do bundle Angular):** por decisão arquitetural, mantêm a URL base **localmente** com **duplicação consciente e documentada** (comentário apontando `site.config.ts`). Ao alterar `SITE_URL`, atualizar também `api/sitemap.ts`, `api/llms.ts` e `src/robots.txt`.
-- **`WHATSAPP_URL`** é mantido como string pré-codificada (byte-a-byte idêntica ao link validado em produção); `WHATSAPP_MESSAGE`/`WHATSAPP_PHONE` ficam disponíveis como partes reutilizáveis (ex.: CTAs contextuais previstos na S17).
+- **`WHATSAPP_URL`** é mantido como string pré-codificada (byte-a-byte idêntica ao link validado em produção); `WHATSAPP_MESSAGE`/`WHATSAPP_PHONE` ficam disponíveis como partes reutilizáveis. Usado pelo botão flutuante global (`app.component`) e pelo rodapé (`footer.component`) — pontos de contato válidos em qualquer página, por isso mantêm a mensagem genérica.
+
+### CTA de WhatsApp contextual por seção (S17 — aplicado 2026-07-02)
+
+- **Helper `buildWhatsAppUrl(message)`** em `site.config.ts` gera links `wa.me` via `encodeURIComponent` — usado apenas para as variantes contextuais, **não** para `WHATSAPP_URL` (que permanece a string canônica pré-codificada, intocada).
+- **`WHATSAPP_URL_FAMILIA`** (+ `WHATSAPP_MESSAGE_FAMILIA`): CTA no card "Foco de Atuação" (Direito de Família e Sucessões) da seção Áreas (`areas.component.html`) — link de texto discreto (borda inferior, sem botão colorido), sóbrio com a identidade da marca.
+- **`WHATSAPP_URL_CONTATO`** (+ `WHATSAPP_MESSAGE_CONTATO`): substitui `WHATSAPP_URL` no ícone de WhatsApp da seção Contato (`contato.component.ts`) — mensagem própria ("vim pelo site, prefiro falar por aqui").
+- Ao adicionar uma nova origem contextual, seguir o mesmo padrão: nova mensagem + `buildWhatsAppUrl()` em `site.config.ts`, nunca hardcodar a URL no componente.
+
+### Selo OAB no hero (S17 — aplicado 2026-07-02)
+
+- Pill discreta `OAB/SP 527.527` abaixo do CTA "Fale Comigo" em `hero.component.html` — mesmo padrão visual do selo já usado no rodapé (`rounded-full`, borda fina, texto pequeno). Texto literal (não centralizado em `site.config.ts`), espelhando o padrão já existente no rodapé — considerar centralizar os dois em `BUSINESS.oab` numa refatoração futura (não fazer sem pedido explícito).
+
+### "Ver mais" nas avaliações longas (S17 — aplicado 2026-07-02)
+
+- `GoogleReview.expanded?: boolean` (`review.model.ts`) guarda o estado de expandir/colapsar por avaliação.
+- `ReviewsComponent.toggleExpand(review)` alterna `review.expanded` via `(click)` — mutação direta no objeto do template, **sem** `markForCheck()`, seguindo o mesmo padrão já usado por `handleImageError()` (eventos disparados pelo próprio template não exigem `markForCheck()` em zoneless; só callbacks de `subscribe()` externo exigem).
+- `isLongReview(text)` decide se o botão "Ver mais"/"Ver menos" aparece: heurística por tamanho do texto (`length > 200`), sem medir DOM — evita custo de SSR/hidratação. O parágrafo usa `[class.line-clamp-6]="!review.expanded"`.
 
 ---
 

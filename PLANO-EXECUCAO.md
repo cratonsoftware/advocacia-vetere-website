@@ -125,7 +125,7 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S15 — Descoberta interna & rodapé | ✅ | 2026-06-25 | 11d6b8a3 · e93c9496 | Categorias do `/blog` → `RouterLink` para `/blog/categoria/:slug` (com `#rla` ref para evitar conflito de cascade Tailwind); autora no artigo → link `/autor/:slug`; tag de categoria clicável no `blog-preview` da home; `routerLinkActive` no header; rodapé 4 colunas (contato `BUSINESS` + redes sociais SVG inline + links blog/autor). Spec do blog atualizado (+2 testes). Validado em produção. |
 | S16 — Mapa personalizado | ❌ Descartada | 2026-07-02 | — | **Descartada por decisão do operador.** O **iframe de embed do Google Maps** (`mapa.component.html`) permanece como abordagem definitiva (sobriedade da marca + custo/benefício). Nenhuma chave de mapa a provisionar; nada a implementar. Não reabrir sem pedido explícito. Ver `CLAUDE.md` (Mapa — estado real). |
 | S16b — Revisão do sync de avaliações _(complemento)_ | ✅ | 2026-07-02 | _pré-commit (operador)_ | Edge Function `fetch-google-reviews`: `delete`+`insert` → **`upsert(onConflict: author_name)`** (acumulativo), grava todas as notas + `review_time`/`author_url`/`language`. **v7 migrou legacy → Places API (New)** (`places.googleapis.com/v1`, FieldMask `reviews`) após o operador desabilitar a Places API legacy no Google Cloud; `review_time` vem de `publishTime` (ISO). Migração aditiva em `google_reviews` (colunas + índice único `author_name` + backfill). `ReviewsService`: `rating=gte.4&order=review_time.desc.nullslast&limit=5`. **Pendências do operador:** habilitar Places API (New) + chave dedicada no secret `GOOGLE_API_KEY`; testar o sync. Limite da API (máx. 5) documentado; GBP API como follow-up. |
-| S17 — Conteúdo & conversão _(opcional)_ | ⬜ | — | — | Selo OAB próximo ao CTA do hero; CTA de WhatsApp contextual por seção; "ver mais" nas avaliações longas (`line-clamp-6`). Origem: `MELHORIAS.md` §5 e §3.12. |
+| S17 — Conteúdo & conversão _(opcional)_ | 🔄 | 2026-07-02 | _pré-commit (operador)_ | **Código aplicado** na branch `feat/content-conversion`: selo OAB no hero, WhatsApp contextual (Áreas/Família + Contato), "ver mais" nas avaliações. **Pendente:** `npm run build` + commit + push + preview pelo operador (regra de governança §5 — o agente não executa builds/Git). |
 | S18 — Auditoria final pós-deploy _(opcional)_ | ⬜ | — | — | Lighthouse/CWV (LCP<2,0s, INP<200ms, CLS<0,1), Rich Results, confirmação de RLS/anon key (§1.7) e smoke check do canonical de um artigo. Não bloqueia DoD. Origem: Apêndice A.6 / `MELHORIAS.md` §1.7. |
 
 ### 6.2 Status por item (granular)
@@ -278,11 +278,12 @@ _Escopo S8:_
 
 > Avaliada e **descartada** por decisão do operador: o **iframe de embed do Google Maps** (`mapa.component.html`) permanece como a abordagem definitiva. Não reabrir sem pedido explícito. Ver `CLAUDE.md` "Mapa — estado real".
 
-**S17 — Conteúdo & conversão (opcional)** _(detalhes: `MELHORIAS.md` §5 e §3.12)_
+**S17 — Conteúdo & conversão (opcional)** _(detalhes: `MELHORIAS.md` §5 e §3.12; branch `feat/content-conversion`, código aplicado 2026-07-02)_
 
-- ⬜ **Selo OAB discreto** próximo ao CTA do hero (prova de credibilidade), mantendo a sobriedade.
-- ⬜ **CTA de WhatsApp contextual por seção** (mensagem pré-preenchida variando conforme a origem; hoje é genérica e duplicada — alinhar com S13).
-- ⬜ **"Ver mais" nas avaliações longas** (`line-clamp-6` corta o texto sem expandir) — expandir/colapsar preservando o layout.
+- ✅ **Selo OAB discreto** próximo ao CTA do hero: pill sóbria "OAB/SP 527.527" abaixo do botão "Fale Comigo" (`hero.component.html`), mesmo padrão visual do selo do rodapé. _(2026-07-02)_
+- ✅ **CTA de WhatsApp contextual por seção**: helper `buildWhatsAppUrl()` + `WHATSAPP_URL_FAMILIA`/`WHATSAPP_URL_CONTATO` em `site.config.ts` (S13); novo link contextual no card "Foco de Atuação" (Família) da seção Áreas; mensagem própria no ícone da seção Contato. `WHATSAPP_URL` original (botão flutuante + rodapé) preservado intocado. _(2026-07-02)_
+- ✅ **"Ver mais" nas avaliações longas**: `GoogleReview.expanded?` + `ReviewsComponent.toggleExpand()`/`isLongReview()` (heurística por tamanho de texto, sem medir DOM); botão só aparece quando o texto excede ~200 caracteres. _(2026-07-02)_
+- ⏸️ **Build/commit/push/preview** — pendentes do operador (regra de governança: o agente não executa Git/build). Comando pronto na saída da sessão.
 
 **S18 — Auditoria final pós-deploy (opcional)** _(detalhes: Apêndice A.6; `MELHORIAS.md` §1.7)_
 

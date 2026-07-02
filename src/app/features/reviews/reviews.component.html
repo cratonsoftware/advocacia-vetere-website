@@ -19,7 +19,15 @@
 								}
 							</div>
 
-							<p class="text-n0/80 mb-8 line-clamp-6 flex-1 text-sm leading-relaxed italic">"{{ review.text }}"</p>
+							<p class="text-n0/80 mb-2 flex-1 text-sm leading-relaxed italic" [class.line-clamp-6]="!review.expanded">"{{ review.text }}"</p>
+
+							@if (isLongReview(review.text)) {
+								<button type="button" (click)="toggleExpand(review)" class="text-n0/70 hover:text-n0 decoration-n0/30 mb-6 self-start text-[10px] font-bold tracking-widest uppercase underline underline-offset-2 transition-colors">
+									{{ review.expanded ? 'Ver menos' : 'Ver mais' }}
+								</button>
+							} @else {
+								<div class="mb-6"></div>
+							}
 
 							<div class="border-n0/10 mt-auto flex items-center gap-4 border-t pt-6">
 								<div class="border-n0/20 bg-n1/10 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border">
