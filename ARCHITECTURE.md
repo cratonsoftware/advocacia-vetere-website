@@ -76,7 +76,7 @@ private readonly headers = new HttpHeaders({
 | --- | --- | --- |
 | `published_articles` | `BlogService` | retrocompat: `id, slug, title, excerpt, content, coverImage, readTime, category, date`; **novos (S3)**: `publishedAt`/`updatedAt` (ISO), `metaTitle`, `metaDescription`, `coverImageAlt`, `tags`, `tldr`, `faq`, `locale`, `canonicalUrl`, `noindex`, `categorySlug`, `author` (objeto) |
 | `categories` | `BlogService` | `id, name, slug` |
-| `google_reviews` | `ReviewsService` | `author_name, rating, text, profile_photo_url, relative_time_description` |
+| `google_reviews` | `ReviewsService` | `author_name, rating, text, profile_photo_url, relative_time_description`; **rev. 2026-07-02:** `review_time` (data real, ordenação), `author_url`, `language`; único em `author_name` |
 | `authors` _(S3)_ | via view `author`; e direto pelo `BlogService` (`getAuthorBySlug`, S8) na página `/autor/:slug` | `name, slug, role, oab, bio, avatar_url, same_as` — entidade de autor (E-E-A-T) |
 
 > A view `published_articles` aplica `ORDER BY published_at DESC`, filtra `is_published AND published_at <= now()` e é `security_invoker` (respeita o RLS das tabelas base). O front consome a view com `select=*`, então os campos novos da S3 trafegam sem quebrar o modelo `Artigo`. **Schema completo das tabelas base (`articles`, `categories`, `authors`, `google_reviews`), RLS, índices e a evolução para SEO (aplicada na S3)** estão em [`BLOG-SEO.md`](./BLOG-SEO.md).
@@ -97,11 +97,13 @@ A `supabaseKey` é embutida no bundle do cliente (ver §6). Isso pressupõe que 
 
 As avaliações exibidas são **avaliações reais do Google Business**. O fluxo é:
 
-1. Um processo de sincronização **agendado e pontual** consulta o Google Cloud (Places/Business) para capturar as avaliações do estabelecimento.
-2. Os dados são gravados na tabela **`google_reviews`** do Supabase.
-3. O site lê apenas o Supabase (`ReviewsService.getReviews()`, `limit=5`) via `HttpClient` — **o site não chama a Google Cloud API em tempo de execução**.
+1. A Edge Function **`fetch-google-reviews`** (Deno), agendada por **pg_cron** (diário, `0 0 * * *`), consulta a **Places API (New)** (`places.googleapis.com/v1/places/{id}`, FieldMask `reviews`) com os secrets `GOOGLE_API_KEY`/`PLACE_ID` — server-side, chave nunca no cliente. _(Migrado da Places API legacy em 2026-07-02.)_
+2. Grava na tabela **`google_reviews`** por **`upsert(onConflict: 'author_name')`** — **acumulativo** (o `delete`+`insert` destrutivo foi removido na revisão de 2026-07-02); guarda todas as notas e a data real (`review_time`, do campo `publishTime` ISO).
+3. O site lê apenas o Supabase (`ReviewsService.getReviews()` → `rating=gte.4&order=review_time.desc.nullslast&limit=5` = as **5 mais recentes com 4+ estrelas**) via `HttpClient` — **o site não chama a Google Cloud API em tempo de execução**.
 
-Isso evita exposição de chave Google no cliente e poupa quota (avaliações mudam raramente). O `ReviewsComponent` ainda traz um **fallback estático** de avaliações caso o Supabase retorne vazio ou falhe, garantindo que a seção nunca apareça quebrada.
+Isso evita exposição de chave Google no cliente e poupa quota. O `ReviewsComponent` ainda traz um **fallback estático** de avaliações caso o Supabase retorne vazio ou falhe, garantindo que a seção nunca apareça quebrada.
+
+> **Limite da Places API:** máximo de 5 avaliações por chamada, sem paginação. O upsert acumula o que o Google rotaciona ao longo do tempo, mas não garante 100%. Cobertura total exigiria a **Google Business Profile API** (OAuth da titular) — follow-up não implementado.
 
 ### Mapa
 

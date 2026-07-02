@@ -301,11 +301,15 @@ this.http.get<Artigo[]>(`${this.apiUrl}/published_articles?select=*`, { headers:
 
 As avaliações exibidas são avaliações reais do Google Business, mas **o site NÃO chama a Google Cloud API em tempo de execução**. O fluxo é:
 
-1. Um processo de sincronização **agendado e pontual** consulta o Google Cloud (Places/Business) para capturar as avaliações do estabelecimento.
-2. Os dados são gravados na tabela **`google_reviews`** do Supabase.
-3. O site lê apenas o Supabase via `HttpClient` (`ReviewsService.getReviews()`, `limit=5`).
+1. A Edge Function **`fetch-google-reviews`** (Deno, `verify_jwt: true`), agendada via **pg_cron** (job `Atualizar Avaliações do Google`, `0 0 * * *` — diário), consulta a **Places API (New)** (`places.googleapis.com/v1/places/{id}`, `X-Goog-FieldMask: reviews`, `languageCode=pt-BR`) com os secrets `GOOGLE_API_KEY` + `PLACE_ID`. **Migração legacy→New em 2026-07-02** (a Places API legacy foi desabilitada no projeto do Google Cloud).
+2. Os dados são gravados na tabela **`google_reviews`** do Supabase por **`upsert(onConflict: 'author_name')`** — **acumulativo, não-destrutivo** (o padrão antigo de `delete`+`insert` foi removido na revisão de 2026-07-02). A chave natural é `author_name` (uma avaliação por autor por local). Grava-se **todas as notas** (o filtro de qualidade fica na leitura).
+3. O site lê apenas o Supabase via `HttpClient` (`ReviewsService.getReviews()`): **`rating=gte.4&order=review_time.desc.nullslast&limit=5`** — as **5 mais recentes com 4+ estrelas**.
 
 Isso evita expor chave Google no cliente e poupa quota. O `ReviewsComponent` mantém um **fallback estático** de avaliações para os casos em que o Supabase retorna vazio ou falha.
+
+**Schema de `google_reviews` (revisão 2026-07-02):** além de `author_name, rating, text, profile_photo_url, relative_time_description, created_at`, tem `review_time timestamptz` (data real da avaliação, do campo `publishTime` da Places API New, já em ISO 8601 — **fonte de ordenação por recência**, pois `relative_time_description` é string não-sortável), `author_url`, `language` e **índice único em `author_name`** (dedup do upsert). RLS `SELECT` público, sem escrita anônima (a escrita é só da Edge Function via service role).
+
+**Limite conhecido (Places API):** a Places API retorna **no máximo 5 avaliações** por chamada, sem paginação. O upsert **acumula** o que o Google rotaciona ao longo do tempo, mas **não garante 100%** das avaliações. Cobertura total exigiria a **Google Business Profile API** (OAuth da titular, aprovação de acesso, IDs de localização) — registrado como follow-up, não implementado.
 
 ### Mapa — estado real
 
