@@ -313,13 +313,7 @@ Isso evita expor chave Google no cliente e poupa quota. O `ReviewsComponent` man
 
 ### Mapa — estado real
 
-A localização usa um **iframe de embed do Google Maps** (`mapa.component.html`). A integração Supabase ↔ Google Cloud para um mapa personalizado foi **planejada, mas não executada** — hoje é apenas o embed padrão.
-
-**Regras (para futura integração via Google Cloud API):**
-
-- Chave da API exclusiva para este projeto — não reutilizar em outros
-- Requisições feitas server-side / em pipeline de sincronização, nunca expondo a chave no client
-- Manter o cache em Supabase (avaliações mudam raramente) — evitar quota desnecessária
+A localização usa um **iframe de embed do Google Maps** (`mapa.component.html`). **Esta é a abordagem definitiva e adotada** — simples, sem chave/quota e com CLS controlado. Uma alternativa de mapa personalizado via Google Cloud API foi avaliada e **descartada** (2026-07-02, decisão do operador): o embed atende melhor à sobriedade da marca e ao custo/benefício. Não reabrir esse caminho sem pedido explícito. O único cuidado no iframe é o `title` de acessibilidade (já aplicado).
 
 ---
 

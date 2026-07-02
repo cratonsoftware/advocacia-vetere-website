@@ -149,8 +149,7 @@ Itens já mapeados e ainda em aberto (detalhados no relatório de auditoria):
 1. **Robustez do build (prioridade):** fazer o deploy falhar de forma "barulhenta" se nenhum artigo for gerado — fecha o buraco que reabriu o problema de indexação entre a S1 e a S8.
 2. **Melhorias de navegação e descoberta:** expor melhor as páginas de categoria e de autor a partir do blog; marcar a seção atual no menu.
 3. **Reforma do rodapé** (mais funcional e elegante, com contatos e redes).
-4. **Mapa personalizado** (sem concorrentes, com pontos de referência e estilo da marca).
-5. **Higiene de repositório:** normalizar fim de linha (CRLF) e fixar a versão do Node.
+4. **Higiene de repositório:** normalizar fim de linha (CRLF) e fixar a versão do Node.
 
 ---
 

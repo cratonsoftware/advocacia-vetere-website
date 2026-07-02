@@ -23,35 +23,34 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 
 **S1–S10 concluídas** (fundação de SEO/E-E-A-T/performance/a11y + correções de conteúdo + diagnóstico GSC). **Novas sessões S11–S18** consolidam a **dívida técnica e as melhorias ainda em aberto** mapeadas no Apêndice A do `RELATORIO-TECNICO-S1-S8.md` e nos "Próximos passos" do `RELATORIO-MUDANCAS-S1-S8.md`. Ordem por dependência e risco:
 
-| #                    | Sessão                       | Foco                                                                    | Depende de | Modelo      | Risco      |
-| -------------------- | ---------------------------- | ----------------------------------------------------------------------- | ---------- | ----------- | ---------- |
-| **S1**               | P0 — Indexação do artigo     | Pré-renderizar `/blog/:slug` + deploy hook                              | —          | **Opus**    | Médio      |
-| **S2**               | Quick wins de SEO/UX         | Correções pequenas e seguras                                            | —          | Sonnet      | Baixo      |
-| **S3**               | Banco — fundação E-E-A-T     | `authors`, view ISO/`updated_at`, capas no Storage                      | S1         | **Opus**    | Médio-Alto |
-| **S4**               | Schema & SERP                | meta dedicados, JSON-LD Article rico, Breadcrumb, LegalService          | S3         | **Opus**    | Médio      |
-| **S5**               | Topical authority & GEO/AEO  | tags, páginas de categoria, TL;DR/FAQ, `llms.txt`                       | S3         | Sonnet/Opus | Médio      |
-| **S6**               | Performance & modernização   | OnPush/zoneless, fontes WOFF2, preconnect, NgOptimizedImage, índices    | —          | Sonnet      | Médio      |
-| **S7**               | Acessibilidade & UX          | reduced-motion, skip link, foco, contraste, skeletons, manifest         | —          | Sonnet      | Baixo      |
-| **S8** _(opcional)_  | Testes & verificação final   | smoke tests + auditoria de fechamento                                   | todas      | Opus/Sonnet | Baixo      |
-| **S9**               | Correções de conteúdo        | "Advogada Familiarista" (≠ Especialista), título e FAQ do artigo        | —          | Sonnet      | Baixo      |
-| **S10**              | Diagnóstico GSC — indexação  | `robots.txt` no GSC + relatórios de indexação que não atualizam         | —          | Sonnet      | Baixo      |
-| **S11**              | Robustez do build (guard P0) | Falhar o build se o pré-render de slugs vier vazio em produção          | —          | **Opus**    | Médio      |
-| **S12**              | Higiene de repo & build      | `.gitattributes`/EOL CRLF; `engines`/`.nvmrc` (Node fixo)               | —          | Sonnet      | Baixo      |
-| **S13**              | Centralização de constantes  | `site.config.ts` (URL base, WhatsApp, contato, horário, `'Todos'`)      | S12        | Sonnet/Opus | Médio      |
-| **S14**              | Testes SSR de rotas          | render tests das rotas pré-renderizadas (complementa os smoke tests)    | —          | Sonnet/Opus | Baixo      |
-| **S15**              | Descoberta interna & rodapé  | expor categorias/autor no blog, seção ativa no menu, reforma do rodapé  | —          | Sonnet      | Médio      |
-| **S16**              | Mapa personalizado           | Google Cloud API + sync Supabase, estilo da marca, pontos de referência | —          | **Opus**    | Médio-Alto |
-| **S17** _(opcional)_ | Conteúdo & conversão         | selo OAB no hero, CTA WhatsApp contextual, "ver mais" nas avaliações    | —          | Sonnet      | Baixo      |
-| **S18** _(opcional)_ | Auditoria final pós-deploy   | Lighthouse/CWV, Rich Results, confirmação de RLS, smoke check           | todas      | Sonnet      | Baixo      |
+| #                    | Sessão                       | Foco                                                                   | Depende de | Modelo      | Risco      |
+| -------------------- | ---------------------------- | ---------------------------------------------------------------------- | ---------- | ----------- | ---------- |
+| **S1**               | P0 — Indexação do artigo     | Pré-renderizar `/blog/:slug` + deploy hook                             | —          | **Opus**    | Médio      |
+| **S2**               | Quick wins de SEO/UX         | Correções pequenas e seguras                                           | —          | Sonnet      | Baixo      |
+| **S3**               | Banco — fundação E-E-A-T     | `authors`, view ISO/`updated_at`, capas no Storage                     | S1         | **Opus**    | Médio-Alto |
+| **S4**               | Schema & SERP                | meta dedicados, JSON-LD Article rico, Breadcrumb, LegalService         | S3         | **Opus**    | Médio      |
+| **S5**               | Topical authority & GEO/AEO  | tags, páginas de categoria, TL;DR/FAQ, `llms.txt`                      | S3         | Sonnet/Opus | Médio      |
+| **S6**               | Performance & modernização   | OnPush/zoneless, fontes WOFF2, preconnect, NgOptimizedImage, índices   | —          | Sonnet      | Médio      |
+| **S7**               | Acessibilidade & UX          | reduced-motion, skip link, foco, contraste, skeletons, manifest        | —          | Sonnet      | Baixo      |
+| **S8** _(opcional)_  | Testes & verificação final   | smoke tests + auditoria de fechamento                                  | todas      | Opus/Sonnet | Baixo      |
+| **S9**               | Correções de conteúdo        | "Advogada Familiarista" (≠ Especialista), título e FAQ do artigo       | —          | Sonnet      | Baixo      |
+| **S10**              | Diagnóstico GSC — indexação  | `robots.txt` no GSC + relatórios de indexação que não atualizam        | —          | Sonnet      | Baixo      |
+| **S11**              | Robustez do build (guard P0) | Falhar o build se o pré-render de slugs vier vazio em produção         | —          | **Opus**    | Médio      |
+| **S12**              | Higiene de repo & build      | `.gitattributes`/EOL CRLF; `engines`/`.nvmrc` (Node fixo)              | —          | Sonnet      | Baixo      |
+| **S13**              | Centralização de constantes  | `site.config.ts` (URL base, WhatsApp, contato, horário, `'Todos'`)     | S12        | Sonnet/Opus | Médio      |
+| **S14**              | Testes SSR de rotas          | render tests das rotas pré-renderizadas (complementa os smoke tests)   | —          | Sonnet/Opus | Baixo      |
+| **S15**              | Descoberta interna & rodapé  | expor categorias/autor no blog, seção ativa no menu, reforma do rodapé | —          | Sonnet      | Médio      |
+| **S17** _(opcional)_ | Conteúdo & conversão         | selo OAB no hero, CTA WhatsApp contextual, "ver mais" nas avaliações   | —          | Sonnet      | Baixo      |
+| **S18** _(opcional)_ | Auditoria final pós-deploy   | Lighthouse/CWV, Rich Results, confirmação de RLS, smoke check          | todas      | Sonnet      | Baixo      |
 
 > S1–S11 e S12–S15 estão **✅ concluídas** (ver §6.1). Das pendentes:
 >
 > - **S11 (maior prioridade técnica) ✅ concluída** — fechou o buraco que reabriu o P0 de indexação (artigo herdando o SEO da Home) entre a S1 e a S8, de forma silenciosa, com guard de build em produção.
 > - **S12 deveria vir cedo:** há 47 arquivos "modificados" que são só conversão LF→CRLF (`git diff -w` = 0). Normalizar EOL **antes** de abrir branches de feature evita ruído em diffs/PRs.
 > - **S13 depende da S12** (mexe em muitos arquivos — melhor sobre uma árvore com EOL já normalizado).
-> - **S14, S15, S16** são independentes entre si. **S16** (mapa via Google Cloud) é a de maior risco/escopo.
+> - **S14, S15** são independentes entre si.
 > - **S17 e S18 são opcionais** e não bloqueiam nenhum DoD.
-> - **Ordem recomendada (restante):** S12 → S13/S14 → S15/S16 → S17/S18.
+> - **Ordem recomendada (restante):** S12 → S13/S14 → S15 → S17/S18.
 
 ---
 
@@ -59,7 +58,7 @@ Sessões longas degradam a qualidade: o contexto se acumula, o agente perde o fi
 
 **Modelos (Claude):**
 
-- **Opus 4.8** — sessões arquiteturais e críticas: **S1, S3, S4, S5, S8, S11** e **S16**. Exigem raciocínio sobre SSR, robustez de build, migração de schema, arquitetura de SEO e integração com Google Cloud; vale o modelo mais capaz para não errar.
+- **Opus 4.8** — sessões arquiteturais e críticas: **S1, S3, S4, S5, S8, S11**. Exigem raciocínio sobre SSR, robustez de build, migração de schema e arquitetura de SEO; vale o modelo mais capaz para não errar.
 - **Sonnet 4.6** — sessões mais mecânicas: **S2, S6, S7, S9, S10, S12, S14, S15, S17, S18**. Boa relação custo/qualidade para edições pontuais, correções de conteúdo, higiene de repo, testes, UX e diagnóstico operacional. **S13** (centralização de constantes) pode ser Sonnet ou Opus conforme o tamanho do refactor.
 - **Haiku** — não recomendado para execução destas sessões (ok apenas para tarefas triviais isoladas).
 
@@ -124,8 +123,8 @@ Uma sessão só está **concluída** quando **todos** os itens abaixo forem verd
 | S13 — Centralização de constantes | ✅ | 2026-06-23 | 17232002 | `src/app/core/config/site.config.ts` (`SITE_URL`, `BUSINESS`, `WHATSAPP_*`, `ALL_CATEGORIES_LABEL`) consumido por `SeoService`, páginas (`artigo`/`categoria`/`autor`/`blog`), `AppComponent` e `ContatoComponent`. `api/*` e `robots.txt` mantêm a URL base com **duplicação documentada** (fora do bundle). Build/commit/preview concluídos. |
 | S14 — Testes SSR de rotas | ✅ | 2026-06-24 | ca1844e0 | Render tests das 5 rotas pré-renderizadas (`home`/`blog`/`artigo`/`categoria`/`autor` `.component.spec.ts`) verificando `<h1>`, canonical self e JSON-LD por tipo; helper compartilhado `src/app/testing/seo-dom.helper.ts` (`provideRenderTestStubs`: loader de imagem transparente + `MatIconRegistry` falso + `PRECONNECT_CHECK_BLOCKLIST` → saída de teste limpa). Smoke tests de serviço da S8 mantidos. Integração via glob do `tsconfig.spec.json` (sem mudar `package.json`/`angular.json`). `npm run test` **34/34 verde, sem warnings**. Origem: `MELHORIAS.md` §1.8. |
 | S15 — Descoberta interna & rodapé | ✅ | 2026-06-25 | 11d6b8a3 · e93c9496 | Categorias do `/blog` → `RouterLink` para `/blog/categoria/:slug` (com `#rla` ref para evitar conflito de cascade Tailwind); autora no artigo → link `/autor/:slug`; tag de categoria clicável no `blog-preview` da home; `routerLinkActive` no header; rodapé 4 colunas (contato `BUSINESS` + redes sociais SVG inline + links blog/autor). Spec do blog atualizado (+2 testes). Validado em produção. |
-| S16 — Mapa personalizado | 🔄 | — | — | Substituir o embed padrão por mapa via Google Cloud API (estilo da marca, pontos de referência, sem concorrentes), com chave server-side e cache em Supabase. Planejado no `CLAUDE.md` (Mapa — estado real). Origem: "Próximos passos" #4. **⏸️ Bloqueado:** aguarda provisionamento da chave exclusiva (`GOOGLE_MAPS_STATIC_KEY`) + pontos de referência. Abordagem aprovada: **Static Maps API** (imagem branded no Supabase Storage + CTA) — chave server-side, sem CLS. |
-| S16b — Revisão do sync de avaliações _(complemento)_ | ✅ | 2026-07-02 | _pré-commit (operador)_ | Edge Function `fetch-google-reviews`: `delete`+`insert` → **`upsert(onConflict: author_name)`** (acumulativo), grava todas as notas + `review_time`/`author_url`/`language`. **v7 migrou legacy → Places API (New)** (`places.googleapis.com/v1`, FieldMask `reviews`) após o operador desabilitar a Places API legacy no Google Cloud; `review_time` vem de `publishTime` (ISO). Migração aditiva em `google_reviews` (colunas + índice único `author_name` + backfill). `ReviewsService`: `rating=gte.4&order=review_time.desc.nullslast&limit=5`. **Pendências do operador:** habilitar Places API (New) + chave dedicada no secret `GOOGLE_API_KEY` (separada da `GOOGLE_MAPS_STATIC_KEY`); testar o sync. Limite da API (máx. 5) documentado; GBP API como follow-up. |
+| S16 — Mapa personalizado | ❌ Descartada | 2026-07-02 | — | **Descartada por decisão do operador.** O **iframe de embed do Google Maps** (`mapa.component.html`) permanece como abordagem definitiva (sobriedade da marca + custo/benefício). Nenhuma chave de mapa a provisionar; nada a implementar. Não reabrir sem pedido explícito. Ver `CLAUDE.md` (Mapa — estado real). |
+| S16b — Revisão do sync de avaliações _(complemento)_ | ✅ | 2026-07-02 | _pré-commit (operador)_ | Edge Function `fetch-google-reviews`: `delete`+`insert` → **`upsert(onConflict: author_name)`** (acumulativo), grava todas as notas + `review_time`/`author_url`/`language`. **v7 migrou legacy → Places API (New)** (`places.googleapis.com/v1`, FieldMask `reviews`) após o operador desabilitar a Places API legacy no Google Cloud; `review_time` vem de `publishTime` (ISO). Migração aditiva em `google_reviews` (colunas + índice único `author_name` + backfill). `ReviewsService`: `rating=gte.4&order=review_time.desc.nullslast&limit=5`. **Pendências do operador:** habilitar Places API (New) + chave dedicada no secret `GOOGLE_API_KEY`; testar o sync. Limite da API (máx. 5) documentado; GBP API como follow-up. |
 | S17 — Conteúdo & conversão _(opcional)_ | ⬜ | — | — | Selo OAB próximo ao CTA do hero; CTA de WhatsApp contextual por seção; "ver mais" nas avaliações longas (`line-clamp-6`). Origem: `MELHORIAS.md` §5 e §3.12. |
 | S18 — Auditoria final pós-deploy _(opcional)_ | ⬜ | — | — | Lighthouse/CWV (LCP<2,0s, INP<200ms, CLS<0,1), Rich Results, confirmação de RLS/anon key (§1.7) e smoke check do canonical de um artigo. Não bloqueia DoD. Origem: Apêndice A.6 / `MELHORIAS.md` §1.7. |
 
@@ -275,13 +274,9 @@ _Escopo S8:_
 - ✅ **Reforma do rodapé (4 colunas):** Col 1 logo/OAB; Col 2 navegação; Col 3 contato (tel clicável `tel:`, e-mail `mailto:`, endereço, horário) de `BUSINESS`; Col 4 blog/autor + redes sociais (Instagram/Facebook/TikTok) via SVG inline de `BUSINESS.sameAs` com `aria-label`. Grade 1→2→4 colunas (mobile→tablet→desktop). _(2026-06-24)_
 - ✅ **Spec do blog atualizado:** comentário S15 + 2 novos testes — verifica link "Todos" para `/blog` e que categorias são renderizadas como `<a>` em `<nav>` com `aria-label="Filtrar por categoria"`. _(2026-06-24)_
 
-**S16 — Mapa personalizado** _(detalhes: `CLAUDE.md` "Mapa — estado real"; "Próximos passos" #4)_
+**S16 — Mapa personalizado** _(descartada — 2026-07-02)_
 
-> Hoje a localização é um **embed padrão** do Google Maps (`mapa.component.html`). A integração via Google Cloud API foi **planejada, não executada**.
-
-- ⬜ Implementar mapa via **Google Cloud API** com estilo da marca, pontos de referência e sem destacar concorrentes.
-- ⬜ **Chave exclusiva** deste projeto, usada **server-side / em pipeline de sincronização** — nunca exposta no client (mesma disciplina das avaliações). Cache em Supabase para poupar quota.
-- ⬜ Não degradar CWV/CLS (reservar espaço; `loading="lazy"` quando fizer sentido). Build verde; atualizar `CLAUDE.md`/`ARCHITECTURE.md`.
+> Avaliada e **descartada** por decisão do operador: o **iframe de embed do Google Maps** (`mapa.component.html`) permanece como a abordagem definitiva. Não reabrir sem pedido explícito. Ver `CLAUDE.md` "Mapa — estado real".
 
 **S17 — Conteúdo & conversão (opcional)** _(detalhes: `MELHORIAS.md` §5 e §3.12)_
 
@@ -314,7 +309,6 @@ _Escopo S8:_
 - **S13:** `grep` pela URL base/telefone/WhatsApp retorna **apenas** a config (fora de `api/*`, se aplicável); build verde; valores idênticos aos anteriores (sem divergência).
 - **S14:** `npm run test` verde incluindo os testes de render das rotas pré-renderizadas (h1/canonical/JSON-LD presentes).
 - **S15:** categorias e perfil de autor alcançáveis por navegação a partir do blog; item de menu da seção atual destacado; rodapé novo com contatos/redes e navegação por teclado/contraste OK; build verde.
-- **S16:** mapa renderiza com estilo da marca; chave **não** aparece no bundle/cliente (inspecionar network/JS); cache em Supabase funcionando; sem regressão de CLS; build verde.
 - **S17:** selo OAB visível e sóbrio no hero; CTA de WhatsApp varia por seção; avaliações longas expandem/colapsam sem quebrar layout.
 - **S18:** relatórios Lighthouse/Rich Results anexados; RLS confirmado e documentado; smoke check do canonical/`sitemap.xml`/`llms.txt` OK.
 
@@ -550,16 +544,7 @@ Entre em Plan Mode e aguarde aprovação. Branch feat/discovery-footer.
 Validação (§7 S15). DoD completo. Resuma e encerre.
 ```
 
-**S16 — Mapa personalizado (modelo: Opus + Plan Mode)**
-
-```
-Execute a S16 do projeto Advocacia Vetere. Sessão de MAIOR risco/escopo.
-Leia antes: CLAUDE.md (seções "Mapa — estado real" e "Avaliações"), ARCHITECTURE.md, PLANO-EXECUCAO.md §6 e RELATORIO-MUDANCAS-S1-S8.md ("Próximos passos" #4).
-Escopo (somente S16): substituir o embed padrão (mapa.component.html) por um mapa via Google Cloud API com estilo da marca, pontos de referência e sem destacar concorrentes. Chave EXCLUSIVA do projeto, usada server-side / em pipeline, NUNCA no client; cache em Supabase para poupar quota (mesma disciplina das avaliações). Não degradar CWV/CLS.
-ATENÇÃO: chaves só via variáveis de ambiente — nunca hardcoded. Confirme com o operador o provisionamento da chave antes de codar.
-Entre em Plan Mode e aguarde aprovação. Branch feat/custom-map.
-Validação (§7 S16): chave ausente do bundle; cache funcionando; sem regressão de CLS; build verde. DoD completo. Resuma e encerre.
-```
+**S16 — Mapa personalizado** _(descartada — 2026-07-02; iframe permanece como abordagem definitiva)_
 
 **S17 — Conteúdo & conversão (opcional; modelo: Sonnet + Plan Mode)**
 

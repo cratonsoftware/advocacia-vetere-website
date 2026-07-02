@@ -107,7 +107,7 @@ Isso evita exposição de chave Google no cliente e poupa quota. O `ReviewsCompo
 
 ### Mapa
 
-A localização usa um **iframe de embed do Google Maps** (`mapa.component.html`). A intenção original era integrar o Supabase ao Google Cloud para um mapa personalizado, **mas isso não foi executado** — atualmente é apenas o embed padrão. Item registrado em `MELHORIAS.md`.
+A localização usa um **iframe de embed do Google Maps** (`mapa.component.html`) — **abordagem definitiva e adotada**. O iframe tem `title` de acessibilidade. Uma variante de mapa personalizado via Google Cloud API foi avaliada e **descartada** (2026-07-02).
 
 ---
 
